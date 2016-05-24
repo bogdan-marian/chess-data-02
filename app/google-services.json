@@ -1,0 +1,58 @@
+{
+  "project_info": {
+    "project_number": "264714598866",
+    "firebase_url": "https://chess-data.firebaseio.com",
+    "project_id": "chess-data",
+    "storage_bucket": "chess-data.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264714598866:android:fd072d43ff0f21f9",
+        "android_client_info": {
+          "package_name": "eu.chessdata"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264714598866-m9n6qopvg0l815u9q4bi9tahhvq3lucu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "eu.chessdata",
+            "certificate_hash": "4ECE3152B5281B59FB4A0E0F9AEF5CB66EFF8A9A"
+          }
+        },
+        {
+          "client_id": "264714598866-g56idsjnjirk5m4qdcrq40d2aff6h90e.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "264714598866-5benmmuk47gvjglo3a9en22ce0kfs65u.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "264714598866-ne3a6fp88topjmnidocrt86u7inokqlr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKMLUTAZ48Z-TQC6sQpyARnQn-5oBpi6g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
