@@ -1,4 +1,4 @@
-package eu.chessdata;
+package eu.chessdata.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,24 +20,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.ServerValue;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-
-import eu.chessdata.model.User;
-import eu.chessdata.utils.Constants;
-import eu.chessdata.utils.Utils;
+import eu.chessdata.R;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
@@ -189,54 +179,54 @@ public class MainActivity extends AppCompatActivity
         ((TextView) header.findViewById(R.id.user_email)).setText(mEmail);
 
         //pushUserInFirebaseHelper();
-        setUserInFirebaseHelper();
+        //setUserInFirebaseHelper();
     }
 
-    private void pushUserInFirebaseHelper(){
-        //make pojo and convert to hashMap
-        HashMap<String, Object>timeStampJoined = new HashMap<>();
-        timeStampJoined.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
-        User user = new User(mUsername,mEmail,timeStampJoined);
-        /*HashMap<String, Object> userToAdd =
-                (HashMap<String, Object>)new ObjectMapper().convertValue(user,Map.class);*/
+//    private void pushUserInFirebaseHelper(){
+//        //make pojo and convert to hashMap
+//        HashMap<String, Object>timeStampJoined = new HashMap<>();
+//        timeStampJoined.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+//        User user = new User(mUsername,mEmail);
+//        /*HashMap<String, Object> userToAdd =
+//                (HashMap<String, Object>)new ObjectMapper().convertValue(user,Map.class);*/
+//
+//        //add item to update map
+//        FirebaseApp app = FirebaseApp.getInstance();
+//        //FirebaseDatabase.getInstance(app);
+//
+//        FirebaseDatabase database = FirebaseDatabase.getInstance(app);
+//
+//        DatabaseReference databaseRef = database.getReference(Constants.LOCATION_USERS);
+//        databaseRef.push().setValue(user);
+//
+//        //newUserRef.setValue(userToAdd);
+//    }
 
-        //add item to update map
-        FirebaseApp app = FirebaseApp.getInstance();
-        //FirebaseDatabase.getInstance(app);
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance(app);
-
-        DatabaseReference databaseRef = database.getReference(Constants.LOCATION_USERS);
-        databaseRef.push().setValue(user);
-
-        //newUserRef.setValue(userToAdd);
-    }
-
-    private void setUserInFirebaseHelper(){
-
-
-        final String encodedEmail = Utils.encodeEmail(mEmail);
-
-        FirebaseApp app = FirebaseApp.getInstance();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference userLocation = database.getReference(Constants.LOCATION_USERS).child(encodedEmail);
-
-        userLocation.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //only set value if user does not exist
-                //if (dataSnapshot.getValue()==null){
-                    HashMap<String, Object>timeStampJoined = new HashMap<>();
-                    timeStampJoined.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
-                    User user = new User(mUsername,mEmail,timeStampJoined);
-                    userLocation.setValue(user);
-                //}
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
+//    private void setUserInFirebaseHelper(){
+//
+//
+//        final String encodedEmail = Utils.encodeEmail(mEmail);
+//
+//        FirebaseApp app = FirebaseApp.getInstance();
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        final DatabaseReference userLocation = database.getReference(Constants.LOCATION_USERS).child(encodedEmail);
+//
+//        userLocation.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                //only set value if user does not exist
+//                //if (dataSnapshot.getValue()==null){
+//                    HashMap<String, Object>timeStampJoined = new HashMap<>();
+//                    timeStampJoined.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+//                    User user = new User(mUsername,mEmail);
+//                    userLocation.setValue(user);
+//                //}
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 }

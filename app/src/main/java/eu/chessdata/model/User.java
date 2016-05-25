@@ -1,6 +1,10 @@
 package eu.chessdata.model;
 
+import com.firebase.client.ServerValue;
+
 import java.util.HashMap;
+
+import eu.chessdata.utils.Constants;
 
 /**
  * Created by Bogdan Oloeriu on 5/24/2016.
@@ -20,12 +24,14 @@ public class User {
      *
      * @param name
      * @param email
-     * @param timestampJoined
      */
-    public User(String name, String email, HashMap<String, Object> timestampJoined) {
+    public User(String name, String email) {
+        HashMap<String, Object> timeStamp = new HashMap<>();
+        timeStamp.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+
         this.name = name;
         this.email = email;
-        this.timestampJoined = timestampJoined;
+        this.timestampJoined = timeStamp;
     }
 
     public String getName() {

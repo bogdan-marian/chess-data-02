@@ -1,4 +1,4 @@
-package eu.chessdata;
+package eu.chessdata.ui;
 
 
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.firebase.client.ServerValue;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -18,10 +19,23 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+
+import eu.chessdata.R;
+import eu.chessdata.model.User;
+import eu.chessdata.utils.Constants;
 
 public class SignInActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
@@ -120,11 +134,42 @@ public class SignInActivity extends AppCompatActivity implements
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
+                            setUserInFirebaseHelper();
                             startActivity(new Intent(SignInActivity.this, MainActivity.class));
                             finish();
                         }
                     }
                 });
+    }
+
+    private void setUserInFirebaseHelper() {
+        FirebaseApp app = FirebaseApp.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = auth.getCurrentUser();
+        final String username = firebaseUser.getDisplayName();
+        final String email = firebaseUser.getEmail();
+        String uid = firebaseUser.getUid();
+
+        final DatabaseReference userLocation = database.getReference(Constants.LOCATION_USERS).child(uid);
+
+        userLocation.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //only set value if user does not exist
+                if (dataSnapshot.getValue() == null) {
+                    HashMap<String, Object> timeStampJoined = new HashMap<>();
+                    timeStampJoined.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+                    User user = new User(username, email);
+                    userLocation.setValue(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }
 
