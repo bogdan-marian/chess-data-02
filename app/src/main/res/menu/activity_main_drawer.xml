@@ -14,24 +14,29 @@
             android:id="@+id/nav_members"
             android:icon="@drawable/ic_menu_members"
             android:title="Players" />
+        <item
+            android:id="@+id/nav_clubs"
+            android:icon="@drawable/ic_menu_clubs"
+            android:title="My Clubs" />
 
     </group>
 
-    <item android:title="---------------">
+   <!-- <item android:title="">
         <menu>
-            <item
+
+            &lt;!&ndash;<item
                 android:id="@+id/nav_manage"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="manage" />
-            <!--<item
+            <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
                 android:title="Share" />
             <item
                 android:id="@+id/nav_send"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />-->
+                android:title="Send" />
         </menu>
-    </item>
+    </item>&ndash;&gt;-->
 
 </menu>

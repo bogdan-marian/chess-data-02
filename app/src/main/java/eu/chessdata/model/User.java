@@ -12,7 +12,7 @@ import eu.chessdata.utils.Constants;
 public class User {
     private String name;
     private String email;
-    private HashMap<String, Object> timestampJoined;
+    private HashMap<String, Object> dateCreated;
 
     public User() {
     }
@@ -31,7 +31,7 @@ public class User {
 
         this.name = name;
         this.email = email;
-        this.timestampJoined = timeStamp;
+        this.dateCreated = timeStamp;
     }
 
     public String getName() {
@@ -42,10 +42,6 @@ public class User {
         return email;
     }
 
-    public HashMap<String, Object> getTimestampJoined() {
-        return timestampJoined;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -54,7 +50,11 @@ public class User {
         this.email = email;
     }
 
-    public void setTimestampJoined(HashMap<String, Object> timestampJoined) {
-        this.timestampJoined = timestampJoined;
+    public HashMap<String, Object> getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(HashMap<String, Object> dateCreated) {
+        this.dateCreated = dateCreated;
     }
 }

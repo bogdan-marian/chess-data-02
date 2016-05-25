@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,12 +28,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 import eu.chessdata.R;
+import eu.chessdata.ui.club.ClubCreateDialogFragment;
+import eu.chessdata.ui.club.MyClubsFragment;
+import eu.chessdata.ui.home.HomeFragment;
+import eu.chessdata.utils.Constants;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        GoogleApiClient.OnConnectionFailedListener {
 
     public static final String ANONYMOUS = "anonymous";
-    private static final String TAG = "my-debug";
+    private static final String LOG_TAG = Constants.LOG_TAG;
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
@@ -46,6 +51,9 @@ public class MainActivity extends AppCompatActivity
     private String mEmail;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
+
+    //
+    private FloatingActionButton mFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +83,15 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setVisibility(View.INVISIBLE);
+        /*fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -125,10 +134,6 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
 
         return super.onOptionsItemSelected(item);
     }
@@ -141,14 +146,34 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             // Handle the camera action
-        } else if (id == R.id.nav_tournaments) {
+            HomeFragment homeFragment = new HomeFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, homeFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+            mFab.setVisibility(View.INVISIBLE);
+        } else if (id == R.id.nav_clubs) {
+            //show fragment
+            MyClubsFragment myClubsFragment = new MyClubsFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, myClubsFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+            //show fab
+            mFab.setVisibility(View.VISIBLE);
+            mFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-        } else if (id == R.id.nav_tournaments) {
-
-        } else if (id == R.id.nav_members) {
-
-        } else if (id == R.id.nav_manage) {
-
+                }
+            });
+            mFab.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    (new ClubCreateDialogFragment()).show(getSupportFragmentManager(), "ClubCreateDialogFragment");
+                    return true;
+                }
+            });
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -160,7 +185,7 @@ public class MainActivity extends AppCompatActivity
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
@@ -178,8 +203,12 @@ public class MainActivity extends AppCompatActivity
         ((TextView) header.findViewById(R.id.user_name)).setText(mUsername);
         ((TextView) header.findViewById(R.id.user_email)).setText(mEmail);
 
-        //pushUserInFirebaseHelper();
-        //setUserInFirebaseHelper();
+        //show home fragment
+        HomeFragment homeFragment = new HomeFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, homeFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
 //    private void pushUserInFirebaseHelper(){
