@@ -11,5 +11,6 @@ public class ChessDataApplication extends android.app.Application{
         super.onCreate();
         /* Initialize Firebase */
         Firebase.setAndroidContext(this);
+        Firebase.getDefaultConfig().setPersistenceEnabled(true);
     }
 }
