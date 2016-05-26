@@ -151,7 +151,7 @@ public class SignInActivity extends AppCompatActivity implements
         final String email = firebaseUser.getEmail();
         String uid = firebaseUser.getUid();
 
-        final DatabaseReference userLocation = database.getReference(Constants.LOCATION_USERS).child(uid);
+        final DatabaseReference userLocation = database.getReference(Constants.USERS).child(uid);
 
         userLocation.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

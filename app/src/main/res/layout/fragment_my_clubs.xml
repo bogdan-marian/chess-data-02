@@ -6,4 +6,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="My Clubs"/>
+    <ListView
+        android:id="@+id/list_view_my_clubs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></ListView>
 </LinearLayout>

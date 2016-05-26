@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity
 //
 //        FirebaseDatabase database = FirebaseDatabase.getInstance(app);
 //
-//        DatabaseReference databaseRef = database.getReference(Constants.LOCATION_USERS);
+//        DatabaseReference databaseRef = database.getReference(Constants.USERS);
 //        databaseRef.push().setValue(user);
 //
 //        //newUserRef.setValue(userToAdd);
@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity
 //
 //        FirebaseApp app = FirebaseApp.getInstance();
 //        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        final DatabaseReference userLocation = database.getReference(Constants.LOCATION_USERS).child(encodedEmail);
+//        final DatabaseReference userLocation = database.getReference(Constants.USERS).child(encodedEmail);
 //
 //        userLocation.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override

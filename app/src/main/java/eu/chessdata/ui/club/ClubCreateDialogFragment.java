@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import eu.chessdata.R;
 import eu.chessdata.model.Club;
-import eu.chessdata.model.ClubManager;
+import eu.chessdata.model.User;
 import eu.chessdata.utils.Constants;
 
 /**
@@ -70,15 +70,25 @@ public class ClubCreateDialogFragment extends DialogFragment{
         String displayName = firebaseUser.getDisplayName();
 
         //create the club
-        final DatabaseReference clubs = database.getReference(Constants.LOCATION_CLUBS);
+        final DatabaseReference clubs = database.getReference(Constants.CLUBS);
         DatabaseReference clubRef = clubs.push();
         clubRef.setValue(club);
         String clubId = clubRef.getKey();
         Log.d(LOG_TAG,"clubId = " + clubId);
 
-        String managersLocation = Constants.LOCATION_CLUB_MANAGERS.replace("$clubId",clubId);
-        ClubManager clubManager = new ClubManager(uid,displayName);
-        final DatabaseReference clubManagers = database.getReference(managersLocation);
-        clubManagers.push().setValue(clubManager);
+        //set manager
+        String managersLocation = Constants.LOCATION_CLUB_MANAGERS
+                .replace("$clubId",clubId)
+                .replace("$managerId",uid);
+        User clubManager = new User(firebaseUser.getDisplayName(),firebaseUser.getEmail());
+        final DatabaseReference managersRef = database.getReference(managersLocation);
+        managersRef.setValue(clubManager);
+
+        //set managed club
+        String managedClubsLocation = Constants.LOCATION_MANAGED_CLUBS
+                .replace(Constants.USER_ID,uid)
+                .replace(Constants.CLUB_ID,clubId);
+        DatabaseReference managedClubsRef = database.getReference(managedClubsLocation);
+        managedClubsRef.setValue(club);
     }
 }
