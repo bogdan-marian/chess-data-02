@@ -71,22 +71,15 @@ public class MyClubsFragment extends Fragment {
         //Firebase reference
         String myClubsLocation = Constants.LOCATION_MY_CLUBS
                 .replace(Constants.USER_ID,"ZWw9LeF7NTUdUlsrKR9VuqJInzp1");
-        String legacyLocation = Constants.FIREBASE_URL+"/"+myClubsLocation;
-        legacyRef = new Firebase(legacyLocation);
+
         mDatabaseClubs.getReference(myClubsLocation);
         mClubsReference = mDatabaseClubs.getReference();
 
         //initialize screen
-        //mListView = (ListView) mView.findViewById(R.id.list_view_my_clubs);
-        RecyclerView recyclerView = (RecyclerView) mView.findViewById(R.id.list_reecycler_view);
+        RecyclerView recyclerView = (RecyclerView) mView.findViewById(R.id.list_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
-
-        //set the adapter
-        /*mMyClubsItemAdapter = new MyClubsItemAdapter(getActivity(),Club.class,
-                R.layout.list_item_text, legacyRef);
-        mListView.setAdapter(mMyClubsItemAdapter);*/
 
 
         //use recycler adapter
