@@ -3,16 +3,14 @@ package eu.chessdata.ui.club;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.firebase.client.Firebase;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,75 +26,58 @@ import eu.chessdata.utils.Constants;
  */
 public class MyClubsFragment extends Fragment {
     FirebaseApp mApp;
-    FirebaseDatabase mDatabaseClubs;
     DatabaseReference mClubsReference;
     FirebaseAuth mAuth;
     FirebaseUser mUser;
 
-    Firebase legacyRef;
     View mView;
     ListView mListView;
-    MyClubsItemAdapter mMyClubsItemAdapter;
+    FirebaseListAdapter<Club> mAdapter;
 
-    FirebaseRecyclerAdapter<Club,ClubViewHolder> mFirebaseAdapter;
-
-
-
-    public static class ClubViewHolder extends RecyclerView.ViewHolder{
-        public TextView textView;
-
-        public ClubViewHolder(View itemView) {
-            super(itemView);
-            textView = (TextView) itemView.findViewById(R.id.list_item_text_simple_view);
-        }
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+
+
         mApp = FirebaseApp.getInstance();
-        mDatabaseClubs = FirebaseDatabase.getInstance();
+
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
 
-        mView = inflater.inflate(R.layout.fragment_my_clubs, container,false);
+        mView = inflater.inflate(R.layout.fragment_my_clubs, container, false);
 
         //Firebase reference
         String myClubsLocation = Constants.LOCATION_MY_CLUBS
-                .replace(Constants.USER_ID,"ZWw9LeF7NTUdUlsrKR9VuqJInzp1");
+                .replace(Constants.USER_ID, "ZWw9LeF7NTUdUlsrKR9VuqJInzp1");
+        mClubsReference = FirebaseDatabase.getInstance().getReference(myClubsLocation);
 
-        mDatabaseClubs.getReference(myClubsLocation);
-        mClubsReference = mDatabaseClubs.getReference();
+        //find the listView
+        mListView = (ListView) mView.findViewById(R.id.list_view_my_clubs);
 
-        //initialize screen
-        RecyclerView recyclerView = (RecyclerView) mView.findViewById(R.id.list_recycler_view);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
-
-
-        //use recycler adapter
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Club, ClubViewHolder>(
+        //create custom FirebaseListAdapter subclass
+        mAdapter = new FirebaseListAdapter<Club>(
+                getActivity(),
                 Club.class,
                 R.layout.list_item_text,
-                ClubViewHolder.class,
-                mClubsReference
-        ) {
+                mClubsReference) {
             @Override
-            protected void populateViewHolder(ClubViewHolder viewHolder, Club model, int position) {
-                viewHolder.textView.setText(model.getShortName());
+            protected void populateView(View v, Club model, int position) {
+                Log.d(Constants.LOG_TAG,"Starting to populate");
+
+                ((TextView)v.findViewById(R.id.list_item_text_simple_view)).setText(model.getShortName());
             }
         };
-
-        recyclerView.setAdapter(mFirebaseAdapter);
-
+        mListView.setAdapter(mAdapter);
         return mView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mAdapter!=null) {
+            mAdapter.cleanup();
+        }
     }
 }
