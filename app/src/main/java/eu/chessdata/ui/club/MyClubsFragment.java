@@ -3,15 +3,20 @@ package eu.chessdata.ui.club;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.firebase.client.Firebase;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import eu.chessdata.R;
@@ -23,14 +28,29 @@ import eu.chessdata.utils.Constants;
  */
 public class MyClubsFragment extends Fragment {
     FirebaseApp mApp;
-    FirebaseDatabase mDatabase;
+    FirebaseDatabase mDatabaseClubs;
+    DatabaseReference mClubsReference;
     FirebaseAuth mAuth;
     FirebaseUser mUser;
 
-    Firebase mMyClubsRef;
+    Firebase legacyRef;
     View mView;
     ListView mListView;
     MyClubsItemAdapter mMyClubsItemAdapter;
+
+    FirebaseRecyclerAdapter<Club,ClubViewHolder> mFirebaseAdapter;
+
+
+
+    public static class ClubViewHolder extends RecyclerView.ViewHolder{
+        public TextView textView;
+
+        public ClubViewHolder(View itemView) {
+            super(itemView);
+            textView = (TextView) itemView.findViewById(R.id.list_item_text_simple_view);
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +62,7 @@ public class MyClubsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mApp = FirebaseApp.getInstance();
-        mDatabase = FirebaseDatabase.getInstance();
+        mDatabaseClubs = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
 
@@ -51,18 +71,38 @@ public class MyClubsFragment extends Fragment {
         //Firebase reference
         String myClubsLocation = Constants.LOCATION_MY_CLUBS
                 .replace(Constants.USER_ID,"ZWw9LeF7NTUdUlsrKR9VuqJInzp1");
-        myClubsLocation = Constants.FIREBASE_URL+"/"+myClubsLocation;
-        mMyClubsRef = new Firebase(myClubsLocation);
-        // mDatabase.getReference(myClubsLocation);
-
+        String legacyLocation = Constants.FIREBASE_URL+"/"+myClubsLocation;
+        legacyRef = new Firebase(legacyLocation);
+        mDatabaseClubs.getReference(myClubsLocation);
+        mClubsReference = mDatabaseClubs.getReference();
 
         //initialize screen
-        mListView = (ListView) mView.findViewById(R.id.list_view_my_clubs);
+        //mListView = (ListView) mView.findViewById(R.id.list_view_my_clubs);
+        RecyclerView recyclerView = (RecyclerView) mView.findViewById(R.id.list_reecycler_view);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
 
         //set the adapter
-        mMyClubsItemAdapter = new MyClubsItemAdapter(getActivity(),Club.class,
-                R.layout.list_item_text,mMyClubsRef);
-        mListView.setAdapter(mMyClubsItemAdapter);
+        /*mMyClubsItemAdapter = new MyClubsItemAdapter(getActivity(),Club.class,
+                R.layout.list_item_text, legacyRef);
+        mListView.setAdapter(mMyClubsItemAdapter);*/
+
+
+        //use recycler adapter
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Club, ClubViewHolder>(
+                Club.class,
+                R.layout.list_item_text,
+                ClubViewHolder.class,
+                mClubsReference
+        ) {
+            @Override
+            protected void populateViewHolder(ClubViewHolder viewHolder, Club model, int position) {
+                viewHolder.textView.setText(model.getShortName());
+            }
+        };
+
+        recyclerView.setAdapter(mFirebaseAdapter);
 
         return mView;
     }
