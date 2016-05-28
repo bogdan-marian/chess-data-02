@@ -39,8 +39,6 @@ public class MyClubsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-
-
         mApp = FirebaseApp.getInstance();
 
         mAuth = FirebaseAuth.getInstance();
