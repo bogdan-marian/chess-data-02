@@ -86,8 +86,8 @@ public class ClubCreateDialogFragment extends DialogFragment{
 
         //set managed club
         String managedClubsLocation = Constants.LOCATION_MANAGED_CLUBS
-                .replace(Constants.USER_ID,uid)
-                .replace(Constants.CLUB_ID,clubId);
+                .replace(Constants.USER_KEY,uid)
+                .replace(Constants.CLUB_KEY,clubId);
         DatabaseReference managedClubsRef = database.getReference(managedClubsLocation);
         managedClubsRef.setValue(club);
     }
