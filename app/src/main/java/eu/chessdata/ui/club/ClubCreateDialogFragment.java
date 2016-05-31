@@ -19,13 +19,15 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import eu.chessdata.R;
 import eu.chessdata.model.Club;
+import eu.chessdata.model.DefaultManagedClub;
 import eu.chessdata.model.User;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyFirebaseUtils;
 
 /**
  * Created by Bogdan Oloeriu on 5/25/2016.
  */
-public class ClubCreateDialogFragment extends DialogFragment{
+public class ClubCreateDialogFragment extends DialogFragment {
     private static final String LOG_TAG = Constants.LOG_TAG;
     private View mView;
 
@@ -35,7 +37,7 @@ public class ClubCreateDialogFragment extends DialogFragment{
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        mView = inflater.inflate(R.layout.club_create_dialog,null);
+        mView = inflater.inflate(R.layout.club_create_dialog, null);
         builder.setView(mView)
                 .setPositiveButton("Create club", new DialogInterface.OnClickListener() {
                     @Override
@@ -47,20 +49,21 @@ public class ClubCreateDialogFragment extends DialogFragment{
         return builder.create();
     }
 
-    private Club buildClub(){
-        String name =((EditText) mView.findViewById(R.id.clubName)).getText().toString();
+    private Club buildClub() {
+        String name = ((EditText) mView.findViewById(R.id.clubName)).getText().toString();
         String shortName = ((EditText) mView.findViewById(R.id.shortName)).getText().toString();
         String email = ((EditText) mView.findViewById(R.id.email)).getText().toString();
         String country = ((EditText) mView.findViewById(R.id.country)).getText().toString();
         String city = ((EditText) mView.findViewById(R.id.city)).getText().toString();
         String homePage = ((EditText) mView.findViewById(R.id.homePage)).getText().toString();
         String description = ((EditText) mView.findViewById(R.id.clubDescription)).getText().toString();
-        Club club = new Club(name,shortName,email,country,city,homePage,description);
+        Club club = new Club(name, shortName, email, country, city, homePage, description);
 
         return club;
     }
-    private void persistClub(){
-        Club club  = buildClub();
+
+    private void persistClub() {
+        Club club = buildClub();
 
         FirebaseApp app = FirebaseApp.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -74,21 +77,25 @@ public class ClubCreateDialogFragment extends DialogFragment{
         DatabaseReference clubRef = clubs.push();
         clubRef.setValue(club);
         String clubId = clubRef.getKey();
-        Log.d(LOG_TAG,"clubId = " + clubId);
+        Log.d(LOG_TAG, "clubId = " + clubId);
 
         //set manager
         String managersLocation = Constants.LOCATION_CLUB_MANAGERS
-                .replace("$clubId",clubId)
-                .replace("$managerId",uid);
-        User clubManager = new User(firebaseUser.getDisplayName(),firebaseUser.getEmail());
+                .replace(Constants.CLUB_KEY, clubId)
+                .replace(Constants.MANAGER_KEY, uid);
+        User clubManager = new User(firebaseUser.getDisplayName(), firebaseUser.getEmail());
         final DatabaseReference managersRef = database.getReference(managersLocation);
         managersRef.setValue(clubManager);
 
-        //set managed club
-        String managedClubsLocation = Constants.LOCATION_MANAGED_CLUBS
-                .replace(Constants.USER_KEY,uid)
-                .replace(Constants.CLUB_KEY,clubId);
-        DatabaseReference managedClubsRef = database.getReference(managedClubsLocation);
-        managedClubsRef.setValue(club);
+        //add to my_clubs club
+        String managedClubsLocation = Constants.LOCATION_MY_CLUB
+                .replace(Constants.USER_KEY, uid)
+                .replace(Constants.CLUB_KEY, clubId);
+        DatabaseReference myClubsRef = database.getReference(managedClubsLocation);
+        myClubsRef.setValue(club);
+
+        //settings set managed_club key;
+        DefaultManagedClub defaultManagedClub = new DefaultManagedClub(clubId, club.getShortName());
+        MyFirebaseUtils.setDefaultManagedClub(defaultManagedClub);
     }
 }

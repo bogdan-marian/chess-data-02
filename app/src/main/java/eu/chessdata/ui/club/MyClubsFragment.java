@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.FirebaseApp;
@@ -24,12 +23,16 @@ import com.google.firebase.database.ValueEventListener;
 
 import eu.chessdata.R;
 import eu.chessdata.model.Club;
+import eu.chessdata.model.DefaultManagedClub;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyFirebaseUtils;
 
 /**
  * Created by Bogdan Oloeriu on 5/25/2016.
  */
 public class MyClubsFragment extends Fragment {
+    private final String tag = Constants.LOG_TAG;
+
     FirebaseApp mApp;
     DatabaseReference mClubsReference;
     FirebaseAuth mAuth;
@@ -53,7 +56,7 @@ public class MyClubsFragment extends Fragment {
 
         //Firebase reference
         String myClubsLocation = Constants.LOCATION_MY_CLUBS
-                .replace(Constants.USER_KEY, "ZWw9LeF7NTUdUlsrKR9VuqJInzp1");
+                .replace(Constants.USER_KEY, mUser.getUid());
         mClubsReference = FirebaseDatabase.getInstance().getReference(myClubsLocation);
 
         //find the listView
@@ -76,9 +79,9 @@ public class MyClubsFragment extends Fragment {
         mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Club selectedClub = mAdapter.getItem(position);
+                final Club selectedClub = mAdapter.getItem(position);
                 String name = selectedClub.getShortName();
-                String clubId = mAdapter.getRef(position).getKey();
+                final String clubId = mAdapter.getRef(position).getKey();
                 //Toast.makeText(getContext(),name +" / " + clubId ,Toast.LENGTH_SHORT).show();
 
                 String adminPath = Constants.CLUB_MANAGERS
@@ -91,16 +94,17 @@ public class MyClubsFragment extends Fragment {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //if data exists then set as default club
-                        if (dataSnapshot.exists()){
-                            Toast.makeText(getContext(),"Super you are a manager",Toast.LENGTH_SHORT);
+                        if (dataSnapshot.getValue()!= null){
+                            DefaultManagedClub defaultManagedClub = new DefaultManagedClub(clubId, selectedClub.getShortName());
+                            MyFirebaseUtils.setDefaultManagedClub(defaultManagedClub);
                         }else {
-                            Toast.makeText(getContext(),"You are not manager",Toast.LENGTH_SHORT);
+                            Log.d(tag,"You are not manager");
                         }
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.e(tag,"Data error: " + databaseError.getMessage());
                     }
                 });
 
