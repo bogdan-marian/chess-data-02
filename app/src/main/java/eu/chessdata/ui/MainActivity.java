@@ -28,17 +28,22 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 import eu.chessdata.R;
+import eu.chessdata.model.DefaultClub;
 import eu.chessdata.ui.club.ClubCreateDialogFragment;
 import eu.chessdata.ui.club.MyClubsFragment;
 import eu.chessdata.ui.home.HomeFragment;
+import eu.chessdata.ui.tournament.TournamentsFragment;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyFirebaseUtils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        MyFirebaseUtils.OnOneTimeResultsListener {
+
 
     public static final String ANONYMOUS = "anonymous";
-    private static final String LOG_TAG = Constants.LOG_TAG;
+    private static final String tag = Constants.LOG_TAG;
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
@@ -152,6 +157,7 @@ public class MainActivity extends AppCompatActivity
             transaction.addToBackStack(null);
             transaction.commit();
             mFab.setVisibility(View.INVISIBLE);
+            getSupportActionBar().setTitle("chess-data");
         } else if (id == R.id.nav_clubs) {
             //show fragment
             MyClubsFragment myClubsFragment = new MyClubsFragment();
@@ -159,6 +165,7 @@ public class MainActivity extends AppCompatActivity
             transaction.replace(R.id.fragment_container, myClubsFragment);
             transaction.addToBackStack(null);
             transaction.commit();
+            getSupportActionBar().setTitle("my clubs");
             //show fab
             mFab.setVisibility(View.VISIBLE);
             mFab.setOnClickListener(new View.OnClickListener() {
@@ -174,6 +181,8 @@ public class MainActivity extends AppCompatActivity
                     return true;
                 }
             });
+        } else if (id == R.id.nav_tournaments) {
+            MyFirebaseUtils.getDefaultClub(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -185,7 +194,7 @@ public class MainActivity extends AppCompatActivity
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult);
+        Log.d(tag, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
@@ -211,51 +220,21 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
-//    private void pushUserInFirebaseHelper(){
-//        //make pojo and convert to hashMap
-//        HashMap<String, Object>timeStampJoined = new HashMap<>();
-//        timeStampJoined.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
-//        User user = new User(mUsername,mEmail);
-//        /*HashMap<String, Object> userToAdd =
-//                (HashMap<String, Object>)new ObjectMapper().convertValue(user,Map.class);*/
-//
-//        //add item to update map
-//        FirebaseApp app = FirebaseApp.getInstance();
-//        //FirebaseDatabase.getInstance(app);
-//
-//        FirebaseDatabase database = FirebaseDatabase.getInstance(app);
-//
-//        DatabaseReference databaseRef = database.getReference(Constants.USERS);
-//        databaseRef.push().setValue(user);
-//
-//        //newUserRef.setValue(userToAdd);
-//    }
+    @Override
+    public void onDefaultClubValue(DefaultClub defaultClub) {
+        if (defaultClub != null) {
+            TournamentsFragment tournamentsFragment = new TournamentsFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, tournamentsFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
 
-//    private void setUserInFirebaseHelper(){
-//
-//
-//        final String encodedEmail = Utils.encodeEmail(mEmail);
-//
-//        FirebaseApp app = FirebaseApp.getInstance();
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        final DatabaseReference userLocation = database.getReference(Constants.USERS).child(encodedEmail);
-//
-//        userLocation.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                //only set value if user does not exist
-//                //if (dataSnapshot.getValue()==null){
-//                    HashMap<String, Object>timeStampJoined = new HashMap<>();
-//                    timeStampJoined.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
-//                    User user = new User(mUsername,mEmail);
-//                    userLocation.setValue(user);
-//                //}
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
+            getSupportActionBar().setTitle("Club: "+defaultClub.getClubName());
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "No default club! Please go to clubs section and long pres the desired club",
+                    Toast.LENGTH_LONG).show();
+        }
+
+    }
 }

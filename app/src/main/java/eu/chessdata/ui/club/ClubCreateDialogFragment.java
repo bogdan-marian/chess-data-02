@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import eu.chessdata.R;
 import eu.chessdata.model.Club;
-import eu.chessdata.model.DefaultManagedClub;
+import eu.chessdata.model.DefaultClub;
 import eu.chessdata.model.User;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFirebaseUtils;
@@ -95,7 +95,9 @@ public class ClubCreateDialogFragment extends DialogFragment {
         myClubsRef.setValue(club);
 
         //settings set managed_club key;
-        DefaultManagedClub defaultManagedClub = new DefaultManagedClub(clubId, club.getShortName());
+        DefaultClub defaultManagedClub = new DefaultClub(clubId, club.getShortName());
         MyFirebaseUtils.setDefaultManagedClub(defaultManagedClub);
+
+
     }
 }

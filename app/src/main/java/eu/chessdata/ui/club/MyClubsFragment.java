@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import eu.chessdata.R;
 import eu.chessdata.model.Club;
-import eu.chessdata.model.DefaultManagedClub;
+import eu.chessdata.model.DefaultClub;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFirebaseUtils;
 
@@ -70,9 +70,9 @@ public class MyClubsFragment extends Fragment {
                 mClubsReference) {
             @Override
             protected void populateView(View v, Club model, int position) {
-                Log.d(Constants.LOG_TAG,"Starting to populate");
+                Log.d(Constants.LOG_TAG, "Starting to populate");
 
-                ((TextView)v.findViewById(R.id.list_item_text_simple_view)).setText(model.getShortName());
+                ((TextView) v.findViewById(R.id.list_item_text_simple_view)).setText(model.getShortName());
             }
         };
         mListView.setAdapter(mAdapter);
@@ -93,25 +93,19 @@ public class MyClubsFragment extends Fragment {
                 adminReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        DefaultClub defaultManagedClub = new DefaultClub(clubId, selectedClub.getShortName());
+                        MyFirebaseUtils.setDefaultClub(defaultManagedClub);
                         //if data exists then set as default club
-                        if (dataSnapshot.getValue()!= null){
-                            DefaultManagedClub defaultManagedClub = new DefaultManagedClub(clubId, selectedClub.getShortName());
+                        if (dataSnapshot.getValue() != null) {
                             MyFirebaseUtils.setDefaultManagedClub(defaultManagedClub);
-                        }else {
-                            Log.d(tag,"You are not manager");
                         }
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.e(tag,"Data error: " + databaseError.getMessage());
+                        Log.e(tag, "Data error: " + databaseError.getMessage());
                     }
                 });
-
-                String uid = mUser.getUid();
-
-                //todo if i'm the manager of the club then set this the default club;
-
                 return true;
             }
         });
@@ -121,7 +115,7 @@ public class MyClubsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mAdapter!=null) {
+        if (mAdapter != null) {
             mAdapter.cleanup();
         }
     }
