@@ -32,6 +32,7 @@ import eu.chessdata.model.DefaultClub;
 import eu.chessdata.ui.club.ClubCreateDialogFragment;
 import eu.chessdata.ui.club.MyClubsFragment;
 import eu.chessdata.ui.home.HomeFragment;
+import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
 import eu.chessdata.ui.tournament.TournamentsFragment;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFirebaseUtils;
@@ -183,6 +184,7 @@ public class MainActivity extends AppCompatActivity
             });
         } else if (id == R.id.nav_tournaments) {
             MyFirebaseUtils.getDefaultClub(this);
+            MyFirebaseUtils.isManagerForDefaultClub(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -229,12 +231,37 @@ public class MainActivity extends AppCompatActivity
             transaction.addToBackStack(null);
             transaction.commit();
 
-            getSupportActionBar().setTitle("Club: "+defaultClub.getClubName());
+            getSupportActionBar().setTitle("Club: " + defaultClub.getClubName());
+
         } else {
             Toast.makeText(getApplicationContext(),
                     "No default club! Please go to clubs section and long pres the desired club",
                     Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    /**
+     * by design this method should only be called when wee have the confirmation that
+     * the user is a manager of the default club. sets the fab visible and adds updates the
+     * onClickListener
+     */
+    @Override
+    public void onUserIsClubManager(final DefaultClub defaultClub) {
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TournamentCreateDialogFragment dialogFragment = TournamentCreateDialogFragment.newInstance(defaultClub.getClubKey());
+                dialogFragment.show(getSupportFragmentManager(),"tournamentCreateDialogFragment");
+            }
+        });
+        mFab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return false;
+            }
+        });
+        mFab.setVisibility(View.VISIBLE);
     }
 }

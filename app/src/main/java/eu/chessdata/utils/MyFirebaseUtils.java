@@ -10,6 +10,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import eu.chessdata.model.DefaultClub;
+import eu.chessdata.model.User;
 
 /**
  * Created by Bogdan Oloeriu on 5/31/2016.
@@ -19,6 +20,7 @@ public class MyFirebaseUtils {
 
     public interface OnOneTimeResultsListener{
         public void onDefaultClubValue(DefaultClub defaultClub);
+        public void onUserIsClubManager(DefaultClub defaultClub);
     }
 
     public static void setDefaultManagedClub(DefaultClub defaultManagedClub) {
@@ -60,6 +62,47 @@ public class MyFirebaseUtils {
 
             }
         });
+    }
+
+    public static void isManagerForDefaultClub(final OnOneTimeResultsListener listener){
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String defaultClubLocation = Constants.LOCATION_DEFAULT_CLUB
+                .replace(Constants.USER_KEY, uid);
+        DatabaseReference defaultClubRef = database.getReference(defaultClubLocation);
+        defaultClubRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final DefaultClub defaultClub = dataSnapshot.getValue(DefaultClub.class);
+                if (defaultClub != null){
+                    String clubKey = defaultClub.getClubKey();
+                    String managersLocation = Constants.LOCATION_CLUB_MANAGERS
+                            .replace(Constants.CLUB_KEY, clubKey)
+                            .replace(Constants.MANAGER_KEY, uid);
+                    DatabaseReference managerRef = database.getReference(managersLocation);
+                    managerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User manager = dataSnapshot.getValue(User.class);
+                            if (manager != null){
+                                listener.onUserIsClubManager(defaultClub);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
 
