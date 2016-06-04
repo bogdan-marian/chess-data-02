@@ -94,10 +94,8 @@ public class ClubCreateDialogFragment extends DialogFragment {
         DatabaseReference myClubsRef = database.getReference(managedClubsLocation);
         myClubsRef.setValue(club);
 
-        //settings set managed_club key;
+        //settings set defaultClub key;
         DefaultClub defaultClub = new DefaultClub(clubId, club.getShortName());
         MyFirebaseUtils.setDefaultClub(defaultClub);
-
-
     }
 }
