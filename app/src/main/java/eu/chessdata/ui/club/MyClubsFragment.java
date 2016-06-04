@@ -70,8 +70,6 @@ public class MyClubsFragment extends Fragment {
                 mClubsReference) {
             @Override
             protected void populateView(View v, Club model, int position) {
-                Log.d(Constants.LOG_TAG, "Starting to populate");
-
                 ((TextView) v.findViewById(R.id.list_item_text_simple_view)).setText(model.getShortName());
             }
         };

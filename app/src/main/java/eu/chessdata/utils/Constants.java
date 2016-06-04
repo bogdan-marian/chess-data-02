@@ -29,7 +29,7 @@ public class Constants {
     public static final String LOCATION_MY_CLUB = LOCATION_MY_CLUBS + "/" + CLUB_KEY;
     public static final String LOCATION_DEFAULT_CLUB = USER_SETTINGS + "/" + USER_KEY + "/" + DEFAULT_CLUB;
     //tournaments/$clubKey/$tournamentKey
-    public static final String LOCATION_TOURNAMENT = TOURNAMENTS+"/"+CLUB_KEY;
+    public static final String LOCATION_TOURNAMENTS = TOURNAMENTS+"/"+CLUB_KEY;
 
 
 

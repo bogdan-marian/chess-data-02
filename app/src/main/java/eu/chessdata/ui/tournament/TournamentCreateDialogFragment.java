@@ -74,7 +74,7 @@ public class TournamentCreateDialogFragment extends DialogFragment {
                 ((NumberPicker) mView.findViewById(R.id.tournamentTotalRounds)).getValue()
         );
 
-        String tournamentLocation = Constants.LOCATION_TOURNAMENT
+        String tournamentLocation = Constants.LOCATION_TOURNAMENTS
                 .replace(Constants.CLUB_KEY, mClubKey);
 
         FirebaseApp app = FirebaseApp.getInstance();
@@ -83,5 +83,8 @@ public class TournamentCreateDialogFragment extends DialogFragment {
         DatabaseReference tournaments = database.getReference(tournamentLocation);
         DatabaseReference tournamentRef = tournaments.push();
         tournamentRef.setValue(tournament);
+
+        //update reversed order
+
     }
 }

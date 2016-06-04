@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDefaultClubValue(DefaultClub defaultClub) {
         if (defaultClub != null) {
-            TournamentsFragment tournamentsFragment = new TournamentsFragment();
+            TournamentsFragment tournamentsFragment = TournamentsFragment.newInstance(defaultClub.getClubKey());
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, tournamentsFragment);
             transaction.addToBackStack(null);
