@@ -17,7 +17,7 @@ public class Constants {
     public static final String MANAGER_KEY = "$managerKey";
     public static final String USER_SETTINGS = "userSettings";
     public static final String MY_CLUBS = "myClubs";
-    public static final String DEFAULT_MANAGED_CLUB = "defaultManagedClub";
+
     public static final String DEFAULT_CLUB = "defaultClub";
     public static final String TOURNAMENTS = "tournaments";
     public static final String TOURNAMENT_KEY = "$tournamentKey";
@@ -27,7 +27,6 @@ public class Constants {
     //userSettings/$userKey/myClubs
     public static final String LOCATION_MY_CLUBS = USER_SETTINGS + "/" + USER_KEY + "/" + MY_CLUBS;
     public static final String LOCATION_MY_CLUB = LOCATION_MY_CLUBS + "/" + CLUB_KEY;
-    public static final String LOCATION_DEFAULT_MANAGED_CLUB = USER_SETTINGS + "/" + USER_KEY + "/" + DEFAULT_MANAGED_CLUB;
     public static final String LOCATION_DEFAULT_CLUB = USER_SETTINGS + "/" + USER_KEY + "/" + DEFAULT_CLUB;
     //tournaments/$clubKey/$tournamentKey
     public static final String LOCATION_TOURNAMENT = TOURNAMENTS+"/"+CLUB_KEY;

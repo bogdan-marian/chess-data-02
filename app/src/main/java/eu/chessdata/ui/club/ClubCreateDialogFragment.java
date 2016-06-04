@@ -95,8 +95,8 @@ public class ClubCreateDialogFragment extends DialogFragment {
         myClubsRef.setValue(club);
 
         //settings set managed_club key;
-        DefaultClub defaultManagedClub = new DefaultClub(clubId, club.getShortName());
-        MyFirebaseUtils.setDefaultManagedClub(defaultManagedClub);
+        DefaultClub defaultClub = new DefaultClub(clubId, club.getShortName());
+        MyFirebaseUtils.setDefaultClub(defaultClub);
 
 
     }

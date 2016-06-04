@@ -18,5 +18,8 @@
     <string name="hint.club.city">City</string>
     <string name="hint.club.homePage">Home page</string>
     <string name="hint.club.description">Club description</string>
+    <string name="dialog.tournament.details">Tournament details</string>
+    <string name="cancel">Cancel</string>
+    <string name="create_tournament">Create tournament</string>
 
 </resources>

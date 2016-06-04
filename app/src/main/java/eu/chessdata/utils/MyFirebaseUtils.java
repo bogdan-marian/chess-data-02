@@ -18,19 +18,10 @@ import eu.chessdata.model.User;
 public class MyFirebaseUtils {
     private static final String tag = Constants.LOG_TAG;
 
-    public interface OnOneTimeResultsListener{
+    public interface OnOneTimeResultsListener {
         public void onDefaultClubValue(DefaultClub defaultClub);
+
         public void onUserIsClubManager(DefaultClub defaultClub);
-    }
-
-    public static void setDefaultManagedClub(DefaultClub defaultManagedClub) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        String defaultManagedClubLocation = Constants.LOCATION_DEFAULT_MANAGED_CLUB
-                .replace(Constants.USER_KEY, uid);
-        DatabaseReference managedClubRef = database.getReference(defaultManagedClubLocation);
-        managedClubRef.setValue(defaultManagedClub);
     }
 
     public static void setDefaultClub(DefaultClub defaultManagedClub) {
@@ -64,7 +55,7 @@ public class MyFirebaseUtils {
         });
     }
 
-    public static void isManagerForDefaultClub(final OnOneTimeResultsListener listener){
+    public static void isManagerForDefaultClub(final OnOneTimeResultsListener listener) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String defaultClubLocation = Constants.LOCATION_DEFAULT_CLUB
@@ -74,7 +65,7 @@ public class MyFirebaseUtils {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final DefaultClub defaultClub = dataSnapshot.getValue(DefaultClub.class);
-                if (defaultClub != null){
+                if (defaultClub != null) {
                     String clubKey = defaultClub.getClubKey();
                     String managersLocation = Constants.LOCATION_CLUB_MANAGERS
                             .replace(Constants.CLUB_KEY, clubKey)
@@ -84,7 +75,7 @@ public class MyFirebaseUtils {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             User manager = dataSnapshot.getValue(User.class);
-                            if (manager != null){
+                            if (manager != null) {
                                 listener.onUserIsClubManager(defaultClub);
                             }
                         }

@@ -93,11 +93,11 @@ public class MyClubsFragment extends Fragment {
                 adminReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        DefaultClub defaultManagedClub = new DefaultClub(clubId, selectedClub.getShortName());
-                        MyFirebaseUtils.setDefaultClub(defaultManagedClub);
+                        DefaultClub defaultClub = new DefaultClub(clubId, selectedClub.getShortName());
+                        MyFirebaseUtils.setDefaultClub(defaultClub);
                         //if data exists then set as default club
                         if (dataSnapshot.getValue() != null) {
-                            MyFirebaseUtils.setDefaultManagedClub(defaultManagedClub);
+                            MyFirebaseUtils.setDefaultClub(defaultClub);
                         }
                     }
 
