@@ -65,7 +65,7 @@ public class Tournament {
         this.reversedDateCreated = reversedDateCreated;
     }
 
-    public long getLongDateCreated(){
+    public long dateCreatedGetLong(){
         return (long) dateCreated.get(Constants.FIREBASE_PROPERTY_TIMESTAMP);
     }
 }
