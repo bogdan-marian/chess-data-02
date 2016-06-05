@@ -44,7 +44,7 @@ public class TournamentsFragment extends Fragment {
         String locTournaments = Constants.LOCATION_TOURNAMENTS
                 .replace(Constants.CLUB_KEY, mClubKey);
         mReference = FirebaseDatabase.getInstance().getReference(locTournaments);
-        Query order = mReference.orderByChild("name");//name
+        Query order = mReference.orderByChild("reversedDateCreated");//name
         mAdapter = new FirebaseListAdapter<Tournament>(
                 getActivity(),
                 Tournament.class,

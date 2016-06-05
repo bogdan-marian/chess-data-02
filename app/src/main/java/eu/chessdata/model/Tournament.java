@@ -17,6 +17,7 @@ public class Tournament {
     //players
     private HashMap<String, Object> dateCreated;
     private HashMap<String, Object> updateStamp;
+    private long reversedDateCreated;
 
     public Tournament(){}
 
@@ -54,5 +55,17 @@ public class Tournament {
 
     public HashMap<String, Object> getUpdateStamp() {
         return updateStamp;
+    }
+
+    public long getReversedDateCreated() {
+        return reversedDateCreated;
+    }
+
+    public void setReversedDateCreated(long reversedDateCreated) {
+        this.reversedDateCreated = reversedDateCreated;
+    }
+
+    public long getLongDateCreated(){
+        return (long) dateCreated.get(Constants.FIREBASE_PROPERTY_TIMESTAMP);
     }
 }

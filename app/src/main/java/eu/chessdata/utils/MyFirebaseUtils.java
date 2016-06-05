@@ -10,6 +10,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import eu.chessdata.model.DefaultClub;
+import eu.chessdata.model.Tournament;
 import eu.chessdata.model.User;
 
 /**
@@ -85,6 +86,30 @@ public class MyFirebaseUtils {
 
                         }
                     });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static void updateTournamentReversedOrder(String clubKey, String tournamentKey) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String tournamentLocation = Constants.LOCATION_TOURNAMENTS
+                .replace(Constants.CLUB_KEY, clubKey) + "/" + tournamentKey;
+
+        final DatabaseReference tournamentRef = database.getReference(tournamentLocation);
+        tournamentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Tournament tournament = dataSnapshot.getValue(Tournament.class);
+                if (tournament != null) {
+                    long timeStamp = tournament.getLongDateCreated();
+                    long reversedDateCreated = 0 - timeStamp;
+                    tournamentRef.child("reversedDateCreated").setValue(reversedDateCreated);
                 }
             }
 
