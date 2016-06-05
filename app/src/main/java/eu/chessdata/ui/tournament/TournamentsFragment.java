@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,6 +28,20 @@ public class TournamentsFragment extends Fragment {
     ListView mListView;
     DatabaseReference mReference;
     FirebaseListAdapter<Tournament> mAdapter;
+
+    /**
+     * A public interface for activities that contain this fragment
+     */
+    public interface TournamentDetailsCallback {
+
+        /**
+         * This function identifies what item was pressed inside the @TournamentDetailsFragment
+         *
+         * @param selection     should be CATEGORIES, PLAYERS.. etc.
+         * @param tournamentUri the uri to the current tournament
+         */
+        public void onTournamentDetailsItemSelected(String clubKey, String tournamentKey, String tournamentName);
+    }
 
     public static TournamentsFragment newInstance(String clubKey){
         TournamentsFragment fragment = new TournamentsFragment();
@@ -59,7 +74,17 @@ public class TournamentsFragment extends Fragment {
 
         mListView = (ListView) mView.findViewById(R.id.list_view_tournaments);
         mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Tournament tournament = mAdapter.getItem(position);
+                String tournamentName = tournament.getName();
+                String tournamentKey = mAdapter.getRef(position).getKey();
+                ((TournamentDetailsCallback) getActivity()).onTournamentDetailsItemSelected(
+                        mClubKey,tournamentKey,tournamentName
+                );
+            }
+        });
         return mView;
-
     }
 }

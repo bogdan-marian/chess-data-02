@@ -87,6 +87,5 @@ public class TournamentCreateDialogFragment extends DialogFragment {
         //update reversed order
         String tournamentKey = tournamentRef.getKey();
         MyFirebaseUtils.updateTournamentReversedOrder(mClubKey,tournamentKey);
-
     }
 }

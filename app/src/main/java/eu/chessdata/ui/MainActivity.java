@@ -33,6 +33,7 @@ import eu.chessdata.ui.club.ClubCreateDialogFragment;
 import eu.chessdata.ui.club.MyClubsFragment;
 import eu.chessdata.ui.home.HomeFragment;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
+import eu.chessdata.ui.tournament.TournamentDetailsFragment;
 import eu.chessdata.ui.tournament.TournamentsFragment;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFirebaseUtils;
@@ -40,7 +41,8 @@ import eu.chessdata.utils.MyFirebaseUtils;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         GoogleApiClient.OnConnectionFailedListener,
-        MyFirebaseUtils.OnOneTimeResultsListener {
+        MyFirebaseUtils.OnOneTimeResultsListener,
+        TournamentsFragment.TournamentDetailsCallback{
 
 
     public static final String ANONYMOUS = "anonymous";
@@ -238,7 +240,6 @@ public class MainActivity extends AppCompatActivity
                     "No default club! Please go to clubs section and long pres the desired club",
                     Toast.LENGTH_LONG).show();
         }
-
     }
 
     /**
@@ -253,7 +254,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 TournamentCreateDialogFragment dialogFragment = TournamentCreateDialogFragment.newInstance(defaultClub.getClubKey());
-                dialogFragment.show(getSupportFragmentManager(),"tournamentCreateDialogFragment");
+                dialogFragment.show(getSupportFragmentManager(), "tournamentCreateDialogFragment");
             }
         });
         mFab.setOnLongClickListener(new View.OnLongClickListener() {
@@ -263,5 +264,17 @@ public class MainActivity extends AppCompatActivity
             }
         });
         mFab.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onTournamentDetailsItemSelected(String clubKey, String tournamentKey, String tournamentName) {
+
+        getSupportActionBar().setTitle(tournamentName);
+
+        TournamentDetailsFragment detailsFragment = TournamentDetailsFragment.newInstance(clubKey,tournamentKey,tournamentName);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container,detailsFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
