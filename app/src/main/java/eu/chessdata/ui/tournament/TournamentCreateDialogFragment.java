@@ -18,7 +18,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import eu.chessdata.R;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.utils.Constants;
-import eu.chessdata.utils.MyFirebaseUtils;
 
 /**
  * Created by Bogdan Oloeriu on 6/2/2016.
@@ -87,7 +86,7 @@ public class TournamentCreateDialogFragment extends DialogFragment {
         tournamentRef.setValue(tournament);
 
         //update reversed order
-        MyFirebaseUtils.updateTournamentReversedOrder(mClubKey,tournamentKey);
+        //MyFirebaseUtils.updateTournamentReversedOrder(mClubKey,tournamentKey);
 
     }
 }
