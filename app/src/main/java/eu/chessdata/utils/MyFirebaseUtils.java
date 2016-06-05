@@ -107,7 +107,7 @@ public class MyFirebaseUtils {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Tournament tournament = dataSnapshot.getValue(Tournament.class);
                 if (tournament != null) {
-                    long timeStamp = tournament.getLongDateCreated();
+                    long timeStamp = tournament.longDateCreated();
                     long reversedDateCreated = 0 - timeStamp;
                     tournamentRef.child("reversedDateCreated").setValue(reversedDateCreated);
                 }
