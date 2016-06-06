@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         GoogleApiClient.OnConnectionFailedListener,
         MyFirebaseUtils.OnOneTimeResultsListener,
-        TournamentsFragment.TournamentDetailsCallback{
+        TournamentsFragment.TournamentsCallback,
+        TournamentDetailsFragment.TournamentDetailsCallback {
 
 
     public static final String ANONYMOUS = "anonymous";
@@ -267,14 +268,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTournamentDetailsItemSelected(String clubKey, String tournamentKey, String tournamentName) {
+    public void onTournamentSelected(String clubKey, String tournamentKey, String tournamentName) {
 
         getSupportActionBar().setTitle(tournamentName);
 
-        TournamentDetailsFragment detailsFragment = TournamentDetailsFragment.newInstance(clubKey,tournamentKey,tournamentName);
+        TournamentDetailsFragment detailsFragment = TournamentDetailsFragment.newInstance(clubKey, tournamentKey, tournamentName);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container,detailsFragment);
+        transaction.replace(R.id.fragment_container, detailsFragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    @Override
+    public void onTournamentDetailsItemSelected(String clubKey, String tournamentKey, String tournamentName, int position) {
+        Log.d(tag, "onTournamentDetailsItemSelected: " + clubKey + "/" + tournamentKey + "/" + tournamentName + "/" + position);
     }
 }

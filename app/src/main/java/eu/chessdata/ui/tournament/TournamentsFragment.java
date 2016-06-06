@@ -32,15 +32,14 @@ public class TournamentsFragment extends Fragment {
     /**
      * A public interface for activities that contain this fragment
      */
-    public interface TournamentDetailsCallback {
+    public interface TournamentsCallback {
 
         /**
          * This function identifies what item was pressed inside the @TournamentDetailsFragment
          *
-         * @param selection     should be CATEGORIES, PLAYERS.. etc.
-         * @param tournamentUri the uri to the current tournament
+         *
          */
-        public void onTournamentDetailsItemSelected(String clubKey, String tournamentKey, String tournamentName);
+        public void onTournamentSelected(String clubKey, String tournamentKey, String tournamentName);
     }
 
     public static TournamentsFragment newInstance(String clubKey){
@@ -80,7 +79,7 @@ public class TournamentsFragment extends Fragment {
                 Tournament tournament = mAdapter.getItem(position);
                 String tournamentName = tournament.getName();
                 String tournamentKey = mAdapter.getRef(position).getKey();
-                ((TournamentDetailsCallback) getActivity()).onTournamentDetailsItemSelected(
+                ((TournamentsCallback) getActivity()).onTournamentSelected(
                         mClubKey,tournamentKey,tournamentName
                 );
             }
