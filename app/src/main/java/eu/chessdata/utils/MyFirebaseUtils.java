@@ -12,6 +12,7 @@ import com.google.firebase.database.ValueEventListener;
 import eu.chessdata.model.DefaultClub;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.model.User;
+import eu.chessdata.ui.MainActivity;
 
 /**
  * Created by Bogdan Oloeriu on 5/31/2016.
@@ -20,9 +21,11 @@ public class MyFirebaseUtils {
     private static final String tag = Constants.LOG_TAG;
 
     public interface OnOneTimeResultsListener {
+        public void onDefaultClubValue(DefaultClub defaultClub, MainActivity.ACTION action);
+
         public void onDefaultClubValue(DefaultClub defaultClub);
 
-        public void onUserIsClubManager(DefaultClub defaultClub);
+        public void onUserIsClubManager(DefaultClub defaultClub, MainActivity.ACTION action);
     }
 
     public static void setDefaultClub(DefaultClub defaultManagedClub) {
@@ -35,7 +38,8 @@ public class MyFirebaseUtils {
         managedClubRef.setValue(defaultManagedClub);
     }
 
-    public static void getDefaultClub(final OnOneTimeResultsListener listener) {
+
+    public static void getDefaultClub(final OnOneTimeResultsListener listener, final MainActivity.ACTION action) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String defaultClubLocation = Constants.LOCATION_DEFAULT_CLUB
@@ -46,7 +50,7 @@ public class MyFirebaseUtils {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 DefaultClub defaultClub = dataSnapshot.getValue(DefaultClub.class);
                 Log.d(tag, "default Club found");
-                listener.onDefaultClubValue(defaultClub);
+                listener.onDefaultClubValue(defaultClub, action);
             }
 
             @Override
@@ -56,7 +60,7 @@ public class MyFirebaseUtils {
         });
     }
 
-    public static void isManagerForDefaultClub(final OnOneTimeResultsListener listener) {
+    public static void isManagerForDefaultClub(final OnOneTimeResultsListener listener, final MainActivity.ACTION action) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String defaultClubLocation = Constants.LOCATION_DEFAULT_CLUB
@@ -77,7 +81,7 @@ public class MyFirebaseUtils {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             User manager = dataSnapshot.getValue(User.class);
                             if (manager != null) {
-                                listener.onUserIsClubManager(defaultClub);
+                                listener.onUserIsClubManager(defaultClub,action);
                             }
                         }
 

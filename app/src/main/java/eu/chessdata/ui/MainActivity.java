@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import eu.chessdata.R;
 import eu.chessdata.model.DefaultClub;
 import eu.chessdata.ui.club.ClubCreateDialogFragment;
+import eu.chessdata.ui.club.ClubPlayersFragment;
 import eu.chessdata.ui.club.MyClubsFragment;
 import eu.chessdata.ui.home.HomeFragment;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
@@ -45,6 +46,10 @@ public class MainActivity extends AppCompatActivity
         TournamentsFragment.TournamentsCallback,
         TournamentDetailsFragment.TournamentDetailsCallback {
 
+    public enum ACTION{
+        SHOW_TOURNAMENTS,
+        SHOW_PLAYERS
+    }
 
     public static final String ANONYMOUS = "anonymous";
     private static final String tag = Constants.LOG_TAG;
@@ -186,8 +191,11 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         } else if (id == R.id.nav_tournaments) {
-            MyFirebaseUtils.getDefaultClub(this);
-            MyFirebaseUtils.isManagerForDefaultClub(this);
+            MyFirebaseUtils.getDefaultClub(this, ACTION.SHOW_TOURNAMENTS);
+            MyFirebaseUtils.isManagerForDefaultClub(this, ACTION.SHOW_TOURNAMENTS);
+        } else if (id == R.id.nav_members){
+            MyFirebaseUtils.getDefaultClub(this, ACTION.SHOW_PLAYERS);
+            MyFirebaseUtils.isManagerForDefaultClub(this, ACTION.SHOW_PLAYERS);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -226,6 +234,34 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onDefaultClubValue(DefaultClub defaultClub, ACTION action) {
+        if (defaultClub != null) {
+            if (action == ACTION.SHOW_TOURNAMENTS) {
+                TournamentsFragment tournamentsFragment = TournamentsFragment.newInstance(defaultClub.getClubKey());
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, tournamentsFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+
+                getSupportActionBar().setTitle("Club: " + defaultClub.getClubName());
+            }else if (action == ACTION.SHOW_PLAYERS){
+                ClubPlayersFragment clubPlayersFragment = ClubPlayersFragment.newInstance(defaultClub.getClubKey());
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container,clubPlayersFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+
+                getSupportActionBar().setTitle("Club: " + defaultClub.getClubName());
+            }
+
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "No default club! Please go to clubs section and long pres the desired club",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
     public void onDefaultClubValue(DefaultClub defaultClub) {
         if (defaultClub != null) {
             TournamentsFragment tournamentsFragment = TournamentsFragment.newInstance(defaultClub.getClubKey());
@@ -245,26 +281,43 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * by design this method should only be called when wee have the confirmation that
-     * the user is a manager of the default club. sets the fab visible and adds updates the
+     * the user is a manager of the default club. sets the fab visibility and updates the
      * onClickListener
      */
     @Override
-    public void onUserIsClubManager(final DefaultClub defaultClub) {
+    public void onUserIsClubManager(final DefaultClub defaultClub, ACTION action) {
+        //todo create reset fab
+        if (action == ACTION.SHOW_TOURNAMENTS){
+            mFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TournamentCreateDialogFragment dialogFragment = TournamentCreateDialogFragment.newInstance(defaultClub.getClubKey());
+                    dialogFragment.show(getSupportFragmentManager(), "tournamentCreateDialogFragment");
+                }
+            });
+            mFab.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    return false;
+                }
+            });
+            mFab.setVisibility(View.VISIBLE);
+        }else if(action == ACTION.SHOW_PLAYERS){
+            mFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(tag,"I should show create player for: "+defaultClub.getClubName());
+                }
+            });
+            mFab.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    return false;
+                }
+            });
+        }
 
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TournamentCreateDialogFragment dialogFragment = TournamentCreateDialogFragment.newInstance(defaultClub.getClubKey());
-                dialogFragment.show(getSupportFragmentManager(), "tournamentCreateDialogFragment");
-            }
-        });
-        mFab.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return false;
-            }
-        });
-        mFab.setVisibility(View.VISIBLE);
+
     }
 
     @Override

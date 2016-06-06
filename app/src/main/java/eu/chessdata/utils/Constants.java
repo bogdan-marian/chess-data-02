@@ -22,15 +22,22 @@ public class Constants {
     public static final String TOURNAMENTS = "tournaments";
     public static final String TOURNAMENT_KEY = "$tournamentKey";
 
-    //clubManagers/$clubKey/$managerId
+    public static final String CLUB_PLAYERS = "clubPlayers";
+    public static final String PLAYER_KEY = "$playerKey";
+
+    //clubManagers/$clubKey/$managerKey
     public static final String LOCATION_CLUB_MANAGERS = CLUB_MANAGERS + "/" + CLUB_KEY + "/" + MANAGER_KEY;
+
     //userSettings/$userKey/myClubs
     public static final String LOCATION_MY_CLUBS = USER_SETTINGS + "/" + USER_KEY + "/" + MY_CLUBS;
     public static final String LOCATION_MY_CLUB = LOCATION_MY_CLUBS + "/" + CLUB_KEY;
     public static final String LOCATION_DEFAULT_CLUB = USER_SETTINGS + "/" + USER_KEY + "/" + DEFAULT_CLUB;
+
     //tournaments/$clubKey/$tournamentKey
     public static final String LOCATION_TOURNAMENTS = TOURNAMENTS+"/"+CLUB_KEY;
 
+    //clubPlayers/$clubKey/playerKey
+    public static final String LOCATION_CLUB_PLAYERS = CLUB_PLAYERS+"/"+CLUB_KEY;
 
 
     /**
