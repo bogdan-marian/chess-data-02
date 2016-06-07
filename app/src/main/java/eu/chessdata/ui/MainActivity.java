@@ -32,6 +32,7 @@ import eu.chessdata.model.DefaultClub;
 import eu.chessdata.ui.club.ClubCreateDialogFragment;
 import eu.chessdata.ui.club.ClubPlayersFragment;
 import eu.chessdata.ui.club.MyClubsFragment;
+import eu.chessdata.ui.club.PlayerCreateDialogFragment;
 import eu.chessdata.ui.home.HomeFragment;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
 import eu.chessdata.ui.tournament.TournamentDetailsFragment;
@@ -306,7 +307,9 @@ public class MainActivity extends AppCompatActivity
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(tag,"I should show create player for: "+defaultClub.getClubName());
+                    //Log.d(tag,"I should show create player for: "+defaultClub.getClubName());
+                    PlayerCreateDialogFragment dialogFragment = PlayerCreateDialogFragment.newInstance("Some name");
+                    dialogFragment.show(getSupportFragmentManager(),"playerCreateDialogFragment");
                 }
             });
             mFab.setOnLongClickListener(new View.OnLongClickListener() {
