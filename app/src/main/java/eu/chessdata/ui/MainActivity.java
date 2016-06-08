@@ -307,7 +307,6 @@ public class MainActivity extends AppCompatActivity
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Log.d(tag,"I should show create player for: "+defaultClub.getClubName());
                     PlayerCreateDialogFragment dialogFragment = PlayerCreateDialogFragment.newInstance(defaultClub.getClubName(), defaultClub.getClubKey());
                     dialogFragment.show(getSupportFragmentManager(), "playerCreateDialogFragment");
                 }

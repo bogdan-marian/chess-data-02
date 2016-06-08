@@ -78,7 +78,6 @@ public class PlayerCreateDialogFragment extends DialogFragment {
     private Player buildPlayer() {
         String name = ((EditText) mView.findViewById(R.id.profileName)).getText().toString();
         String email = ((EditText) mView.findViewById(R.id.email)).getText().toString();
-
         Player player = new Player(name, email, mClubKey, mClubName);
         return player;
     }

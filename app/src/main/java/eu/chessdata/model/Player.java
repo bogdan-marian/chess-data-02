@@ -11,17 +11,32 @@ public class Player {
     private String userKey;
     private String playerKey;
     private String clubKey;
+    /**
+     * when updating guestClubKey wee should change also the club name to the one associated with
+     * the guestClubKey
+     */
     private String clubName;
+    private String guestClubKey;
 
     public Player(){}
 
     public Player(String name, String email, String clubKey, String clubName){
         this.name = name;
         this.email = email;
+        this.clubKey = clubKey;
+        this.clubName = clubName;
     }
 
     public String getEmail() {
         return email;
+    }
+
+    public String getGuestClubKey() {
+        return guestClubKey;
+    }
+
+    public void setGuestClubKey(String guestClubKey) {
+        this.guestClubKey = guestClubKey;
     }
 
     public void setEmail(String email) {
