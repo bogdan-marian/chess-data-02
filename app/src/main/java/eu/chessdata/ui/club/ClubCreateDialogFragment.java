@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -38,13 +37,19 @@ public class ClubCreateDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         mView = inflater.inflate(R.layout.club_create_dialog, null);
-        builder.setView(mView)
-                .setPositiveButton("Create club", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        persistClub();
-                    }
-                });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dismiss();
+            }
+        });
+        builder.setView(mView);
+        builder.setPositiveButton("Create club", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                persistClub();
+            }
+        });
 
         return builder.create();
     }
@@ -65,7 +70,6 @@ public class ClubCreateDialogFragment extends DialogFragment {
     private void persistClub() {
         Club club = buildClub();
 
-        FirebaseApp app = FirebaseApp.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = auth.getCurrentUser();

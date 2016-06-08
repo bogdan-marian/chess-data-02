@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity
         TournamentsFragment.TournamentsCallback,
         TournamentDetailsFragment.TournamentDetailsCallback {
 
-    public enum ACTION{
+    public enum ACTION {
         SHOW_TOURNAMENTS,
         SHOW_PLAYERS
     }
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_tournaments) {
             MyFirebaseUtils.getDefaultClub(this, ACTION.SHOW_TOURNAMENTS);
             MyFirebaseUtils.isManagerForDefaultClub(this, ACTION.SHOW_TOURNAMENTS);
-        } else if (id == R.id.nav_members){
+        } else if (id == R.id.nav_members) {
             MyFirebaseUtils.getDefaultClub(this, ACTION.SHOW_PLAYERS);
             MyFirebaseUtils.isManagerForDefaultClub(this, ACTION.SHOW_PLAYERS);
         }
@@ -245,10 +245,10 @@ public class MainActivity extends AppCompatActivity
                 transaction.commit();
 
                 getSupportActionBar().setTitle("Club: " + defaultClub.getClubName());
-            }else if (action == ACTION.SHOW_PLAYERS){
+            } else if (action == ACTION.SHOW_PLAYERS) {
                 ClubPlayersFragment clubPlayersFragment = ClubPlayersFragment.newInstance(defaultClub.getClubKey());
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container,clubPlayersFragment);
+                transaction.replace(R.id.fragment_container, clubPlayersFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
 
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onUserIsClubManager(final DefaultClub defaultClub, ACTION action) {
         //todo create reset fab
-        if (action == ACTION.SHOW_TOURNAMENTS){
+        if (action == ACTION.SHOW_TOURNAMENTS) {
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -303,13 +303,13 @@ public class MainActivity extends AppCompatActivity
                 }
             });
             mFab.setVisibility(View.VISIBLE);
-        }else if(action == ACTION.SHOW_PLAYERS){
+        } else if (action == ACTION.SHOW_PLAYERS) {
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //Log.d(tag,"I should show create player for: "+defaultClub.getClubName());
-                    PlayerCreateDialogFragment dialogFragment = PlayerCreateDialogFragment.newInstance("Some name");
-                    dialogFragment.show(getSupportFragmentManager(),"playerCreateDialogFragment");
+                    PlayerCreateDialogFragment dialogFragment = PlayerCreateDialogFragment.newInstance(defaultClub.getClubName(), defaultClub.getClubKey());
+                    dialogFragment.show(getSupportFragmentManager(), "playerCreateDialogFragment");
                 }
             });
             mFab.setOnLongClickListener(new View.OnLongClickListener() {

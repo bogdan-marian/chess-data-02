@@ -5,6 +5,7 @@ package eu.chessdata.model;
  */
 public class Player {
     private String name;
+    private String email;
     private String elo;
 
     private String userKey;
@@ -13,6 +14,19 @@ public class Player {
     private String clubName;
 
     public Player(){}
+
+    public Player(String name, String email, String clubKey, String clubName){
+        this.name = name;
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public void setName(String name) {
         this.name = name;
