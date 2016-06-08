@@ -8,9 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import eu.chessdata.R;
 import eu.chessdata.model.Player;
@@ -28,7 +30,7 @@ public class ClubPlayersFragment extends Fragment {
     private DatabaseReference mReference;
     private FirebaseListAdapter<Player> mAdapter;
 
-    public static ClubPlayersFragment newInstance(String clubKey){
+    public static ClubPlayersFragment newInstance(String clubKey) {
         ClubPlayersFragment fragment = new ClubPlayersFragment();
         fragment.mClubKey = clubKey;
         return fragment;
@@ -37,8 +39,21 @@ public class ClubPlayersFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.fragment_club_players,container,false);
-        Log.d(tag,"Club key = " + mClubKey);
+        mView = inflater.inflate(R.layout.fragment_club_players, container, false);
+        Log.d(tag, "Club key = " + mClubKey);
+
+        //Firebase reference
+        String clubsLocation = Constants.LOCATION_CLUB_PLAYERS
+                .replace(Constants.CLUB_KEY, mClubKey);
+        mReference = FirebaseDatabase.getInstance().getReference(clubsLocation);
+        mListView = (ListView) mView.findViewById(R.id.list_view_club_players);
+        mAdapter = new FirebaseListAdapter<Player>(getActivity(), Player.class, R.layout.list_item_text, mReference) {
+            @Override
+            protected void populateView(View v, Player model, int position) {
+                ((TextView) v.findViewById(R.id.list_item_text_simple_view)).setText(model.getName());
+            }
+        };
+        mListView.setAdapter(mAdapter);
         return mView;
     }
 }
