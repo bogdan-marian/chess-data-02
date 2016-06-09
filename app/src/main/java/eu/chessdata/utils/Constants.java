@@ -39,6 +39,8 @@ public class Constants {
     //clubPlayers/$clubKey/playerKey
     public static final String LOCATION_CLUB_PLAYERS = CLUB_PLAYERS+"/"+CLUB_KEY;
 
+    //tournamentPlayers/$tournamentKey/
+
 
     /**
      * Constants for Firebase URL

@@ -36,6 +36,7 @@ import eu.chessdata.ui.club.PlayerCreateDialogFragment;
 import eu.chessdata.ui.home.HomeFragment;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
 import eu.chessdata.ui.tournament.TournamentDetailsFragment;
+import eu.chessdata.ui.tournament.TournamentPlayersFragment;
 import eu.chessdata.ui.tournament.TournamentsFragment;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFirebaseUtils;
@@ -49,7 +50,8 @@ public class MainActivity extends AppCompatActivity
 
     public enum ACTION {
         SHOW_TOURNAMENTS,
-        SHOW_PLAYERS
+        SHOW_PLAYERS,
+        SHOW_TOURNAMENT_PLAYERS
     }
 
     public static final String ANONYMOUS = "anonymous";
@@ -317,9 +319,15 @@ public class MainActivity extends AppCompatActivity
                     return false;
                 }
             });
+        } else if (action == ACTION.SHOW_TOURNAMENT_PLAYERS){
+            mFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(tag,"Please add a tournament player");
+                }
+            });
+            mFab.setVisibility(View.VISIBLE);
         }
-
-
     }
 
     @Override
@@ -334,8 +342,32 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
+    private void disableFab() {
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+        mFab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return false;
+            }
+        });
+        mFab.setVisibility(View.INVISIBLE);
+    }
+
     @Override
     public void onTournamentDetailsItemSelected(String clubKey, String tournamentKey, String tournamentName, int position) {
         Log.d(tag, "onTournamentDetailsItemSelected: " + clubKey + "/" + tournamentKey + "/" + tournamentName + "/" + position);
+        disableFab();
+        if (position == 1) {//players
+            TournamentPlayersFragment tournamentPlayersFragment = TournamentPlayersFragment.newInstance(tournamentKey);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, tournamentPlayersFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+            MyFirebaseUtils.isManagerForClubKey(clubKey,this,ACTION.SHOW_TOURNAMENT_PLAYERS);
+        }
     }
 }

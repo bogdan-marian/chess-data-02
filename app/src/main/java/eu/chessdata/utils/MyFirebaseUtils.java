@@ -60,6 +60,37 @@ public class MyFirebaseUtils {
         });
     }
 
+    /**
+     * Identifies if current user is manager for a specific club by clubKey and then notifies the
+     * registered listener only for positive results.
+     * @param listener
+     * @param action
+     */
+    public static void isManagerForClubKey(final String clubKey, final OnOneTimeResultsListener listener, final MainActivity.ACTION action){
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final  String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String managerLoc = Constants.LOCATION_CLUB_MANAGERS
+                .replace(Constants.CLUB_KEY,clubKey)
+                .replace(Constants.MANAGER_KEY,uid);
+        DatabaseReference managerRef = database.getReference(managerLoc);
+        managerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User manager = dataSnapshot.getValue(User.class);
+                if (manager != null){
+                    DefaultClub defaultClub = new DefaultClub();
+                    defaultClub.setClubKey(clubKey);
+                    listener.onUserIsClubManager(defaultClub,action);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag,"databaseError: " + databaseError.getMessage());
+            }
+        });
+    }
+
     public static void isManagerForDefaultClub(final OnOneTimeResultsListener listener, final MainActivity.ACTION action) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
