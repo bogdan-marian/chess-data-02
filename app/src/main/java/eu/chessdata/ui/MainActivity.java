@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -27,6 +28,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import eu.chessdata.R;
 import eu.chessdata.model.DefaultClub;
 import eu.chessdata.ui.club.ClubCreateDialogFragment;
@@ -34,25 +38,33 @@ import eu.chessdata.ui.club.ClubPlayersFragment;
 import eu.chessdata.ui.club.MyClubsFragment;
 import eu.chessdata.ui.club.PlayerCreateDialogFragment;
 import eu.chessdata.ui.home.HomeFragment;
+import eu.chessdata.ui.tournament.TournamentAddPlayerDialog;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
 import eu.chessdata.ui.tournament.TournamentDetailsFragment;
 import eu.chessdata.ui.tournament.TournamentPlayersFragment;
 import eu.chessdata.ui.tournament.TournamentsFragment;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFirebaseUtils;
+import eu.chessdata.utils.Utils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         GoogleApiClient.OnConnectionFailedListener,
         MyFirebaseUtils.OnOneTimeResultsListener,
         TournamentsFragment.TournamentsCallback,
-        TournamentDetailsFragment.TournamentDetailsCallback {
+        TournamentDetailsFragment.TournamentDetailsCallback ,
+        Utils.VipMap{
+
+
+
 
     public enum ACTION {
         SHOW_TOURNAMENTS,
         SHOW_PLAYERS,
         SHOW_TOURNAMENT_PLAYERS
     }
+
+
 
     public static final String ANONYMOUS = "anonymous";
     private static final String tag = Constants.LOG_TAG;
@@ -61,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mFirebaseDatabaseReference;
+    private final Map<String, String> mVipMap = new HashMap<>();
 
     //
     private String mUsername;
@@ -71,6 +84,11 @@ public class MainActivity extends AppCompatActivity
 
     //
     private FloatingActionButton mFab;
+
+    @Override
+    public void updateVipValue(String key, String value) {
+        mVipMap.put(key,value);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -288,13 +306,13 @@ public class MainActivity extends AppCompatActivity
      * onClickListener
      */
     @Override
-    public void onUserIsClubManager(final DefaultClub defaultClub, ACTION action) {
+    public void onUserIsClubManager(final Map<String,String> myMap, ACTION action) {
         //todo create reset fab
         if (action == ACTION.SHOW_TOURNAMENTS) {
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TournamentCreateDialogFragment dialogFragment = TournamentCreateDialogFragment.newInstance(defaultClub.getClubKey());
+                    TournamentCreateDialogFragment dialogFragment = TournamentCreateDialogFragment.newInstance(myMap.get(Constants.CLUB_KEY) );
                     dialogFragment.show(getSupportFragmentManager(), "tournamentCreateDialogFragment");
                 }
             });
@@ -309,7 +327,7 @@ public class MainActivity extends AppCompatActivity
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    PlayerCreateDialogFragment dialogFragment = PlayerCreateDialogFragment.newInstance(defaultClub.getClubName(), defaultClub.getClubKey());
+                    PlayerCreateDialogFragment dialogFragment = PlayerCreateDialogFragment.newInstance(myMap.get(Constants.CLUB_NAME),myMap.get(Constants.CLUB_KEY) );
                     dialogFragment.show(getSupportFragmentManager(), "playerCreateDialogFragment");
                 }
             });
@@ -323,12 +341,28 @@ public class MainActivity extends AppCompatActivity
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(tag,"Please add a tournament player");
+                    String clubKey = mVipMap.get(Constants.CLUB_KEY);
+                    String tournamentKey = mVipMap.get(Constants.TOURNAMENT_KEY);
+                    Log.d(tag,"Please add a tournament player: " +clubKey + " / " + tournamentKey);
+
+                    TournamentAddPlayerDialog addPlayerDialog = TournamentAddPlayerDialog.newInstance(tournamentKey,clubKey);
+                    addPlayerDialog.show(getSupportFragmentManager(),"TournamentAddPlayerDialog");
                 }
             });
             mFab.setVisibility(View.VISIBLE);
         }
     }
+
+    /**
+     * use this function to run fragment transactions. It will make the code more readable
+     * @param containerViewId
+     * @param fragment
+     */
+    private void runFragmentTransaction(int containerViewId, Fragment fragment){
+        //todo implement this
+    }
+
+
 
     @Override
     public void onTournamentSelected(String clubKey, String tournamentKey, String tournamentName) {
@@ -360,8 +394,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onTournamentDetailsItemSelected(String clubKey, String tournamentKey, String tournamentName, int position) {
         Log.d(tag, "onTournamentDetailsItemSelected: " + clubKey + "/" + tournamentKey + "/" + tournamentName + "/" + position);
+
+        updateVipValue(Constants.CLUB_KEY,clubKey);
+        updateVipValue(Constants.TOURNAMENT_KEY,tournamentKey);
+
         disableFab();
         if (position == 1) {//players
+
             TournamentPlayersFragment tournamentPlayersFragment = TournamentPlayersFragment.newInstance(tournamentKey);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, tournamentPlayersFragment);

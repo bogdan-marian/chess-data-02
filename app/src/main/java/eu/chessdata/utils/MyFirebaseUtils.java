@@ -9,6 +9,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import eu.chessdata.model.DefaultClub;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.model.User;
@@ -25,7 +28,7 @@ public class MyFirebaseUtils {
 
         public void onDefaultClubValue(DefaultClub defaultClub);
 
-        public void onUserIsClubManager(DefaultClub defaultClub, MainActivity.ACTION action);
+        public void onUserIsClubManager(Map<String,String> dataMap, MainActivity.ACTION action);
     }
 
     public static void setDefaultClub(DefaultClub defaultManagedClub) {
@@ -80,7 +83,9 @@ public class MyFirebaseUtils {
                 if (manager != null){
                     DefaultClub defaultClub = new DefaultClub();
                     defaultClub.setClubKey(clubKey);
-                    listener.onUserIsClubManager(defaultClub,action);
+                    Map<String,String> values = new HashMap<String, String>();
+                    values.put(Constants.CLUB_KEY, clubKey);
+                    listener.onUserIsClubManager(values,action);
                 }
             }
 
@@ -112,7 +117,10 @@ public class MyFirebaseUtils {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             User manager = dataSnapshot.getValue(User.class);
                             if (manager != null) {
-                                listener.onUserIsClubManager(defaultClub,action);
+                                String clubKey = defaultClub.getClubKey();
+                                Map<String,String> values = new HashMap<String, String>();
+                                values.put(Constants.CLUB_KEY,clubKey);
+                                listener.onUserIsClubManager(values,action);
                             }
                         }
 

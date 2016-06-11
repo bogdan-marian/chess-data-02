@@ -13,6 +13,7 @@ public class Constants {
     public static final String USER_KEY = "$userKey";
     public static final String CLUBS = "clubs";
     public static final String CLUB_KEY = "$clubKey";
+    public static final String CLUB_NAME = "clubName";
     public static final String CLUB_MANAGERS = "clubManagers";
     public static final String MANAGER_KEY = "$managerKey";
     public static final String USER_SETTINGS = "userSettings";
