@@ -3,7 +3,6 @@ package eu.chessdata.ui.club;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,6 @@ public class ClubPlayersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_club_players, container, false);
-        Log.d(tag, "Club key = " + mClubKey);
 
         //Firebase reference
         String clubsLocation = Constants.LOCATION_CLUB_PLAYERS

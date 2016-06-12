@@ -124,11 +124,12 @@ public class TournamentAddPlayerDialog extends DialogFragment {
                 if (dataSnapshot.getValue() == null){
                     playerRef.setValue(player);
                 }
+                getDialog().dismiss();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e(tag,"Firebase error: " + databaseError.getMessage());
             }
         });
     }

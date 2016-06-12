@@ -10,7 +10,7 @@
         android:text="Tournament players" />
 
     <ListView
-        android:id="@+id/list_view_club_players"
+        android:id="@+id/list_view_tournament_players"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></ListView>
 </LinearLayout>
