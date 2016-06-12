@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -19,10 +18,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import eu.chessdata.R;
 import eu.chessdata.model.Player;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MapUtil;
 
 /**
  * Created by Bogdan Oloeriu on 6/11/2016.
@@ -33,7 +35,11 @@ public class TournamentAddPlayerDialog extends DialogFragment {
     private String mClubKey;
 
     private View mView;
-    ArrayList<String> mListValues;
+
+    ArrayList<Player> mPlayers;
+    Map<String,Player> mPlayersMap;
+
+    PlayerAdapter mPlayerAdapter;
 
     public static TournamentAddPlayerDialog newInstance(String tournamentKey, String clubKey) {
         TournamentAddPlayerDialog fragment = new TournamentAddPlayerDialog();
@@ -52,11 +58,12 @@ public class TournamentAddPlayerDialog extends DialogFragment {
         mView = inflater.inflate(R.layout.dialog_tournament_add_player, null, false);
         builder.setView(mView);
         ListView listView = (ListView) mView.findViewById(R.id.list_view_tournament_players);
-        mListValues = new ArrayList<>();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-                R.layout.list_item_text, mListValues);
-        listView.setAdapter(adapter);
+        mPlayers = new ArrayList<>();
+        mPlayersMap = new HashMap<>();
+
+        mPlayerAdapter = new PlayerAdapter(getContext(),mPlayers);
+        listView.setAdapter(mPlayerAdapter);
 
         (new UpdateListTask()).execute();
         return builder.create();
@@ -74,7 +81,11 @@ public class TournamentAddPlayerDialog extends DialogFragment {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot item: dataSnapshot.getChildren()){
                         Player player = item.getValue(Player.class);
-                        mListValues.add(player.getName());
+                        mPlayersMap.put(player.getPlayerKey(),player);
+                    }
+                    mPlayersMap = MapUtil.sortByValue(mPlayersMap);
+                    for (Map.Entry<String,Player> entry: mPlayersMap.entrySet()){
+                        mPlayerAdapter.add(entry.getValue());
                     }
                 }
 
@@ -83,7 +94,6 @@ public class TournamentAddPlayerDialog extends DialogFragment {
 
                 }
             });
-            mListValues.add("Bogdan Marian Oloeriu");
             return null;
         }
 

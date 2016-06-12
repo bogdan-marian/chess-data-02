@@ -1,9 +1,11 @@
 package eu.chessdata.model;
 
+import java.text.Collator;
+
 /**
  * Created by Bogdan Oloeriu on 6/4/2016.
  */
-public class Player {
+public class Player implements Comparable<Player>{
     private String name;
     private String email;
     private String elo;
@@ -25,6 +27,12 @@ public class Player {
         this.email = email;
         this.clubKey = clubKey;
         this.clubName = clubName;
+    }
+
+    @Override
+    public int compareTo(Player another) {
+        Collator defaultCollator = Collator.getInstance();
+        return defaultCollator.compare(this.getName(), another.getName());
     }
 
     public String getEmail() {
@@ -90,4 +98,6 @@ public class Player {
     public String getClubName() {
         return clubName;
     }
+
+
 }
