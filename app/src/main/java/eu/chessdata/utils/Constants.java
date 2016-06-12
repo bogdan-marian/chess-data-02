@@ -26,6 +26,8 @@ public class Constants {
     public static final String CLUB_PLAYERS = "clubPlayers";
     public static final String PLAYER_KEY = "$playerKey";
 
+    public static final String TOURNAMENT_PLAYERS = "tournamentPlayers";
+
     //clubManagers/$clubKey/$managerKey
     public static final String LOCATION_CLUB_MANAGERS = CLUB_MANAGERS + "/" + CLUB_KEY + "/" + MANAGER_KEY;
 
@@ -35,13 +37,13 @@ public class Constants {
     public static final String LOCATION_DEFAULT_CLUB = USER_SETTINGS + "/" + USER_KEY + "/" + DEFAULT_CLUB;
 
     //tournaments/$clubKey/$tournamentKey
-    public static final String LOCATION_TOURNAMENTS = TOURNAMENTS+"/"+CLUB_KEY;
+    public static final String LOCATION_TOURNAMENTS = TOURNAMENTS + "/" + CLUB_KEY;
 
     //clubPlayers/$clubKey/playerKey
-    public static final String LOCATION_CLUB_PLAYERS = CLUB_PLAYERS+"/"+CLUB_KEY;
+    public static final String LOCATION_CLUB_PLAYERS = CLUB_PLAYERS + "/" + CLUB_KEY;
 
     //tournamentPlayers/$tournamentKey/
-
+    public static final String LOCATION_TOURNAMENT_PLAYERS = TOURNAMENT_PLAYERS + "/" + TOURNAMENT_KEY;
 
     /**
      * Constants for Firebase URL

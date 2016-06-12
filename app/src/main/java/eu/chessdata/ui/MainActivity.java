@@ -343,8 +343,6 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(View v) {
                     String clubKey = mVipMap.get(Constants.CLUB_KEY);
                     String tournamentKey = mVipMap.get(Constants.TOURNAMENT_KEY);
-                    Log.d(tag,"Please add a tournament player: " +clubKey + " / " + tournamentKey);
-
                     TournamentAddPlayerDialog addPlayerDialog = TournamentAddPlayerDialog.newInstance(tournamentKey,clubKey);
                     addPlayerDialog.show(getSupportFragmentManager(),"TournamentAddPlayerDialog");
                 }

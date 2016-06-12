@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -19,6 +20,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import eu.chessdata.R;
@@ -64,6 +67,14 @@ public class TournamentAddPlayerDialog extends DialogFragment {
 
         mPlayerAdapter = new PlayerAdapter(getContext(),mPlayers);
         listView.setAdapter(mPlayerAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                List<Map.Entry<String,Player>> list = new LinkedList<Map.Entry<String, Player>>(mPlayersMap.entrySet());
+                Player player = list.get(position).getValue();
+                addPlayer(player);
+            }
+        });
 
         (new UpdateListTask()).execute();
         return builder.create();
@@ -101,5 +112,24 @@ public class TournamentAddPlayerDialog extends DialogFragment {
         protected void onPostExecute(Void aVoid) {
             Log.d(tag, "End of onPostExecute");
         }
+    }
+
+    private void addPlayer(final Player player){
+        String tournamentPlayerLoc = Constants.LOCATION_TOURNAMENT_PLAYERS
+                .replace(Constants.TOURNAMENT_KEY, mTournamentKey)+"/"+player.getPlayerKey();
+        final DatabaseReference playerRef = FirebaseDatabase.getInstance().getReference(tournamentPlayerLoc);
+        playerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null){
+                    playerRef.setValue(player);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }
