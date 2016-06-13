@@ -24,9 +24,9 @@ public class MyFirebaseUtils {
     private static final String tag = Constants.LOG_TAG;
 
     public interface OnOneTimeResultsListener {
-        public void onDefaultClubValue(DefaultClub defaultClub, MainActivity.ACTION action);
+        public void onClubValue(DefaultClub defaultClub, MainActivity.ACTION action);
 
-        public void onDefaultClubValue(DefaultClub defaultClub);
+        public void onClubValue(DefaultClub defaultClub);
 
         public void onUserIsClubManager(Map<String,String> dataMap, MainActivity.ACTION action);
     }
@@ -53,7 +53,7 @@ public class MyFirebaseUtils {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 DefaultClub defaultClub = dataSnapshot.getValue(DefaultClub.class);
                 Log.d(tag, "default Club found");
-                listener.onDefaultClubValue(defaultClub, action);
+                listener.onClubValue(defaultClub, action);
             }
 
             @Override

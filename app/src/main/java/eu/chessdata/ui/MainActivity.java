@@ -38,6 +38,7 @@ import eu.chessdata.ui.club.ClubPlayersFragment;
 import eu.chessdata.ui.club.MyClubsFragment;
 import eu.chessdata.ui.club.PlayerCreateDialogFragment;
 import eu.chessdata.ui.home.HomeFragment;
+import eu.chessdata.ui.round.RoundPagerFragment;
 import eu.chessdata.ui.tournament.TournamentAddPlayerDialog;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
 import eu.chessdata.ui.tournament.TournamentDetailsFragment;
@@ -61,7 +62,8 @@ public class MainActivity extends AppCompatActivity
     public enum ACTION {
         SHOW_TOURNAMENTS,
         SHOW_PLAYERS,
-        SHOW_TOURNAMENT_PLAYERS
+        SHOW_TOURNAMENT_PLAYERS,
+        SHOW_ROUND
     }
 
 
@@ -255,24 +257,26 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDefaultClubValue(DefaultClub defaultClub, ACTION action) {
-        if (defaultClub != null) {
+    public void onClubValue(DefaultClub club, ACTION action) {
+        if (club != null) {
             if (action == ACTION.SHOW_TOURNAMENTS) {
-                TournamentsFragment tournamentsFragment = TournamentsFragment.newInstance(defaultClub.getClubKey());
+                TournamentsFragment tournamentsFragment = TournamentsFragment.newInstance(club.getClubKey());
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, tournamentsFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
 
-                getSupportActionBar().setTitle("Club: " + defaultClub.getClubName());
+                getSupportActionBar().setTitle("Club: " + club.getClubName());
             } else if (action == ACTION.SHOW_PLAYERS) {
-                ClubPlayersFragment clubPlayersFragment = ClubPlayersFragment.newInstance(defaultClub.getClubKey());
+                ClubPlayersFragment clubPlayersFragment = ClubPlayersFragment.newInstance(club.getClubKey());
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment_container, clubPlayersFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
 
-                getSupportActionBar().setTitle("Club: " + defaultClub.getClubName());
+                getSupportActionBar().setTitle("Club: " + club.getClubName());
+            } else if (action == ACTION.SHOW_ROUND){
+
             }
 
         } else {
@@ -283,7 +287,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDefaultClubValue(DefaultClub defaultClub) {
+    public void onClubValue(DefaultClub defaultClub) {
         if (defaultClub != null) {
             TournamentsFragment tournamentsFragment = TournamentsFragment.newInstance(defaultClub.getClubKey());
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -348,6 +352,8 @@ public class MainActivity extends AppCompatActivity
                 }
             });
             mFab.setVisibility(View.VISIBLE);
+        } else if (action == ACTION.SHOW_ROUND){
+            //for the moment no fab
         }
     }
 
@@ -357,7 +363,10 @@ public class MainActivity extends AppCompatActivity
      * @param fragment
      */
     private void runFragmentTransaction(int containerViewId, Fragment fragment){
-        //todo implement this
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(containerViewId,fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
 
@@ -405,6 +414,11 @@ public class MainActivity extends AppCompatActivity
             transaction.addToBackStack(null);
             transaction.commit();
             MyFirebaseUtils.isManagerForClubKey(clubKey,this,ACTION.SHOW_TOURNAMENT_PLAYERS);
+        }else if (position == 2){//rounds
+            Bundle bundle = RoundPagerFragment.getBundle(tournamentKey);
+            RoundPagerFragment roundPagerFragment = new RoundPagerFragment();
+            roundPagerFragment.setArguments(bundle);
+            runFragmentTransaction(R.id.fragment_container,roundPagerFragment);
         }
     }
 }
