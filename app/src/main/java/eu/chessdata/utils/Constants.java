@@ -59,5 +59,5 @@ public class Constants {
      * Some other constants
      */
     public static final String LOG_TAG = "my-debug";
-    public static final String TOTAL_ROUNDS = "totalRounds" ;
+    public static final String ROUND_NUMBER = "roundNumber";
 }
