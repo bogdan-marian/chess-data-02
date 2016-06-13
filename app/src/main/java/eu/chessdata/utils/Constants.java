@@ -28,6 +28,12 @@ public class Constants {
 
     public static final String TOURNAMENT_PLAYERS = "tournamentPlayers";
 
+    public static final String TOURNAMENT_ROUNDS = "tournamentRounds";
+    public static final String ROUND_NUMBER = "$roundNumber";
+    public static final String ROUND_PLAYERS = "roundPlayers";
+    public static final String GAMES = "games";
+
+
     //clubManagers/$clubKey/$managerKey
     public static final String LOCATION_CLUB_MANAGERS = CLUB_MANAGERS + "/" + CLUB_KEY + "/" + MANAGER_KEY;
 
@@ -45,6 +51,12 @@ public class Constants {
     //tournamentPlayers/$tournamentKey/
     public static final String LOCATION_TOURNAMENT_PLAYERS = TOURNAMENT_PLAYERS + "/" + TOURNAMENT_KEY;
 
+    //tournamentRounds/$tournamentKey/$roundNumber/games
+    public static final String LOCATION_ROUND_GAMES = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + GAMES;
+
+    //tournamentRounds/$tournamentKey/$roundNumber/roundPlayers
+    public static final String LOCATION_ROUND_PLAYERS = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + ROUND_PLAYERS;
+
     /**
      * Constants for Firebase URL
      */
@@ -59,5 +71,5 @@ public class Constants {
      * Some other constants
      */
     public static final String LOG_TAG = "my-debug";
-    public static final String ROUND_NUMBER = "roundNumber";
+
 }
