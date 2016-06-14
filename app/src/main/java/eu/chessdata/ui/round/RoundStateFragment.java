@@ -86,9 +86,16 @@ public class RoundStateFragment extends Fragment{
     }
 
     protected void showPresence(){
-        RoundPresenceFragment fragment = RoundPresenceFragment.newInstance(mTournamentKey,mRoundNumber);
+        RoundPlayersFragment fragment = RoundPlayersFragment.newInstance(mTournamentKey,mRoundNumber);
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container_presence_games, fragment);
         transaction.commit();
+    }
+
+    /**
+     * this function should only be called from the pager that holds this fragment
+     */
+    protected void configureFab(){
+        Log.d(tag,"Time to configureFab() from state fragment: round = " + mRoundNumber);
     }
 }

@@ -45,6 +45,7 @@ import eu.chessdata.ui.tournament.TournamentDetailsFragment;
 import eu.chessdata.ui.tournament.TournamentPlayersFragment;
 import eu.chessdata.ui.tournament.TournamentsFragment;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyFabInterface;
 import eu.chessdata.utils.MyFirebaseUtils;
 import eu.chessdata.utils.Utils;
 
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity
         MyFirebaseUtils.OnOneTimeResultsListener,
         TournamentsFragment.TournamentsCallback,
         TournamentDetailsFragment.TournamentDetailsCallback ,
-        Utils.VipMap{
+        Utils.VipMap, MyFabInterface{
 
 
 
@@ -383,7 +384,14 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
-    private void disableFab() {
+    @Override
+    public void enableFab(View.OnClickListener onClickListener) {
+        mFab.setOnClickListener(onClickListener);
+        mFab.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void disableFab() {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

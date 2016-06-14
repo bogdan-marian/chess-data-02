@@ -6,5 +6,5 @@ package eu.chessdata.utils;
 public class Utils {
     public static interface VipMap{
         public void updateVipValue(String key, String value);
-    };
+    }
 }
