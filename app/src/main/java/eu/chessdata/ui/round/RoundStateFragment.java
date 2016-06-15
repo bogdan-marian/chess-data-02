@@ -17,6 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import eu.chessdata.R;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyFabInterface;
 
 /**
  * Created by Bogdan Oloeriu on 6/13/2016.
@@ -97,5 +98,16 @@ public class RoundStateFragment extends Fragment{
      */
     protected void configureFab(){
         Log.d(tag,"Time to configureFab() from state fragment: round = " + mRoundNumber);
+        MyFabInterface myFabInterface = (MyFabInterface) getActivity();
+        myFabInterface.disableFab();
+        if (!mShowGames){
+            myFabInterface.enableFab(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey,mRoundNumber);
+                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
+                }
+            });
+        }
     }
 }
