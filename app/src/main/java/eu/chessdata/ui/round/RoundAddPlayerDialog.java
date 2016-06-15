@@ -54,7 +54,9 @@ public class RoundAddPlayerDialog extends DialogFragment{
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Add player to round: " + mRoundNumber);
         View view = inflater.inflate(R.layout.dialog_round_add_player,null,false);
+        builder.setView(view);
         ListView listView = (ListView)view.findViewById(R.id.list_view_add_round_players);
+
         return  builder.create();
     }
 }

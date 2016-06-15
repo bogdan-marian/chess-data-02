@@ -12,10 +12,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.Map;
 
 import eu.chessdata.R;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyFabInterface;
 
 /**
  * Created by Bogdan Oloeriu on 6/12/2016.
@@ -117,6 +124,32 @@ public class RoundPagerFragment extends Fragment {
      * Maybe disable screen rotation.
      */
     public void setRound1Fab() {
-        Log.d(tag, "Special ================= time to configure round 1");
+        Log.d(tag, "RoundPagerFragment setRound1Fab");
+        final MyFabInterface myFabInterface = (MyFabInterface) getActivity();
+        myFabInterface.disableFab();
+        String gamesLoc = Constants.LOCATION_ROUND_GAMES
+                .replace(Constants.TOURNAMENT_KEY, mTournamentKey)
+                .replace(Constants.ROUND_NUMBER, String.valueOf(1));
+        DatabaseReference gamesRef = FirebaseDatabase.getInstance().getReference(gamesLoc);
+        gamesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+                    //create and activate fab listener and show add players
+                    myFabInterface.enableFab(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, 1);
+                            roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, "Firebase error: " + databaseError.getMessage());
+            }
+        });
     }
 }
