@@ -32,16 +32,19 @@ public class RoundPagerFragment extends Fragment {
 
     private ViewPager mViewPager;
     private String mTournamentKey;
+    private String mClubKey;
     private Map<String, RoundStateFragment> mStateFragmentMap = new ArrayMap<>();
 
-    public static Bundle getBundle(String tournamentKey) {
+    public static Bundle getBundle(String tournamentKey, String clubKey) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.TOURNAMENT_KEY, tournamentKey);
+        bundle.putString(Constants.CLUB_KEY,clubKey);
         return bundle;
     }
 
     private void setParameters() {
         mTournamentKey = getArguments().getString(Constants.TOURNAMENT_KEY);
+        mClubKey = getArguments().getString(Constants.CLUB_KEY);
     }
 
     @Nullable
@@ -87,7 +90,7 @@ public class RoundPagerFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             int round = position + 1;
-            Bundle bundle = RoundStateFragment.getBundle(mTournamentKey, round);
+            Bundle bundle = RoundStateFragment.getBundle(mTournamentKey, round, mClubKey);
             RoundStateFragment roundStateFragment = new RoundStateFragment();
             roundStateFragment.setArguments(bundle);
 

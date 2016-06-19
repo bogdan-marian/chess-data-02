@@ -423,7 +423,7 @@ public class MainActivity extends AppCompatActivity
             transaction.commit();
             MyFirebaseUtils.isManagerForClubKey(clubKey,this,ACTION.SHOW_TOURNAMENT_PLAYERS);
         }else if (position == 2){//rounds
-            Bundle bundle = RoundPagerFragment.getBundle(tournamentKey);
+            Bundle bundle = RoundPagerFragment.getBundle(tournamentKey, clubKey);
             RoundPagerFragment roundPagerFragment = new RoundPagerFragment();
             roundPagerFragment.setArguments(bundle);
             runFragmentTransaction(R.id.fragment_container,roundPagerFragment);
