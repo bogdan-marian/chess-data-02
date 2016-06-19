@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.chessdata.R;
+import eu.chessdata.model.Game;
 import eu.chessdata.model.Player;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.utils.Constants;
@@ -98,7 +99,11 @@ public class RoundStateFragment extends Fragment {
     }
 
     protected void showGames() {
-        Log.d(tag, "Show games " + mTournamentKey + " / " + mRoundNumber);
+        RoundGamesFragment fragment = RoundGamesFragment.newInstance(mTournamentKey,mRoundNumber);
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container_presence_games,fragment);
+        transaction.commit();
+        mShowGames = true;
     }
 
     protected void showPresence() {
@@ -106,6 +111,7 @@ public class RoundStateFragment extends Fragment {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container_presence_games, fragment);
         transaction.commit();
+        mShowGames = false;
     }
 
     /**
@@ -128,7 +134,9 @@ public class RoundStateFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-        inflater.inflate(R.menu.round_players_fragment, menu);
+        if (!mShowGames) {
+            inflater.inflate(R.menu.round_players_fragment, menu);
+        }
     }
 
     @Override
@@ -178,7 +186,7 @@ public class RoundStateFragment extends Fragment {
 
         String gamesLoc = Constants.LOCATION_ROUND_GAMES
                 .replace(Constants.TOURNAMENT_KEY, mTournamentKey)
-                .replace(Constants.ROUND_NUMBER, String.valueOf(mFirstTableNumber));
+                .replace(Constants.ROUND_NUMBER, String.valueOf(mRoundNumber));
         DatabaseReference gamesRef = FirebaseDatabase.getInstance().getReference(gamesLoc);
         gamesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -209,9 +217,10 @@ public class RoundStateFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> items = dataSnapshot.getChildren();
-                for (DataSnapshot item: items){
+                for (DataSnapshot item : items) {
                     mPlayers.add(item.getValue(Player.class));
                 }
+                onTimeToGenerateGames();
             }
 
             @Override
@@ -221,7 +230,45 @@ public class RoundStateFragment extends Fragment {
         });
     }
 
-    public void onTimeToGenerateGames(){
+    public void onTimeToGenerateGames() {
+        Log.d(tag, "onTimeToGenerateGames round: " + mRoundNumber
+                + " / clubKey = " + mClubKey
+                + " / firstTableNumber = " + mFirstTableNumber);
+        int i = 0;
+        List<Game> games = new ArrayList<>();
+        Game game = new Game();
 
+        //create the games
+        int table = 0;
+
+        for (Player player : mPlayers) {
+            i++;
+            if (i % 2 == 1) {
+                table++;
+                game = new Game();
+                game.setTableNumber(table);
+                game.setActualNumber(table + mFirstTableNumber - 1);
+                game.setWhitePlayer(player);
+            } else {
+                game.setBlackPlayer(player);
+                games.add(game);
+                game = new Game();
+            }
+            if (i == mPlayers.size() && i%2==1) {
+                game.setResult(4);
+                games.add(game);
+            }
+        }
+
+        //persist the games
+        String gamesLoc = Constants.LOCATION_ROUND_GAMES
+                .replace(Constants.TOURNAMENT_KEY, mTournamentKey)
+                .replace(Constants.ROUND_NUMBER, String.valueOf(mRoundNumber));
+        DatabaseReference allGamesRef = FirebaseDatabase.getInstance().getReference(gamesLoc);
+        for (Game gameItem : games) {
+            DatabaseReference gameRef = allGamesRef.getRef().child(String.valueOf(gameItem.getTableNumber()));
+            gameRef.setValue(gameItem);
+        }
+        showGames();
     }
 }
