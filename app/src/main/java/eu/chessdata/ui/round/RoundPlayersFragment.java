@@ -6,8 +6,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import eu.chessdata.R;
+import eu.chessdata.model.Player;
 import eu.chessdata.utils.Constants;
 
 /**
@@ -18,6 +25,10 @@ public class RoundPlayersFragment extends Fragment{
 
     private String mTournamentKey;
     private int mRoundNumber;
+
+    private ListView mListView;
+    private DatabaseReference mReference;
+    private FirebaseListAdapter<Player> mAdapter;
 
     private static Bundle getBundle(String tournamentKey, int roundNumber){
         Bundle bundle = new Bundle();
@@ -41,8 +52,20 @@ public class RoundPlayersFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_round_players,container,false);
         setParameters();
+
+        String roundPlayersLoc = Constants.LOCATION_ROUND_PLAYERS
+                .replace(Constants.TOURNAMENT_KEY,mTournamentKey)
+                .replace(Constants.ROUND_NUMBER,String.valueOf(mRoundNumber));
+        mReference = FirebaseDatabase.getInstance().getReference(roundPlayersLoc);
+        mListView = (ListView) view.findViewById(R.id.list_view_round_players);
+        mAdapter = new FirebaseListAdapter<Player>(getActivity(), Player.class, R.layout.list_item_text,mReference) {
+            @Override
+            protected void populateView(View v, Player model, int position) {
+                ((TextView) v.findViewById(R.id.list_item_text_simple_view)).setText(model.getName());
+
+            }
+        };
+        mListView.setAdapter(mAdapter);
         return view;
     }
-
-
 }
