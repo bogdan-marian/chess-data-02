@@ -71,7 +71,8 @@ public class TournamentCreateDialogFragment extends DialogFragment {
                 ((EditText) mView.findViewById(R.id.tournamentName)).getText().toString(),
                 ((EditText) mView.findViewById(R.id.tournamentDescription)).getText().toString(),
                 ((EditText) mView.findViewById(R.id.tournamentLocation)).getText().toString(),
-                ((NumberPicker) mView.findViewById(R.id.tournamentTotalRounds)).getValue()
+                ((NumberPicker) mView.findViewById(R.id.tournamentTotalRounds)).getValue(),
+                Integer.parseInt(((EditText) mView.findViewById(R.id.tournamentFirstTableNumber)).getText().toString())
         );
 
         String tournamentLocation = Constants.LOCATION_TOURNAMENTS

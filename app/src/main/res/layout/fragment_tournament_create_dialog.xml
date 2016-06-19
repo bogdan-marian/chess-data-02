@@ -49,6 +49,11 @@
             android:id="@+id/tournamentTotalRounds"
             android:transitionGroup="true"/>
     </LinearLayout>
+    <EditText
+        android:id="@+id/tournamentFirstTableNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="First table number (default = 1)"/>
 
 
 </LinearLayout>

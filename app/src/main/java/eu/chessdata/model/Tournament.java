@@ -14,6 +14,7 @@ public class Tournament {
     private String description;
     private String location;
     private int totalRounds;
+    private int firstTableNumber = 1;
     //players
     private HashMap<String, Object> dateCreated;
     private HashMap<String, Object> updateStamp;
@@ -21,7 +22,7 @@ public class Tournament {
 
     public Tournament(){}
 
-    public Tournament(String name, String description, String location, int totalRounds){
+    public Tournament(String name, String description, String location, int totalRounds, int firstTableNumber){
         HashMap<String, Object> timeStamp = new HashMap<>();
         timeStamp.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 
@@ -29,6 +30,7 @@ public class Tournament {
         this.description = description;
         this.location = location;
         this.totalRounds = totalRounds;
+        this.firstTableNumber = firstTableNumber;
         this.dateCreated = timeStamp;
         this.updateStamp = timeStamp;
     }
@@ -47,6 +49,10 @@ public class Tournament {
 
     public int getTotalRounds() {
         return totalRounds;
+    }
+
+    public int getFirstTableNumber() {
+        return firstTableNumber;
     }
 
     public HashMap<String, Object> getDateCreated() {
