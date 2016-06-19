@@ -6,6 +6,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,6 +47,7 @@ public class RoundStateFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.fragment_round_state,container,false);
         setParameters();
         computeData();
@@ -97,7 +101,6 @@ public class RoundStateFragment extends Fragment{
      * this function should only be called from the pager that holds this fragment
      */
     protected void configureFab(){
-        Log.d(tag,"Time to configureFab() from state fragment: round = " + mRoundNumber);
         MyFabInterface myFabInterface = (MyFabInterface) getActivity();
         myFabInterface.disableFab();
         if (!mShowGames){
@@ -109,5 +112,17 @@ public class RoundStateFragment extends Fragment{
                 }
             });
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        menu.clear();
+        inflater.inflate(R.menu.round_players_fragment,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(tag,"Time to generate games for round: " + mRoundNumber);
+        return true;
     }
 }
