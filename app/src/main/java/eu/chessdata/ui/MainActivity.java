@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity
     private String mEmail;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
+    private Menu mMenu;
 
     //
     private FloatingActionButton mFab;
@@ -155,6 +156,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        mMenu = menu;
         return true;
     }
 
@@ -428,5 +430,9 @@ public class MainActivity extends AppCompatActivity
             roundPagerFragment.setArguments(bundle);
             runFragmentTransaction(R.id.fragment_container,roundPagerFragment);
         }
+    }
+
+    private void resetMenu(){
+
     }
 }
