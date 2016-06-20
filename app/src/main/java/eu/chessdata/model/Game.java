@@ -4,7 +4,14 @@ package eu.chessdata.model;
  * Created by Bogdan Oloeriu on 6/19/2016.
  */
 public class Game {
+    /**
+     * it allays starts from 1
+     */
     private int tableNumber;
+    /**
+     * represents the table number that it is printed on the desc.
+     * It usually is computed from tableNumber + a constant
+     */
     private int actualNumber;
     private Player whitePlayer;
     private Player blackPlayer;

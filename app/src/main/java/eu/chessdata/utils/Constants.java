@@ -31,7 +31,11 @@ public class Constants {
     public static final String TOURNAMENT_ROUNDS = "tournamentRounds";
     public static final String ROUND_NUMBER = "$roundNumber";
     public static final String ROUND_PLAYERS = "roundPlayers";
+    public static final String TABLE_NUMBER = "$tableNumber";
     public static final String GAMES = "games";
+    public static final String WHITE_PLAYER_NAME = "whitePlayerName";
+    public static final String BLACK_PLAYER_NAME = "blackPlayerName";
+    public static final String NO_PARTNER = "noPartner";
 
 
     //clubManagers/$clubKey/$managerKey
