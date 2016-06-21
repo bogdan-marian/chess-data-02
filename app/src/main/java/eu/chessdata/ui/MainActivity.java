@@ -428,8 +428,4 @@ public class MainActivity extends AppCompatActivity
             runFragmentTransaction(R.id.fragment_container,roundPagerFragment);
         }
     }
-
-    private void resetMenu(){
-
-    }
 }

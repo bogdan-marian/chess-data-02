@@ -85,6 +85,15 @@ public class RoundPagerFragment extends Fragment {
         return fragmentView;
     }
 
+    protected void addPage(int mRoundNumber) {
+        if (mRoundNumber >= mRoundsWithData){
+            if (mRoundsWithData < mTotalRounds){
+                mRoundsWithData++;
+                mSectionPagerAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
     private class SectionPagerAdapter extends FragmentStatePagerAdapter {
         private final FragmentManager mFragmentManager;
 
@@ -117,13 +126,21 @@ public class RoundPagerFragment extends Fragment {
     }
 
     /**
-     * todo Please make sure that is the round state that sets the fab;
+     * it is very important that the round state that sets the fab;
      */
     public void configureFab() {
         int round = mViewPager.getCurrentItem() + 1;
         String tag = getTag(round);
         RoundStateFragment stateFragment = mStateFragmentMap.get(tag);
         stateFragment.configureFab();
+    }
+
+    public void redrawMenu(){
+        if (    mTotalRounds > 1
+                && mRoundsWithData < mTotalRounds
+                && mRoundsWithData == mViewPager.getCurrentItem() + 1){
+            Log.d(tag,"I should redraw the menu");
+        }
     }
 
     /**

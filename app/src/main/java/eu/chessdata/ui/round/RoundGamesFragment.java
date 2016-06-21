@@ -3,7 +3,10 @@ package eu.chessdata.ui.round;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,33 +29,41 @@ public class RoundGamesFragment extends Fragment {
     private String tag = Constants.LOG_TAG;
 
     private String mTournamentKey;
+    private String mClubKey;
     private int mRoundNumber;
+
+    private int mTotalRounds =1;
+    private int mRoundsWithData = 1;
+    private boolean mShowMenu = false;
 
     private ListView mListView;
     private DatabaseReference mReference;
     private FirebaseListAdapter<Game> mAdapter;
 
-    private static Bundle getBundle(String tournamentKey, int roundNumber) {
+    private static Bundle getBundle(String tournamentKey, int roundNumber, String clubKey) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.TOURNAMENT_KEY, tournamentKey);
         bundle.putInt(Constants.ROUND_NUMBER, roundNumber);
+        bundle.putString(Constants.CLUB_KEY,clubKey);
         return bundle;
     }
 
     private void setParameters() {
         mTournamentKey = getArguments().getString(Constants.TOURNAMENT_KEY);
         mRoundNumber = getArguments().getInt(Constants.ROUND_NUMBER);
+        mClubKey = getArguments().getString(Constants.CLUB_KEY);
     }
 
-    public static RoundGamesFragment newInstance(String tournamentKey, int roundNumber) {
+    public static RoundGamesFragment newInstance(String tournamentKey, int roundNumber, String clubKey) {
         RoundGamesFragment roundGamesFragment = new RoundGamesFragment();
-        roundGamesFragment.setArguments(getBundle(tournamentKey, roundNumber));
+        roundGamesFragment.setArguments(getBundle(tournamentKey, roundNumber,clubKey));
         return roundGamesFragment;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.fragment_round_games, container, false);
         setParameters();
 
@@ -116,5 +127,13 @@ public class RoundGamesFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        if (mShowMenu){
+            Log.d(tag,"Time to create menu");
+        }
     }
 }

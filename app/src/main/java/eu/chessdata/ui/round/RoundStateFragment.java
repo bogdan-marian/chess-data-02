@@ -99,7 +99,7 @@ public class RoundStateFragment extends Fragment {
     }
 
     protected void showGames() {
-        RoundGamesFragment fragment = RoundGamesFragment.newInstance(mTournamentKey,mRoundNumber);
+        RoundGamesFragment fragment = RoundGamesFragment.newInstance(mTournamentKey,mRoundNumber,mClubKey);
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container_presence_games,fragment);
         transaction.commit();
@@ -270,5 +270,8 @@ public class RoundStateFragment extends Fragment {
             gameRef.setValue(gameItem);
         }
         showGames();
+
+        RoundPagerFragment roundPagerFragment = (RoundPagerFragment) getParentFragment();
+        Log.d(tag,"What is the state?");
     }
 }
