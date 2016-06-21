@@ -84,4 +84,6 @@ public class TournamentDetailsFragment extends Fragment {
 
         return fragmentView;
     }
+
+
 }

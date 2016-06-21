@@ -29,6 +29,7 @@ public class Constants {
     public static final String TOURNAMENT_PLAYERS = "tournamentPlayers";
 
     public static final String TOURNAMENT_ROUNDS = "tournamentRounds";
+    public static final String TOTAL_ROUNDS = "totalRounds";
     public static final String ROUND_NUMBER = "$roundNumber";
     public static final String ROUND_PLAYERS = "roundPlayers";
     public static final String TABLE_NUMBER = "$tableNumber";
@@ -38,7 +39,7 @@ public class Constants {
     public static final String BLACK_PLAYER_NAME = "blackPlayerName";
     public static final String NO_PARTNER = "noPartner";
     public static final String CURRENT_RESULT = "currentResult";
-    public static final String PREVENT_UPDATE_RESULT ="preventUpdateResult";
+    public static final String PREVENT_UPDATE_RESULT = "preventUpdateResult";
 
 
     //clubManagers/$clubKey/$managerKey
@@ -49,8 +50,10 @@ public class Constants {
     public static final String LOCATION_MY_CLUB = LOCATION_MY_CLUBS + "/" + CLUB_KEY;
     public static final String LOCATION_DEFAULT_CLUB = USER_SETTINGS + "/" + USER_KEY + "/" + DEFAULT_CLUB;
 
-    //tournaments/$clubKey/$tournamentKey
+    //tournaments/$clubKey
     public static final String LOCATION_TOURNAMENTS = TOURNAMENTS + "/" + CLUB_KEY;
+    //tournaments/$clubKey/$tournamentKey
+    public static final String LOCATION_TOURNAMENT = LOCATION_TOURNAMENTS + "/" + TOURNAMENT_KEY;
 
     //clubPlayers/$clubKey/playerKey
     public static final String LOCATION_CLUB_PLAYERS = CLUB_PLAYERS + "/" + CLUB_KEY;

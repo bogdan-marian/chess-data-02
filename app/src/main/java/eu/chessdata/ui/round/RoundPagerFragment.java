@@ -1,5 +1,6 @@
 package eu.chessdata.ui.round;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Map;
 
 import eu.chessdata.R;
+import eu.chessdata.model.Tournament;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFabInterface;
 
@@ -32,19 +34,23 @@ public class RoundPagerFragment extends Fragment {
 
     private ViewPager mViewPager;
     private String mTournamentKey;
+    private int mTotalRounds = 1;
+    private int mRoundsWithData = 1;
     private String mClubKey;
     private Map<String, RoundStateFragment> mStateFragmentMap = new ArrayMap<>();
+    private SectionPagerAdapter mSectionPagerAdapter;
 
     public static Bundle getBundle(String tournamentKey, String clubKey) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.TOURNAMENT_KEY, tournamentKey);
-        bundle.putString(Constants.CLUB_KEY,clubKey);
+        bundle.putString(Constants.CLUB_KEY, clubKey);
         return bundle;
     }
 
     private void setParameters() {
         mTournamentKey = getArguments().getString(Constants.TOURNAMENT_KEY);
         mClubKey = getArguments().getString(Constants.CLUB_KEY);
+        mTotalRounds = getArguments().getInt(Constants.TOTAL_ROUNDS);
     }
 
     @Nullable
@@ -52,11 +58,11 @@ public class RoundPagerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setParameters();
         View fragmentView = inflater.inflate(R.layout.fragment_round_pager, container, false);
-        SectionPagerAdapter sectionPagerAdapter = new SectionPagerAdapter(getFragmentManager());
+        mSectionPagerAdapter = new SectionPagerAdapter(getFragmentManager());
 
 
         mViewPager = (ViewPager) fragmentView.findViewById(R.id.container_round_pager);
-        mViewPager.setAdapter(sectionPagerAdapter);
+        mViewPager.setAdapter(mSectionPagerAdapter);
         ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -75,12 +81,13 @@ public class RoundPagerFragment extends Fragment {
         };
         mViewPager.addOnPageChangeListener(onPageChangeListener);
         setRound1Fab();
+        (new ExtractTournamentData()).execute();
         return fragmentView;
     }
 
     private class SectionPagerAdapter extends FragmentStatePagerAdapter {
         private final FragmentManager mFragmentManager;
-        private int roundsWithData = 2;
+
 
         public SectionPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -101,7 +108,7 @@ public class RoundPagerFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return roundsWithData;
+            return mRoundsWithData;
         }
     }
 
@@ -152,6 +159,61 @@ public class RoundPagerFragment extends Fragment {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e(tag, "Firebase error: " + databaseError.getMessage());
+            }
+        });
+    }
+
+
+    private class ExtractTournamentData extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            //get tournament total rounds
+            String tournamentLoc = Constants.LOCATION_TOURNAMENT
+                    .replace(Constants.CLUB_KEY, mClubKey)
+                    .replace(Constants.TOURNAMENT_KEY, mTournamentKey);
+            DatabaseReference tournamentRef = FirebaseDatabase.getInstance().getReference(tournamentLoc);
+            tournamentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Tournament tournament = dataSnapshot.getValue(Tournament.class);
+                    if (tournament != null) {
+                        mTotalRounds = tournament.getTotalRounds();
+                        timeToDecideHowManyRoundsToShow();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            return null;
+        }
+    }
+
+    private void timeToDecideHowManyRoundsToShow() {
+        String sectionNotRequired = "/" + Constants.ROUND_NUMBER + "/" + Constants.ROUND_PLAYERS;
+        String roundsLoc = Constants.LOCATION_ROUND_PLAYERS
+                .replace(sectionNotRequired, "")
+                .replace(Constants.TOURNAMENT_KEY, mTournamentKey);
+        DatabaseReference roundsRef = FirebaseDatabase.getInstance().getReference(roundsLoc);
+        roundsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long childrenCount = dataSnapshot.getChildrenCount();
+                String value = String.valueOf(childrenCount);
+                Integer count = Integer.valueOf(value);
+                mRoundsWithData = count;
+                if (mRoundsWithData <= mTotalRounds){
+                    mSectionPagerAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, "Database error: " + databaseError.getMessage());
             }
         });
     }

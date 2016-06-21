@@ -408,7 +408,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onTournamentDetailsItemSelected(String clubKey, String tournamentKey, String tournamentName, int position) {
-        Log.d(tag, "onTournamentDetailsItemSelected: " + clubKey + "/" + tournamentKey + "/" + tournamentName + "/" + position);
 
         updateVipValue(Constants.CLUB_KEY,clubKey);
         updateVipValue(Constants.TOURNAMENT_KEY,tournamentKey);

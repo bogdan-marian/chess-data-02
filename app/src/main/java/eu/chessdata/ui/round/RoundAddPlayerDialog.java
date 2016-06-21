@@ -142,7 +142,7 @@ public class RoundAddPlayerDialog extends DialogFragment{
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.e(tag,"Database error: " + databaseError.getMessage());
                 }
             });
             return null;
