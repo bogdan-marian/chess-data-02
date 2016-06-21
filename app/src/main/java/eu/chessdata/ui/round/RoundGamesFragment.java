@@ -102,6 +102,19 @@ public class RoundGamesFragment extends Fragment {
                 gameSetResultDialog.show(getActivity().getSupportFragmentManager(), "gameSetResultDialog");
             }
         });
+        //on long click wee override update protection
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Game game = mAdapter.getItem(position);
+
+                GameSetResultDialog gameSetResultDialog = GameSetResultDialog.newInstance(mTournamentKey, mRoundNumber, game);
+                //override update protection
+                gameSetResultDialog.disablePreventUpdateResults();
+                gameSetResultDialog.show(getActivity().getSupportFragmentManager(), "gameSetResultDialog");
+                return true;
+            }
+        });
         return view;
     }
 }

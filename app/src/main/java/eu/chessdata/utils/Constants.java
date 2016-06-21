@@ -33,9 +33,12 @@ public class Constants {
     public static final String ROUND_PLAYERS = "roundPlayers";
     public static final String TABLE_NUMBER = "$tableNumber";
     public static final String GAMES = "games";
+    public static final String RESULT = "result";
     public static final String WHITE_PLAYER_NAME = "whitePlayerName";
     public static final String BLACK_PLAYER_NAME = "blackPlayerName";
     public static final String NO_PARTNER = "noPartner";
+    public static final String CURRENT_RESULT = "currentResult";
+    public static final String PREVENT_UPDATE_RESULT ="preventUpdateResult";
 
 
     //clubManagers/$clubKey/$managerKey
@@ -57,6 +60,9 @@ public class Constants {
 
     //tournamentRounds/$tournamentKey/$roundNumber/games
     public static final String LOCATION_ROUND_GAMES = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + GAMES;
+
+    //tournamentRounds/$tournamentKey/$roundNumber/games/$tableNumber/result
+    public static final String LOCATION_GAME_RESULT = LOCATION_ROUND_GAMES + "/" + TABLE_NUMBER + "/" + RESULT;
 
     //tournamentRounds/$tournamentKey/$roundNumber/roundPlayers
     public static final String LOCATION_ROUND_PLAYERS = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + ROUND_PLAYERS;
