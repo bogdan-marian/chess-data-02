@@ -136,13 +136,6 @@ public class RoundPagerFragment extends Fragment {
         stateFragment.configureFab();
     }
 
-    public void redrawMenu() {
-        if (mTotalRounds > 1
-                && mRoundsWithData < mTotalRounds
-                && mRoundsWithData == mViewPager.getCurrentItem() + 1) {
-            Log.d(tag, "I should redraw the menu");
-        }
-    }
 
     /**
      * It is to messy to detect when round 1 finishes the creation process for the first time only
@@ -222,32 +215,46 @@ public class RoundPagerFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 long childrenCount = dataSnapshot.getChildrenCount();
-                String value = String.valueOf(childrenCount);
-                Integer count = Integer.valueOf(value);
-                mRoundsWithData = count;
-                if (mRoundsWithData <= mTotalRounds) {
+                String sRoundsWithData = String.valueOf(childrenCount);
+                Integer count = Integer.valueOf(sRoundsWithData);
+                //mRoundsWithData = count;
+                if (mRoundsWithData == mTotalRounds){
+                    return;
+                }
+                if (mRoundsWithData < count && mRoundsWithData < mTotalRounds) {
+                    mRoundsWithData = count;
                     mSectionPagerAdapter.notifyDataSetChanged();
                 }
-                //get the last games
-                DataSnapshot lastGames = dataSnapshot.child(String.valueOf(count)).child(Constants.GAMES);
-                if (lastGames != null && mRoundsWithData < mTotalRounds) {
-                    boolean appendDummyData = true;
+                //<get the last games>
+                if (!dataSnapshot.hasChild(sRoundsWithData)){
+                    return;
+                }
+                DataSnapshot vipRound = dataSnapshot.child(sRoundsWithData);
+                if (!vipRound.hasChild(Constants.GAMES)){
+                    return;
+                }
+                DataSnapshot vipGames = vipRound.child(Constants.GAMES);
+
+                //</get the last games>
+
+                if (vipGames != null && mRoundsWithData < mTotalRounds) {
+                    boolean incrementRoundsWithData = true;
                     /**
                      * iterate over games and if any results are 0 (not decided)
                      * then break the loop and set
-                     * appendDummyData = false;
+                     * incrementRoundsWithData = false;
                      */
-                    for (DataSnapshot item: lastGames.getChildren()){
+                    for (DataSnapshot item: vipGames.getChildren()){
                         Game game = item.getValue(Game.class);
                         if (game.getResult()==0){
-                            appendDummyData = false;
+                            incrementRoundsWithData = false;
                             break;
                         }
                     }
-                    if(appendDummyData){
+                    if(incrementRoundsWithData){
                         mRoundsWithData++;
                         mSectionPagerAdapter.notifyDataSetChanged();
-                        Log.d(tag,"Dummy data was created for round: " + mRoundsWithData);
+                        Log.d(tag,"Incremented mRoundsWithData to : " + mRoundsWithData);
                     }
                 }
             }
