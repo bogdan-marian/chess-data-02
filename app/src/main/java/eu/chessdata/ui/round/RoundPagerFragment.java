@@ -210,13 +210,14 @@ public class RoundPagerFragment extends Fragment {
         }
     }
 
-    private void timeToDecideHowManyRoundsToShow() {
+    protected void timeToDecideHowManyRoundsToShow() {
         String sectionNotRequired = "/" + Constants.ROUND_NUMBER + "/" + Constants.ROUND_PLAYERS;
         String roundsLoc = Constants.LOCATION_ROUND_PLAYERS
                 .replace(sectionNotRequired, "")
                 .replace(Constants.TOURNAMENT_KEY, mTournamentKey);
         DatabaseReference roundsRef = FirebaseDatabase.getInstance().getReference(roundsLoc);
-        roundsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        roundsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 long childrenCount = dataSnapshot.getChildrenCount();

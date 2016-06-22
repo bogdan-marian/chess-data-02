@@ -271,7 +271,8 @@ public class RoundStateFragment extends Fragment {
         }
         showGames();
 
-        RoundPagerFragment roundPagerFragment = (RoundPagerFragment) getParentFragment();
-        Log.d(tag,"What is the state?");
+
+        /*RoundPagerFragment roundPagerFragment =(RoundPagerFragment) getFragmentManager().findFragmentByTag("RoundPagerFragment");
+        roundPagerFragment.timeToDecideHowManyRoundsToShow();*/
     }
 }

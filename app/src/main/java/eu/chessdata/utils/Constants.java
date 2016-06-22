@@ -32,6 +32,7 @@ public class Constants {
     public static final String TOTAL_ROUNDS = "totalRounds";
     public static final String ROUND_NUMBER = "$roundNumber";
     public static final String ROUND_PLAYERS = "roundPlayers";
+    public static final String DATA_PLACEHOLDER = "dataPlaceHolder";
     public static final String TABLE_NUMBER = "$tableNumber";
     public static final String GAMES = "games";
     public static final String RESULT = "result";
@@ -69,6 +70,9 @@ public class Constants {
 
     //tournamentRounds/$tournamentKey/$roundNumber/roundPlayers
     public static final String LOCATION_ROUND_PLAYERS = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + ROUND_PLAYERS;
+
+    //tournamentRounds/$tournamentKey/$roundNumber/placeHolder
+    public static final String LOCATION_ROUND_DATA_PLACEHOLDER = TOURNAMENT_ROUNDS +"/"+TOURNAMENT_KEY+"/"+ROUND_NUMBER+"/"+DATA_PLACEHOLDER;
 
     /**
      * Constants for Firebase URL

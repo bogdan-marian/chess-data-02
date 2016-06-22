@@ -363,10 +363,10 @@ public class MainActivity extends AppCompatActivity
      * @param containerViewId
      * @param fragment
      */
-    private void runFragmentTransaction(int containerViewId, Fragment fragment){
+    private void runFragmentTransaction(int containerViewId, Fragment fragment, String fragmentTag){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(containerViewId,fragment);
-        transaction.addToBackStack(null);
+        transaction.replace(containerViewId,fragment,fragmentTag);
+        transaction.addToBackStack(fragmentTag);
         transaction.commit();
     }
 
@@ -425,7 +425,7 @@ public class MainActivity extends AppCompatActivity
             Bundle bundle = RoundPagerFragment.getBundle(tournamentKey, clubKey);
             RoundPagerFragment roundPagerFragment = new RoundPagerFragment();
             roundPagerFragment.setArguments(bundle);
-            runFragmentTransaction(R.id.fragment_container,roundPagerFragment);
+            runFragmentTransaction(R.id.fragment_container,roundPagerFragment,"RoundPagerFragment");
         }
     }
 }
