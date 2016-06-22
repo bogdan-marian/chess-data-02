@@ -50,8 +50,10 @@ public class RoundPlayersFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_round_players,container,false);
         setParameters();
+        View view = inflater.inflate(R.layout.fragment_round_players,container,false);
+        TextView textView = (TextView)view.findViewById(R.id.round_players_simple_header);
+        textView.setText("Round " + mRoundNumber+": players");
 
         String roundPlayersLoc = Constants.LOCATION_ROUND_PLAYERS
                 .replace(Constants.TOURNAMENT_KEY,mTournamentKey)

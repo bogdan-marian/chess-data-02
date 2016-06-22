@@ -275,4 +275,8 @@ public class RoundStateFragment extends Fragment {
         /*RoundPagerFragment roundPagerFragment =(RoundPagerFragment) getFragmentManager().findFragmentByTag("RoundPagerFragment");
         roundPagerFragment.timeToDecideHowManyRoundsToShow();*/
     }
+
+    protected void showNextRound(String tournamentKey, int totalRounds){
+        
+    }
 }

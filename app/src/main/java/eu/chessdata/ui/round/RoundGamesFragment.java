@@ -32,8 +32,6 @@ public class RoundGamesFragment extends Fragment {
     private String mClubKey;
     private int mRoundNumber;
 
-    private int mTotalRounds =1;
-    private int mRoundsWithData = 1;
     private boolean mShowMenu = false;
 
     private ListView mListView;
@@ -64,8 +62,11 @@ public class RoundGamesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        View view = inflater.inflate(R.layout.fragment_round_games, container, false);
         setParameters();
+        View view = inflater.inflate(R.layout.fragment_round_games, container, false);
+        TextView textView = (TextView)view.findViewById(R.id.round_games_simple_header);
+        textView.setText("Round "+mRoundNumber+": games");
+
 
         String roundGamesLoc = Constants.LOCATION_ROUND_GAMES
                 .replace(Constants.TOURNAMENT_KEY, mTournamentKey)
@@ -136,4 +137,6 @@ public class RoundGamesFragment extends Fragment {
             Log.d(tag,"Time to create menu");
         }
     }
+
+
 }

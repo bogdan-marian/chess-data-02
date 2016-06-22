@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Map;
 
 import eu.chessdata.R;
+import eu.chessdata.model.Game;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFabInterface;
@@ -86,8 +87,8 @@ public class RoundPagerFragment extends Fragment {
     }
 
     protected void addPage(int mRoundNumber) {
-        if (mRoundNumber >= mRoundsWithData){
-            if (mRoundsWithData < mTotalRounds){
+        if (mRoundNumber >= mRoundsWithData) {
+            if (mRoundsWithData < mTotalRounds) {
                 mRoundsWithData++;
                 mSectionPagerAdapter.notifyDataSetChanged();
             }
@@ -135,11 +136,11 @@ public class RoundPagerFragment extends Fragment {
         stateFragment.configureFab();
     }
 
-    public void redrawMenu(){
-        if (    mTotalRounds > 1
+    public void redrawMenu() {
+        if (mTotalRounds > 1
                 && mRoundsWithData < mTotalRounds
-                && mRoundsWithData == mViewPager.getCurrentItem() + 1){
-            Log.d(tag,"I should redraw the menu");
+                && mRoundsWithData == mViewPager.getCurrentItem() + 1) {
+            Log.d(tag, "I should redraw the menu");
         }
     }
 
@@ -224,8 +225,30 @@ public class RoundPagerFragment extends Fragment {
                 String value = String.valueOf(childrenCount);
                 Integer count = Integer.valueOf(value);
                 mRoundsWithData = count;
-                if (mRoundsWithData <= mTotalRounds){
+                if (mRoundsWithData <= mTotalRounds) {
                     mSectionPagerAdapter.notifyDataSetChanged();
+                }
+                //get the last games
+                DataSnapshot lastGames = dataSnapshot.child(String.valueOf(count)).child(Constants.GAMES);
+                if (lastGames != null && mRoundsWithData < mTotalRounds) {
+                    boolean appendDummyData = true;
+                    /**
+                     * iterate over games and if any results are 0 (not decided)
+                     * then break the loop and set
+                     * appendDummyData = false;
+                     */
+                    for (DataSnapshot item: lastGames.getChildren()){
+                        Game game = item.getValue(Game.class);
+                        if (game.getResult()==0){
+                            appendDummyData = false;
+                            break;
+                        }
+                    }
+                    if(appendDummyData){
+                        mRoundsWithData++;
+                        mSectionPagerAdapter.notifyDataSetChanged();
+                        Log.d(tag,"Dummy data was created for round: " + mRoundsWithData);
+                    }
                 }
             }
 
