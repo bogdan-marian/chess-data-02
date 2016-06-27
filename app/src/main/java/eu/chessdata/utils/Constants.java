@@ -89,4 +89,5 @@ public class Constants {
      */
     public static final String LOG_TAG = "my-debug";
 
+    public static final java.lang.String IS_ADMIN = "isAdmin" ;
 }

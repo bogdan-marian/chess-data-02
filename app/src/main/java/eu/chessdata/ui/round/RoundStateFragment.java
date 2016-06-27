@@ -270,13 +270,17 @@ public class RoundStateFragment extends Fragment {
             gameRef.setValue(gameItem);
         }
         showGames();
-
-
-        /*RoundPagerFragment roundPagerFragment =(RoundPagerFragment) getFragmentManager().findFragmentByTag("RoundPagerFragment");
-        roundPagerFragment.timeToDecideHowManyRoundsToShow();*/
     }
 
-    protected void showNextRound(String tournamentKey, int totalRounds){
-        
+    private class ConfigureFabAndMenuTask extends AsyncTask<Bundle,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Bundle... params) {
+            Bundle bundle = params[0];
+            boolean isAdmin = bundle.getBoolean(Constants.IS_ADMIN);
+            Log.d(tag,"Time to ConfigureFabAndMenuTask");
+            return null;
+        }
     }
+
 }

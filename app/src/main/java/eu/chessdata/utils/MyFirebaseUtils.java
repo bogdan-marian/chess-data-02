@@ -1,5 +1,7 @@
 package eu.chessdata.utils;
 
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -161,6 +163,11 @@ public class MyFirebaseUtils {
 
             }
         });
+
+    }
+
+    public static void isCurrentUserAdmin(AsyncTask<Bundle,Void,Void> isAdminTask){
+        Bundle bundle = new Bundle();
 
     }
 }
