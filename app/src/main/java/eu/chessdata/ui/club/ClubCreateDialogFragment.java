@@ -92,10 +92,10 @@ public class ClubCreateDialogFragment extends DialogFragment {
         managersRef.setValue(clubManager);
 
         //add to my_clubs club
-        String managedClubsLocation = Constants.LOCATION_MY_CLUB
+        String myClubLocation = Constants.LOCATION_MY_CLUB
                 .replace(Constants.USER_KEY, uid)
                 .replace(Constants.CLUB_KEY, clubId);
-        DatabaseReference myClubsRef = database.getReference(managedClubsLocation);
+        DatabaseReference myClubsRef = database.getReference(myClubLocation);
         myClubsRef.setValue(club);
 
         //settings set defaultClub key;

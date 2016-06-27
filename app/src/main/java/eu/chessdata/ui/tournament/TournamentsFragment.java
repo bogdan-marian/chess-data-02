@@ -18,6 +18,7 @@ import com.google.firebase.database.Query;
 import eu.chessdata.R;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyFabInterface;
 
 /**
  * Created by Bogdan Oloeriu on 6/1/2016.
@@ -53,6 +54,7 @@ public class TournamentsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_tournaments, container, false);
+        ((MyFabInterface)getActivity()).disableFab();
 
         //firebase reference
         String locTournaments = Constants.LOCATION_TOURNAMENTS
