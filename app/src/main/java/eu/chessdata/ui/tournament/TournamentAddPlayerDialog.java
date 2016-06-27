@@ -39,10 +39,10 @@ public class TournamentAddPlayerDialog extends DialogFragment {
 
     private View mView;
 
-    ArrayList<Player> mPlayers;
-    Map<String,Player> mPlayersMap;
+    private ArrayList<Player> mPlayers;
+    private Map<String,Player> mPlayersMap;
 
-    PlayerAdapter mPlayerAdapter;
+    private PlayerAdapter mPlayerAdapter;
 
     public static TournamentAddPlayerDialog newInstance(String tournamentKey, String clubKey) {
         TournamentAddPlayerDialog fragment = new TournamentAddPlayerDialog();
