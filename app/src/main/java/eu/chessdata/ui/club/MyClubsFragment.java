@@ -25,6 +25,7 @@ import eu.chessdata.R;
 import eu.chessdata.model.Club;
 import eu.chessdata.model.DefaultClub;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyFabInterface;
 import eu.chessdata.utils.MyFirebaseUtils;
 
 /**
@@ -107,6 +108,7 @@ public class MyClubsFragment extends Fragment {
                 return true;
             }
         });
+        configureFab();
         return mView;
     }
 
@@ -116,5 +118,16 @@ public class MyClubsFragment extends Fragment {
         if (mAdapter != null) {
             mAdapter.cleanup();
         }
+    }
+
+    private void configureFab(){
+        MyFabInterface myFabInterface = (MyFabInterface) getActivity();
+        myFabInterface.enableFab(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClubAddExistingDialog clubAddExistingDialog = new ClubAddExistingDialog();
+                clubAddExistingDialog.show(getActivity().getSupportFragmentManager(),"ClubAddExistingDialog");
+            }
+        });
     }
 }

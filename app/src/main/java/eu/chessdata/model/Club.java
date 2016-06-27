@@ -2,6 +2,7 @@ package eu.chessdata.model;
 
 import com.firebase.client.ServerValue;
 
+import java.text.Collator;
 import java.util.HashMap;
 
 import eu.chessdata.utils.Constants;
@@ -9,7 +10,7 @@ import eu.chessdata.utils.Constants;
 /**
  * Created by Bogdan Oloeriu on 5/25/2016.
  */
-public class Club {
+public class Club implements Comparable<Club>{
     private String name;
     private String shortName;
     private String email;
@@ -38,6 +39,21 @@ public class Club {
         this.dateCreated = timeStamp;
         this.updateStamp = timeStamp;
     }
+
+    public long dateCreatedGetLong(){
+        return (long) dateCreated.get(Constants.FIREBASE_PROPERTY_TIMESTAMP);
+    }
+    public String valMapKey(){
+        return this.getName()+dateCreatedGetLong();
+    }
+
+    @Override
+    public int compareTo(Club another) {
+        Collator defaultCollator = Collator.getInstance();
+        return defaultCollator.compare(this.getName(), another.getName());
+    }
+
+    //
 
     public String getName() {
         return name;
@@ -110,4 +126,6 @@ public class Club {
     public void setUpdateStamp(HashMap<String, Object> updateStamp) {
         this.updateStamp = updateStamp;
     }
+
+
 }

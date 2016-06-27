@@ -74,4 +74,5 @@ public class Tournament {
     public long dateCreatedGetLong(){
         return (long) dateCreated.get(Constants.FIREBASE_PROPERTY_TIMESTAMP);
     }
+
 }
