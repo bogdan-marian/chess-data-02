@@ -40,7 +40,9 @@ public class Constants {
     public static final String BLACK_PLAYER_NAME = "blackPlayerName";
     public static final String NO_PARTNER = "noPartner";
     public static final String CURRENT_RESULT = "currentResult";
-    public static final String PREVENT_UPDATE_RESULT = "preventUpdateResult";
+    public static final String GLOBAL_FOLLOWERS = "globalFollowers";
+    public static final String BY_PLAYER = "byPlayer";
+    public static final String FOLLOWED_PLAYERS = "followedPlayers";
 
 
     //clubManagers/$clubKey/$managerKey
@@ -49,6 +51,8 @@ public class Constants {
     //userSettings/$userKey/myClubs
     public static final String LOCATION_MY_CLUBS = USER_SETTINGS + "/" + USER_KEY + "/" + MY_CLUBS;
     public static final String LOCATION_MY_CLUB = LOCATION_MY_CLUBS + "/" + CLUB_KEY;
+
+    public static final String LOCATION_MY_FOLLOWED_PLAYERS = USER_SETTINGS + "/" + USER_KEY + "/" + FOLLOWED_PLAYERS;
     public static final String LOCATION_DEFAULT_CLUB = USER_SETTINGS + "/" + USER_KEY + "/" + DEFAULT_CLUB;
 
     //tournaments/$clubKey
@@ -71,8 +75,8 @@ public class Constants {
     //tournamentRounds/$tournamentKey/$roundNumber/roundPlayers
     public static final String LOCATION_ROUND_PLAYERS = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + ROUND_PLAYERS;
 
-    //tournamentRounds/$tournamentKey/$roundNumber/placeHolder
-    public static final String LOCATION_ROUND_DATA_PLACEHOLDER = TOURNAMENT_ROUNDS +"/"+TOURNAMENT_KEY+"/"+ROUND_NUMBER+"/"+DATA_PLACEHOLDER;
+    //globalFollowers/byPlayer/$playerKey/$userKey
+    public static final String LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER = GLOBAL_FOLLOWERS + "/" + BY_PLAYER + "/" + PLAYER_KEY + "/" + USER_KEY;
 
     /**
      * Constants for Firebase URL
@@ -89,5 +93,5 @@ public class Constants {
      */
     public static final String LOG_TAG = "my-debug";
 
-    public static final java.lang.String IS_ADMIN = "isAdmin" ;
+    public static final java.lang.String IS_ADMIN = "isAdmin";
 }

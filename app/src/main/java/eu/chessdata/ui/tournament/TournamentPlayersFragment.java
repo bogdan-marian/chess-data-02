@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -51,6 +52,14 @@ public class TournamentPlayersFragment extends Fragment {
             }
         };
         mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Player player = mAdapter.getItem(position);
+                FollowPlayerDialog followPlayerDialog = FollowPlayerDialog.newInstance(player);
+                followPlayerDialog.show(getActivity().getSupportFragmentManager(),"FollowPlayerDialog");
+            }
+        });
         return mView;
     }
 }
