@@ -26,11 +26,13 @@ import eu.chessdata.model.Game;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFabInterface;
+import eu.chessdata.utils.MyFirebaseUtils;
 
 /**
  * Created by Bogdan Oloeriu on 6/12/2016.
  */
-public class RoundPagerFragment extends Fragment {
+public class RoundPagerFragment extends Fragment
+        implements MyFirebaseUtils.OnUserIsAdmin {
     private final String tag = Constants.LOG_TAG;
 
     private ViewPager mViewPager;
@@ -40,6 +42,8 @@ public class RoundPagerFragment extends Fragment {
     private String mClubKey;
     private Map<String, RoundStateFragment> mStateFragmentMap = new ArrayMap<>();
     private SectionPagerAdapter mSectionPagerAdapter;
+    private boolean mUserIsAdmin = false;
+    private boolean roundZero = false;
 
     public static Bundle getBundle(String tournamentKey, String clubKey) {
         Bundle bundle = new Bundle();
@@ -83,15 +87,32 @@ public class RoundPagerFragment extends Fragment {
         mViewPager.addOnPageChangeListener(onPageChangeListener);
         setRound1Fab();
         (new ExtractTournamentData()).execute();
+        MyFirebaseUtils.isCurrentUserAdmin(mClubKey, this);
         return fragmentView;
     }
 
-    protected void addPage(int mRoundNumber) {
+    /*protected void addPage(int mRoundNumber) {
         if (mRoundNumber >= mRoundsWithData) {
             if (mRoundsWithData < mTotalRounds) {
                 mRoundsWithData++;
                 mSectionPagerAdapter.notifyDataSetChanged();
             }
+        }
+    }*/
+
+    @Override
+    public void onUserIsAdmin(boolean isAdmin) {
+        mUserIsAdmin = isAdmin;
+        if (mUserIsAdmin && roundZero){
+            MyFabInterface myFabInterface = (MyFabInterface)getActivity();
+            myFabInterface.enableFab(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, 1);
+                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
+                }
+            });
+            roundZero = false;
         }
     }
 
@@ -130,10 +151,12 @@ public class RoundPagerFragment extends Fragment {
      * it is very important that the round state that sets the fab;
      */
     public void configureFab() {
-        int round = mViewPager.getCurrentItem() + 1;
-        String tag = getTag(round);
-        RoundStateFragment stateFragment = mStateFragmentMap.get(tag);
-        stateFragment.configureFab();
+        if (mUserIsAdmin) {
+            int round = mViewPager.getCurrentItem() + 1;
+            String tag = getTag(round);
+            RoundStateFragment stateFragment = mStateFragmentMap.get(tag);
+            stateFragment.configureFab();
+        }
     }
 
 
@@ -157,13 +180,8 @@ public class RoundPagerFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
                     //create and activate fab listener and show add players
-                    myFabInterface.enableFab(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, 1);
-                            roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
-                        }
-                    });
+                    roundZero = true;
+                    MyFirebaseUtils.isCurrentUserAdmin(mClubKey,getOnUserIsAdmin());
                 }
             }
 
@@ -218,7 +236,7 @@ public class RoundPagerFragment extends Fragment {
                 String sRoundsWithData = String.valueOf(childrenCount);
                 Integer count = Integer.valueOf(sRoundsWithData);
                 //mRoundsWithData = count;
-                if (mRoundsWithData == mTotalRounds){
+                if (mRoundsWithData == mTotalRounds) {
                     return;
                 }
                 if (mRoundsWithData < count && mRoundsWithData < mTotalRounds) {
@@ -226,11 +244,11 @@ public class RoundPagerFragment extends Fragment {
                     mSectionPagerAdapter.notifyDataSetChanged();
                 }
                 //<get the last games>
-                if (!dataSnapshot.hasChild(sRoundsWithData)){
+                if (!dataSnapshot.hasChild(sRoundsWithData)) {
                     return;
                 }
                 DataSnapshot vipRound = dataSnapshot.child(sRoundsWithData);
-                if (!vipRound.hasChild(Constants.GAMES)){
+                if (!vipRound.hasChild(Constants.GAMES)) {
                     return;
                 }
                 DataSnapshot vipGames = vipRound.child(Constants.GAMES);
@@ -244,17 +262,17 @@ public class RoundPagerFragment extends Fragment {
                      * then break the loop and set
                      * incrementRoundsWithData = false;
                      */
-                    for (DataSnapshot item: vipGames.getChildren()){
+                    for (DataSnapshot item : vipGames.getChildren()) {
                         Game game = item.getValue(Game.class);
-                        if (game.getResult()==0){
+                        if (game.getResult() == 0) {
                             incrementRoundsWithData = false;
                             break;
                         }
                     }
-                    if(incrementRoundsWithData){
+                    if (incrementRoundsWithData) {
                         mRoundsWithData++;
                         mSectionPagerAdapter.notifyDataSetChanged();
-                        Log.d(tag,"Incremented mRoundsWithData to : " + mRoundsWithData);
+                        Log.d(tag, "Incremented mRoundsWithData to : " + mRoundsWithData);
                     }
                 }
             }
@@ -264,5 +282,9 @@ public class RoundPagerFragment extends Fragment {
                 Log.e(tag, "Database error: " + databaseError.getMessage());
             }
         });
+    }
+
+    private MyFirebaseUtils.OnUserIsAdmin getOnUserIsAdmin(){
+        return this;
     }
 }

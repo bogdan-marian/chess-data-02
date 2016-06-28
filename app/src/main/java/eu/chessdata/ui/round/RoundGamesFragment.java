@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -21,11 +22,13 @@ import eu.chessdata.R;
 import eu.chessdata.model.Game;
 import eu.chessdata.model.Player;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyFirebaseUtils;
 
 /**
  * Created by Bogdan Oloeriu on 6/19/2016.
  */
-public class RoundGamesFragment extends Fragment {
+public class RoundGamesFragment extends Fragment
+    implements MyFirebaseUtils.OnUserIsAdmin{
     private String tag = Constants.LOG_TAG;
 
     private String mTournamentKey;
@@ -37,6 +40,8 @@ public class RoundGamesFragment extends Fragment {
     private ListView mListView;
     private DatabaseReference mReference;
     private FirebaseListAdapter<Game> mAdapter;
+    private boolean mIsAdmin = false;
+
 
     private static Bundle getBundle(String tournamentKey, int roundNumber, String clubKey) {
         Bundle bundle = new Bundle();
@@ -61,8 +66,10 @@ public class RoundGamesFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
         setParameters();
+        MyFirebaseUtils.isCurrentUserAdmin(mClubKey,this);
+        setHasOptionsMenu(true);
+
         View view = inflater.inflate(R.layout.fragment_round_games, container, false);
         TextView textView = (TextView)view.findViewById(R.id.round_games_simple_header);
         textView.setText("Round "+mRoundNumber+": games");
@@ -109,9 +116,14 @@ public class RoundGamesFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Game game = mAdapter.getItem(position);
+                if (mIsAdmin){
+                    GameSetResultDialog gameSetResultDialog = GameSetResultDialog.newInstance(mTournamentKey, mRoundNumber, game);
+                    gameSetResultDialog.show(getActivity().getSupportFragmentManager(), "gameSetResultDialog");
+                }else {
+                    Toast.makeText(getContext(), "You are not authorized to update the result", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                GameSetResultDialog gameSetResultDialog = GameSetResultDialog.newInstance(mTournamentKey, mRoundNumber, game);
-                gameSetResultDialog.show(getActivity().getSupportFragmentManager(), "gameSetResultDialog");
             }
         });
         //on long click wee override update protection
@@ -138,5 +150,8 @@ public class RoundGamesFragment extends Fragment {
         }
     }
 
-
+    @Override
+    public void onUserIsAdmin(boolean isAdmin) {
+        mIsAdmin = isAdmin;
+    }
 }

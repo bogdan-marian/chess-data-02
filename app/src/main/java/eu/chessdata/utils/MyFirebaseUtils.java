@@ -1,7 +1,5 @@
 package eu.chessdata.utils;
 
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,7 +28,11 @@ public class MyFirebaseUtils {
 
         public void onClubValue(DefaultClub defaultClub);
 
-        public void onUserIsClubManager(Map<String,String> dataMap, MainActivity.ACTION action);
+        public void onUserIsClubManager(Map<String, String> dataMap, MainActivity.ACTION action);
+    }
+
+    public interface OnUserIsAdmin {
+        public void onUserIsAdmin(boolean isAdmin);
     }
 
     public static void setDefaultClub(DefaultClub defaultManagedClub) {
@@ -68,32 +70,33 @@ public class MyFirebaseUtils {
     /**
      * Identifies if current user is manager for a specific club by clubKey and then notifies the
      * registered listener only for positive results.
+     *
      * @param listener
      * @param action
      */
-    public static void isManagerForClubKey(final String clubKey, final OnOneTimeResultsListener listener, final MainActivity.ACTION action){
+    public static void isManagerForClubKey(final String clubKey, final OnOneTimeResultsListener listener, final MainActivity.ACTION action) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final  String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String managerLoc = Constants.LOCATION_CLUB_MANAGERS
-                .replace(Constants.CLUB_KEY,clubKey)
-                .replace(Constants.MANAGER_KEY,uid);
+                .replace(Constants.CLUB_KEY, clubKey)
+                .replace(Constants.MANAGER_KEY, uid);
         DatabaseReference managerRef = database.getReference(managerLoc);
         managerRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User manager = dataSnapshot.getValue(User.class);
-                if (manager != null){
+                if (manager != null) {
                     DefaultClub defaultClub = new DefaultClub();
                     defaultClub.setClubKey(clubKey);
-                    Map<String,String> values = new HashMap<String, String>();
+                    Map<String, String> values = new HashMap<String, String>();
                     values.put(Constants.CLUB_KEY, clubKey);
-                    listener.onUserIsClubManager(values,action);
+                    listener.onUserIsClubManager(values, action);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(tag,"databaseError: " + databaseError.getMessage());
+                Log.e(tag, "databaseError: " + databaseError.getMessage());
             }
         });
     }
@@ -120,9 +123,9 @@ public class MyFirebaseUtils {
                             User manager = dataSnapshot.getValue(User.class);
                             if (manager != null) {
                                 String clubKey = defaultClub.getClubKey();
-                                Map<String,String> values = new HashMap<String, String>();
-                                values.put(Constants.CLUB_KEY,clubKey);
-                                listener.onUserIsClubManager(values,action);
+                                Map<String, String> values = new HashMap<String, String>();
+                                values.put(Constants.CLUB_KEY, clubKey);
+                                listener.onUserIsClubManager(values, action);
                             }
                         }
 
@@ -166,8 +169,29 @@ public class MyFirebaseUtils {
 
     }
 
-    public static void isCurrentUserAdmin(AsyncTask<Bundle,Void,Void> isAdminTask){
-        Bundle bundle = new Bundle();
 
+    public static void isCurrentUserAdmin(String clubKey, final OnUserIsAdmin onUserIsAdmin) {
+        Log.d(tag, "Tome to implement MyFirebaseUtils.isCurrentUserAdmin");
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String clubManagerLoc = Constants.LOCATION_CLUB_MANAGERS
+                .replace(Constants.CLUB_KEY, clubKey)
+                .replace(Constants.MANAGER_KEY, uid);
+        DatabaseReference managerRef = FirebaseDatabase.getInstance().getReference(clubManagerLoc);
+        managerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean manager = false;
+                if (dataSnapshot.getValue() != null) {
+                    manager = true;
+                }
+                onUserIsAdmin.onUserIsAdmin(manager);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, databaseError.getMessage());
+                onUserIsAdmin.onUserIsAdmin(false);
+            }
+        });
     }
 }
