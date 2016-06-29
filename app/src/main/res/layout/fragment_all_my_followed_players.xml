@@ -3,8 +3,8 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <ListView
+        android:id="@+id/list_view_followed_players"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:text="All my followed players"/>
+        android:layout_height="match_parent"></ListView>
 </LinearLayout>

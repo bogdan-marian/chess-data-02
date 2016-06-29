@@ -18,6 +18,11 @@
             android:id="@+id/nav_clubs"
             android:icon="@drawable/ic_menu_clubs"
             android:title="My Clubs" />
+        <item
+            android:id="@+id/nav_followed_players"
+            android:icon="@drawable/ic_menu_members"
+            android:title="Followed players"/>
+
 
     </group>
 

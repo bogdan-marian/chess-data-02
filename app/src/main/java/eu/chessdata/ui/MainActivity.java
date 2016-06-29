@@ -44,6 +44,7 @@ import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
 import eu.chessdata.ui.tournament.TournamentDetailsFragment;
 import eu.chessdata.ui.tournament.TournamentPlayersFragment;
 import eu.chessdata.ui.tournament.TournamentsFragment;
+import eu.chessdata.ui.userspecific.AllMyFollowedPlayersFragment;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFabInterface;
 import eu.chessdata.utils.MyFirebaseUtils;
@@ -220,6 +221,14 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_members) {
             MyFirebaseUtils.getDefaultClub(this, ACTION.SHOW_PLAYERS);
             MyFirebaseUtils.isManagerForDefaultClub(this, ACTION.SHOW_PLAYERS);
+        } else if (id == R.id.nav_followed_players){
+            AllMyFollowedPlayersFragment allMyFollowedPlayersFragment = new AllMyFollowedPlayersFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container,allMyFollowedPlayersFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+            disableFab();
+            getSupportActionBar().setTitle("Followed players");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
