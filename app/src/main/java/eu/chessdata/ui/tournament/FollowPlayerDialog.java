@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import eu.chessdata.model.Player;
 import eu.chessdata.utils.Constants;
@@ -38,9 +41,20 @@ public class FollowPlayerDialog extends DialogFragment{
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.d(tag,"Time to implement follow "+ mPlayerToFollow.getName());
+                persistNewPlayerToFollow();
             }
         });
         return builder.create();
+    }
+
+    public void persistNewPlayerToFollow(){
+        String userKey = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String followLoc = Constants.LOCATION_MY_FOLLOWED_PLAYERS_BY_PLAYER
+                .replace(Constants.USER_KEY,userKey)
+                .replace(Constants.PLAYER_KEY, mPlayerToFollow.getPlayerKey());
+        DatabaseReference followRef = FirebaseDatabase.getInstance().getReference(followLoc);
+        followRef.setValue(mPlayerToFollow);
+        //dismiss the dialog
+        dismiss();
     }
 }
