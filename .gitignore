@@ -1,4 +1,5 @@
 *.iml
+*.jar
 .gradle
 .idea
 /local.properties
@@ -6,3 +7,5 @@
 /build
 /captures
 .idea/.name
+backend/build/
+backend/src/main/resources/serviceAccountCredentials.json
