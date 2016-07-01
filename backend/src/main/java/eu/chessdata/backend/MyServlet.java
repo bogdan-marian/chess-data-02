@@ -6,7 +6,12 @@
 
 package eu.chessdata.backend;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Scanner;
+
 import javax.servlet.http.*;
 
 public class MyServlet extends HttpServlet {
@@ -14,7 +19,8 @@ public class MyServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         resp.setContentType("text/plain");
-        resp.getWriter().println("Please use the form to POST to this url");
+
+        resp.getWriter().println(getFileContent());
     }
 
     @Override
@@ -26,5 +32,24 @@ public class MyServlet extends HttpServlet {
             resp.getWriter().println("Please enter a name");
         }
         resp.getWriter().println("Hello " + name);
+    }
+
+    private String getFileContent(){
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("simpleFile.txt").getFile());
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            StringBuffer sb = new StringBuffer();
+            int content;
+            while ((content = fileInputStream.read())!=-1){
+                sb.append((char)content);
+            }
+            return sb.toString();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        throw new IllegalStateException("Should not be able to reach this point");//return "No content yet:";
     }
 }

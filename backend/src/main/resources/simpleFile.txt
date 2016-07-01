@@ -1,0 +1,2 @@
+This is just a simple file. I created this file in order to see if I can read files from the
+resources folder from google app engine containers
