@@ -4,5 +4,6 @@
 /local.properties
 .DS_Store
 /build
+/backend/build/
 /captures
 .idea/.name
