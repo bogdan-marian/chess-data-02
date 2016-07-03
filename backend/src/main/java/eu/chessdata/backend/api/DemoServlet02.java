@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 public class DemoServlet02 extends HttpServlet{
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        resp.setContentType("text/plain");
+        resp.getWriter().println("Debug message from: DemoServlet02");
     }
 }
