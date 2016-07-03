@@ -4,7 +4,7 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/HelloWorld
 */
 
-package eu.chessdata.backend;
+package eu.chessdata.backend.api;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -22,7 +22,7 @@ import javax.servlet.http.*;
 import eu.chessdata.backend.model.User;
 import eu.chessdata.backend.utils.Constants;
 
-public class MyServlet extends HttpServlet {
+public class DemoServlet01 extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
