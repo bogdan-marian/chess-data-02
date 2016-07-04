@@ -7,3 +7,5 @@
 /backend/build/
 /captures
 .idea/.name
+
+backend/src/main/resources/serviceAccountCredentials.json

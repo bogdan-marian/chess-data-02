@@ -21,6 +21,12 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
+    }
 }
 
 dependencies {
@@ -36,5 +42,7 @@ dependencies {
     compile 'com.firebaseui:firebase-ui-database:0.4.0'
     compile 'com.firebaseui:firebase-ui-auth:0.4.0'
 }
+
+
 
 apply plugin: 'com.google.gms.google-services'

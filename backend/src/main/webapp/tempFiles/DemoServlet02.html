@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.0.0.js"></script>
+</head>
+
+<body>
+    <h1>Hello DemoServlet02</h1>
+
+    <!-- action="/api/DemoServlet02" method="post" -->
+    <form id="myForm">
+        First name:
+        <input type="text" name="firstName">
+        <br> Last name:
+        <input type="text" name="lastName">
+        <br>
+        <button onclick="submitJson()">Submit json</button>
+    </form>
+
+    <script>
+        function submitJson() {
+            var frm = $("#myForm");
+            var dat = JSON.stringify(frm.serializeArray());
+
+            var jsonText = '{"name":"Lacra", "email":"lacra@email.com"}'
+
+            alert("I'm about to post this:\n\n" + jsonText);
+            
+            $.post(
+                "/api/DemoServlet02",
+                jsonText,
+                function(data, status){
+                    alert("Data: " + data+"\nStatus: " + status);
+                }
+            );
+        }
+
+    </script>
+
+</body>
+
+</html>
