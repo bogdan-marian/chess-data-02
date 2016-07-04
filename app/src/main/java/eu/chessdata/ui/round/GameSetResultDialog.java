@@ -1,6 +1,7 @@
 package eu.chessdata.ui.round;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import eu.chessdata.model.Game;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyCloudService;
 
 /**
  * Created by Bogdan Oloeriu on 6/20/2016.
@@ -28,6 +30,7 @@ public class GameSetResultDialog extends DialogFragment {
     private boolean mNoPartner = true;
     private int mCurrentResult;
     private boolean mPreventUpdateResult = true;
+    private Context mContext;
 
     private static Bundle getBundle(String tournamentKey, int roundNumber, Game game) {
         Bundle bundle = new Bundle();
@@ -71,6 +74,7 @@ public class GameSetResultDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mContext = getContext();
         setParameters();
         if (mNoPartner) {
             dismiss();
@@ -113,6 +117,13 @@ public class GameSetResultDialog extends DialogFragment {
                     .replace(Constants.TABLE_NUMBER, String.valueOf(mTableNumber));
             DatabaseReference resultRef = FirebaseDatabase.getInstance().getReference(resultLoc);
             resultRef.setValue(result);
+
+            //notify the backend
+            String gameLoc = Constants.LOCATION_GAME
+                    .replace(Constants.TOURNAMENT_KEY,mTournamentKey)
+                    .replace(Constants.ROUND_NUMBER,String.valueOf(mRoundNumber))
+                    .replace(Constants.TABLE_NUMBER,String.valueOf(mTableNumber));
+            MyCloudService.startActionGameResultUpdated(mContext,gameLoc);
             return null;
         }
 

@@ -55,7 +55,7 @@ public class Constants {
     //userSettings/$userKey/followedPlayers/
     public static final String LOCATION_MY_FOLLOWED_PLAYERS = USER_SETTINGS + "/" + USER_KEY + "/" + FOLLOWED_PLAYERS;
     //userSettings/$userKey/followedPlayers/byPlayer/$playerKey
-    public static final String LOCATION_MY_FOLLOWED_PLAYERS_BY_PLAYER = LOCATION_MY_FOLLOWED_PLAYERS + "/" + BY_PLAYER +"/"+ PLAYER_KEY;
+    public static final String LOCATION_MY_FOLLOWED_PLAYERS_BY_PLAYER = LOCATION_MY_FOLLOWED_PLAYERS + "/" + BY_PLAYER + "/" + PLAYER_KEY;
 
     public static final String LOCATION_DEFAULT_CLUB = USER_SETTINGS + "/" + USER_KEY + "/" + DEFAULT_CLUB;
 
@@ -72,6 +72,8 @@ public class Constants {
 
     //tournamentRounds/$tournamentKey/$roundNumber/games
     public static final String LOCATION_ROUND_GAMES = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + GAMES;
+    //tournamentRounds/$tournamentKey/$roundNumber/games/$tableNumber
+    public static final String LOCATION_GAME = LOCATION_ROUND_GAMES + "/" + TABLE_NUMBER;
 
     //tournamentRounds/$tournamentKey/$roundNumber/games/$tableNumber/result
     public static final String LOCATION_GAME_RESULT = LOCATION_ROUND_GAMES + "/" + TABLE_NUMBER + "/" + RESULT;
