@@ -123,6 +123,7 @@ public class GameSetResultDialog extends DialogFragment {
                     .replace(Constants.TOURNAMENT_KEY,mTournamentKey)
                     .replace(Constants.ROUND_NUMBER,String.valueOf(mRoundNumber))
                     .replace(Constants.TABLE_NUMBER,String.valueOf(mTableNumber));
+
             MyCloudService.startActionGameResultUpdated(mContext,gameLoc);
             return null;
         }

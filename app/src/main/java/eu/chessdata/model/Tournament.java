@@ -20,6 +20,7 @@ public class Tournament {
     private HashMap<String, Object> updateStamp;
     private long reversedDateCreated;
 
+
     public Tournament(){}
 
     public Tournament(String name, String description, String location, int totalRounds, int firstTableNumber){
@@ -74,5 +75,6 @@ public class Tournament {
     public long dateCreatedGetLong(){
         return (long) dateCreated.get(Constants.FIREBASE_PROPERTY_TIMESTAMP);
     }
+
 
 }

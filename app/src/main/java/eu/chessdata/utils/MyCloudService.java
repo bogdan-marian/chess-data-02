@@ -54,8 +54,8 @@ public class MyCloudService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_GAME_RESULT_UPDATED.equals(action)) {
-                final String gameJson = intent.getStringExtra(EXTRA_GAME_LOCATION);
-                handleActionGameResultUpdated(gameJson);
+                final String gameLocation = intent.getStringExtra(EXTRA_GAME_LOCATION);
+                handleActionGameResultUpdated(gameLocation);
             } else if (ACTION_BAZ.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_GAME_LOCATION);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
