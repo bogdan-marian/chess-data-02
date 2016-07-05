@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -91,18 +93,17 @@ public class MyCloudService extends IntentService {
             connection.setRequestMethod("POST");
 
             //create gson
-            JSONObject content = new JSONObject();
-            content.put("gameLocation",gameLocation);
-            String contentString = content.toString();
-            Log.d(tag,"gameLocation: " + gameLocation);
-            Log.d(tag,"contentString: " + contentString);
+            MyPayLoad myPayLoad = new MyPayLoad();
+            myPayLoad.setEvent(MyPayLoad.Event.GAME_RESULT_UPDATED);
+            myPayLoad.setGameLocation(gameLocation);
+            Gson gson = new Gson();
+            String jsonMyPayLoad = gson.toJson(myPayLoad);
 
-            //create gson
 
 
             //send the data
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
-            outputStreamWriter.write(contentString);
+            outputStreamWriter.write(jsonMyPayLoad);
             outputStreamWriter.flush();
 
             //show the response
