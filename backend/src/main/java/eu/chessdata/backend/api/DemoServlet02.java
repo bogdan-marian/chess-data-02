@@ -40,6 +40,5 @@ public class DemoServlet02 extends HttpServlet{
         user1.setEmail("bogdan@mail.com");
         String json2 = gson.toJson(user1);
         System.out.println("New json: " + json2);
-
     }
 }

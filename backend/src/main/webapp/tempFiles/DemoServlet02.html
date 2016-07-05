@@ -17,21 +17,36 @@
         <br>
         <button onclick="submitJson()">Submit json</button>
     </form>
+    <br/>
+    <button onClick="submit2ToBasicApi()">Submit 2 to BasicApi</button>
 
     <script>
         function submitJson() {
             var frm = $("#myForm");
             var dat = JSON.stringify(frm.serializeArray());
 
-            var jsonText = '{"name":"Lacra", "email":"lacra@email.com"}'
+            var jsonText = '{"name":"Lacra", "email":"lacra@email.com"}';
 
             alert("I'm about to post this:\n\n" + jsonText);
-            
+
             $.post(
                 "/api/DemoServlet02",
                 jsonText,
-                function(data, status){
-                    alert("Data: " + data+"\nStatus: " + status);
+                function(data, status) {
+                    alert("Data: " + data + "\nStatus: " + status);
+                }
+            );
+        }
+
+        function submit2ToBasicApi() {
+            var jsonText = 'Some content that is not yet json';
+
+            alert('I will post this: ' + jsonText);
+            $.post(
+                '/api/BasicApi',
+                jsonText,
+                function(data,status){
+                    alert('Data: ' + data + "\nStatus: " + status);
                 }
             );
         }

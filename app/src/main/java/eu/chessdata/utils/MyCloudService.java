@@ -5,6 +5,18 @@ import android.content.Intent;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import eu.chessdata.model.MyPayLoad;
+
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
@@ -68,7 +80,47 @@ public class MyCloudService extends IntentService {
      * Notifies the backend that a specific game has bean updated
      */
     private void handleActionGameResultUpdated(String gameLocation) {
-        Log.d(tag,"please implement handleActionGameResultUpdated, gameLocation = " + gameLocation);
+        String url = "https://chess-data.appspot.com/api/BasicApi";
+        try {
+            URL object = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection)object.openConnection();
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestMethod("POST");
+
+            //create gson
+            JSONObject content = new JSONObject();
+            content.put("gameLocation",gameLocation);
+            String contentString = content.toString();
+            Log.d(tag,"gameLocation: " + gameLocation);
+            Log.d(tag,"contentString: " + contentString);
+
+            //create gson
+
+
+            //send the data
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+            outputStreamWriter.write(contentString);
+            outputStreamWriter.flush();
+
+            //show the response
+            StringBuilder sb = new StringBuilder();
+            int httpResult = connection.getResponseCode();
+            if (httpResult == HttpURLConnection.HTTP_OK){
+                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
+                String line = null;
+                while ((line = br.readLine())!=null){
+                    sb.append(line+"\n");
+                }
+                br.close();
+            }
+            Log.d(tag,"Response from server: " + sb.toString());
+
+        } catch (Exception e) {
+            Log.e(tag, e.getMessage());
+        }
     }
 
     /**
