@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eu.chessdata.backend.model.MyPayLoad;
+import eu.chessdata.backend.utils.MyFirebase;
 import eu.chessdata.backend.utils.MyGson;
 
 /**
@@ -35,5 +36,8 @@ public class Worker extends HttpServlet{
         if (myPayLoad.getEvent() == MyPayLoad.Event.GAME_RESULT_UPDATED) {
             log.info("chess-data Worker decoded payload: " + myPayLoad.getGameLocation());
         }
+
+        MyFirebase.makeSureEverythingIsInOrder();
+        
     }
 }
