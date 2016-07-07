@@ -27,7 +27,7 @@ import eu.chessdata.backend.utils.MyGson;
 /**
  * Created by Bogdan Oloeriu on 06/07/2016.
  */
-public class Worker extends HttpServlet{
+public class Worker extends HttpServlet {
     private static final Logger log = Logger.getLogger(Worker.class.getName());
 
     @Override
@@ -48,25 +48,30 @@ public class Worker extends HttpServlet{
         MyFirebase.makeSureEverythingIsInOrder();
 
 
-        //final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch latch = new CountDownLatch(1);
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(Constants.USERS);
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot item: dataSnapshot.getChildren()){
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
                     User user = item.getValue(User.class);
-                    log.info("onDataChange: "+ user.getName());
+                    log.info("onDataChange: " + user.getName());
                 }
-          //      latch.countDown();
+                latch.countDown();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 log.info("firebase error: " + databaseError.getMessage());
-            //    latch.countDown();
+                latch.countDown();
             }
         });
-        //latch.await();
-        log.info("Worker threads complete!");
+        try {
+            latch.await();
+            log.info("Worker threads complete!");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 }
