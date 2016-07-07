@@ -26,14 +26,12 @@ import eu.chessdata.model.MyPayLoad;
  * helper methods.
  */
 public class MyCloudService extends IntentService {
-    private static String tag = Constants.LOG_TAG;
-
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_GAME_RESULT_UPDATED = "eu.chessdata.utils.ACTION_GAME_RESULT_UPDATED";
     private static final String ACTION_BAZ = "eu.chessdata.utils.action.BAZ";
-
     private static final String EXTRA_GAME_LOCATION = "eu.chessdata.utils.EXTRA_GAME_LOCATION";
     private static final String EXTRA_PARAM2 = "eu.chessdata.utils.extra.PARAM2";
+    private static String tag = Constants.LOG_TAG;
 
     public MyCloudService() {
         super("MyCloudService");
@@ -85,7 +83,7 @@ public class MyCloudService extends IntentService {
         String url = "https://chess-data.appspot.com/api/BasicApi";
         try {
             URL object = new URL(url);
-            HttpURLConnection connection = (HttpURLConnection)object.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) object.openConnection();
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setRequestProperty("Content-Type", "application/json");
@@ -100,8 +98,8 @@ public class MyCloudService extends IntentService {
             String jsonMyPayLoad = gson.toJson(myPayLoad);
 
 
-
             //send the data
+            Log.e(tag, "Sending the data " + jsonMyPayLoad);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
             outputStreamWriter.write(jsonMyPayLoad);
             outputStreamWriter.flush();
@@ -109,15 +107,15 @@ public class MyCloudService extends IntentService {
             //show the response
             StringBuilder sb = new StringBuilder();
             int httpResult = connection.getResponseCode();
-            if (httpResult == HttpURLConnection.HTTP_OK){
-                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
+            if (httpResult == HttpURLConnection.HTTP_OK) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
                 String line = null;
-                while ((line = br.readLine())!=null){
-                    sb.append(line+"\n");
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
                 }
                 br.close();
             }
-            Log.d(tag,"Response from server: " + sb.toString());
+            Log.d(tag, "Response from server: " + sb.toString());
 
         } catch (Exception e) {
             Log.e(tag, e.getMessage());

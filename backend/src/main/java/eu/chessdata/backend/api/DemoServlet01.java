@@ -17,12 +17,16 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Logger;
+
 import javax.servlet.http.*;
 
 import eu.chessdata.backend.model.User;
 import eu.chessdata.backend.utils.Constants;
 
 public class DemoServlet01 extends HttpServlet {
+    private static final Logger log = Logger.getLogger(DemoServlet01.class.getName());
+
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
@@ -58,6 +62,7 @@ public class DemoServlet01 extends HttpServlet {
                     for (DataSnapshot item: dataSnapshot.getChildren()){
                         User user = item.getValue(User.class);
                         System.out.println(user.getName());
+                        log.info("onDataChange: "+ user.getName());
                     }
                 }
 
