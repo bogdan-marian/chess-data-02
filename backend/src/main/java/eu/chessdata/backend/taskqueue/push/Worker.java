@@ -42,7 +42,7 @@ public class Worker extends HttpServlet {
         MyPayLoad myPayLoad = gson.fromJson(jsonPlayLoad, MyPayLoad.class);
 
         if (myPayLoad.getEvent() == MyPayLoad.Event.GAME_RESULT_UPDATED) {
-            log.info("chess-data Worker decoded payload: " + myPayLoad.getGameLocation());
+            notifyUsers(myPayLoad);
         }
 
         MyFirebase.makeSureEverythingIsInOrder();
@@ -72,6 +72,11 @@ public class Worker extends HttpServlet {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+    }
+
+    private void notifyUsers(MyPayLoad myPayLoad){
+        //get the users to notify
 
     }
 }
