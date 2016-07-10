@@ -35,6 +35,16 @@ public class User {
         this.dateCreated = timeStamp;
     }
 
+    public User(String name, String email, String userKey) {
+        HashMap<String, Object> timeStamp = new HashMap<>();
+        timeStamp.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+
+        this.name = name;
+        this.email = email;
+        this.dateCreated = timeStamp;
+        this.userKey = userKey;
+    }
+
     public String getName() {
         return name;
     }
@@ -53,5 +63,13 @@ public class User {
 
     public HashMap<String, Object> getDateCreated() {
         return dateCreated;
+    }
+
+    public String getUserKey() {
+        return userKey;
+    }
+
+    public void setUserKey(String userKey) {
+        this.userKey = userKey;
     }
 }

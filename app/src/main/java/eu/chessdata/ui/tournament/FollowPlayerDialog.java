@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import eu.chessdata.model.Player;
+import eu.chessdata.model.User;
 import eu.chessdata.utils.Constants;
 
 /**
@@ -55,6 +56,16 @@ public class FollowPlayerDialog extends DialogFragment{
         DatabaseReference followRef = FirebaseDatabase.getInstance().getReference(followLoc);
         followRef.setValue(mPlayerToFollow);
 
+        //set the global followers
+        String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        User user = new User(name,email,userKey);
+
+        String globalFollowerLoc = Constants.LOCATION_GLOBAL_FOLLOWER_BY_PLAYER
+                .replace(Constants.PLAYER_KEY, mPlayerToFollow.getPlayerKey())
+                .replace(Constants.USER_KEY,userKey);
+        DatabaseReference globalFollowerRef = FirebaseDatabase.getInstance().getReference(globalFollowerLoc);
+        globalFollowerRef.setValue(user);
 
         //dismiss the dialog
         dismiss();

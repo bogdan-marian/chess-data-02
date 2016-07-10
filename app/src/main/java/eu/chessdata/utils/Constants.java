@@ -88,8 +88,11 @@ public class Constants {
     //tournamentRounds/$tournamentKey/$roundNumber/roundPlayers
     public static final String LOCATION_ROUND_PLAYERS = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + ROUND_PLAYERS;
 
+
+    //globalFollowers/byPlayer/$playerKey
+    public static final String LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER = GLOBAL_FOLLOWERS + "/" + BY_PLAYER + "/" + PLAYER_KEY ;
     //globalFollowers/byPlayer/$playerKey/$userKey
-    public static final String LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER = GLOBAL_FOLLOWERS + "/" + BY_PLAYER + "/" + PLAYER_KEY + "/" + USER_KEY;
+    public static final String LOCATION_GLOBAL_FOLLOWER_BY_PLAYER = LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER + "/" + USER_KEY;
 
     /**
      * Constants for Firebase URL
