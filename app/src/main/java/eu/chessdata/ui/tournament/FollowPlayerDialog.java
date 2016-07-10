@@ -54,6 +54,8 @@ public class FollowPlayerDialog extends DialogFragment{
                 .replace(Constants.PLAYER_KEY, mPlayerToFollow.getPlayerKey());
         DatabaseReference followRef = FirebaseDatabase.getInstance().getReference(followLoc);
         followRef.setValue(mPlayerToFollow);
+
+
         //dismiss the dialog
         dismiss();
     }

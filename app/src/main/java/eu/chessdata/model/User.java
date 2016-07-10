@@ -12,6 +12,7 @@ import eu.chessdata.utils.Constants;
 public class User {
     private String name;
     private String email;
+    private String userKey;
     private HashMap<String, Object> dateCreated;
 
     public User() {
