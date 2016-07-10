@@ -53,8 +53,4 @@ public class User {
     public HashMap<String, Object> getDateCreated() {
         return dateCreated;
     }
-
-    public void setDateCreated(HashMap<String, Object> dateCreated) {
-        this.dateCreated = dateCreated;
-    }
 }

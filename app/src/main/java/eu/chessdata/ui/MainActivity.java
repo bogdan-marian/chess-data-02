@@ -27,6 +27,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity
 
 
     public static final String ANONYMOUS = "anonymous";
-    private static final String tag = Constants.LOG_TAG;
+    private static final String TAG = Constants.LOG_TAG;
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
@@ -140,6 +141,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        //
+        Log.d(TAG,"MainActivity: firebase instance id = " + FirebaseInstanceId.getInstance().getToken());
     }
 
     @Override
@@ -240,7 +243,7 @@ public class MainActivity extends AppCompatActivity
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(tag, "onConnectionFailed:" + connectionResult);
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 

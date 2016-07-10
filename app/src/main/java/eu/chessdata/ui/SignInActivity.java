@@ -30,10 +30,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 
 import eu.chessdata.R;
+import eu.chessdata.model.Device;
 import eu.chessdata.model.User;
 import eu.chessdata.utils.Constants;
 
@@ -42,7 +44,7 @@ public class SignInActivity extends AppCompatActivity implements
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
 
-    private static final String tag = Constants.LOG_TAG;
+    private static final String TAG = Constants.LOG_TAG;
     private static final int RC_SIGN_IN = 9001;
 
     private SignInButton mSignInButton;
@@ -96,7 +98,7 @@ public class SignInActivity extends AppCompatActivity implements
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(tag, "onConnectionFailed:" + connectionResult);
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
@@ -112,25 +114,25 @@ public class SignInActivity extends AppCompatActivity implements
                 firebaseAuthWithGoogle(account);
             } else {
                 // Google Sign In failed
-                Log.e(tag, "Google Sign In failed." + result.getStatus());
+                Log.e(TAG, "Google Sign In failed." + result.getStatus());
             }
         }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(tag, "firebaseAuthWithGooogle:" + acct.getId());
+        Log.d(TAG, "firebaseAuthWithGooogle:" + acct.getId());
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(tag, "signInWithCredential:onComplete:" + task.isSuccessful());
+                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Log.w(tag, "signInWithCredential", task.getException());
+                            Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
@@ -163,11 +165,36 @@ public class SignInActivity extends AppCompatActivity implements
                     User user = new User(username, email);
                     userLocation.setValue(user);
                 }
+                registerDeviceInFirebase();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(tag,"DatabaseError: " + databaseError.getMessage());
+                Log.e(TAG,"DatabaseError: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    private void registerDeviceInFirebase(){
+        String userKey = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String deviceKey = FirebaseInstanceId.getInstance().getToken();
+        String deviceLoc = Constants.LOCATION_MY_DEVICE
+                .replace(Constants.USER_KEY,userKey)
+                .replace(Constants.DEVICE_KEY,deviceKey);
+        final DatabaseReference deviceRef = FirebaseDatabase.getInstance().getReference(deviceLoc);
+        deviceRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //only set value if value device not registered yet
+                if (dataSnapshot.getValue() == null){
+                    Device device = new Device(deviceKey, Device.DeviceType.ANDROID);
+                    deviceRef.setValue(device);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG,"DatabaseError: " + databaseError.getMessage());
             }
         });
     }
