@@ -1,6 +1,5 @@
 package eu.chessdata.backend.api;
 
-import eu.chessdata.backend.model.User;
 import com.google.appengine.repackaged.com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -11,6 +10,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import eu.chessdata.backend.model.User;
+import eu.chessdata.backend.utils.MySecurityValues;
 
 /**
  * Created by Bogdan Oloeriu on 03/07/2016.
@@ -40,5 +42,8 @@ public class DemoServlet02 extends HttpServlet{
         user1.setEmail("bogdan@mail.com");
         String json2 = gson.toJson(user1);
         System.out.println("New json: " + json2);
+
+        String firebaseId = MySecurityValues.securityValues.getFirebaseServerKey();
+        System.out.println("Firebase id = " + firebaseId);
     }
 }

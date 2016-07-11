@@ -3,7 +3,6 @@ package eu.chessdata.backend.api;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.firebase.internal.Log;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -18,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import eu.chessdata.backend.model.MyPayLoad;
 import eu.chessdata.backend.utils.MyGson;
+import eu.chessdata.backend.utils.MySecurityValues;
 
 /**
  * Created by Bogdan Oloeriu on 05/07/2016.
@@ -45,5 +45,9 @@ public class BasicApi extends HttpServlet {
         queue.add(TaskOptions.Builder.withUrl("/worker").payload(jsonPlayLoad));
         resp.getWriter().print("Task added to default queue: " + bufferedReader);
         log.info("bogdanTag Task added to default queue: " + bufferedReader);
+
+        String firebaseId = MySecurityValues.securityValues.getFirebaseServerKey();
+        System.out.println("Firebase id = " + firebaseId);
+
     }
 }

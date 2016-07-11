@@ -3,7 +3,7 @@ package eu.chessdata.backend.model;
 /**
  * Created by Bogdan Oloeriu on 7/11/2016.
  */
-public class MySecurityValues {
+public class SecurityValues {
     private String firebaseServerKey;
 
     public String getFirebaseServerKey() {
