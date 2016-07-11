@@ -10,6 +10,9 @@ import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -194,5 +197,19 @@ public class Worker extends HttpServlet {
             e.printStackTrace();
         }
         return devices;
+    }
+
+    private void sendNotification(String deviceId){
+        try {
+            URL url = new URL("https://fcm.googleapis.com/fcm/send");
+            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            conn.setDoInput(true);
+            conn.setRequestMethod("PUT");
+            
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
