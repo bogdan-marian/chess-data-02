@@ -26,7 +26,7 @@ public class MySecurityValues {
     }
 
     private static SecurityValues readSecurityValues(){
-        InputStream inputStream = MySecurityValues.class.getResourceAsStream("mySecurityValues.json");
+        InputStream inputStream = MySecurityValues.class.getClassLoader().getResourceAsStream("mySecurityValues.json");
         try {
             Reader reader = new InputStreamReader(inputStream,"UTF-8");
             Gson gson = new GsonBuilder().create();
