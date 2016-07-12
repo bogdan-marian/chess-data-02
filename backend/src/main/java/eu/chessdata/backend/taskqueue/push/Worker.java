@@ -40,6 +40,7 @@ import eu.chessdata.backend.utils.MySecurityValues;
  * Created by Bogdan Oloeriu on 06/07/2016.
  */
 public class Worker extends HttpServlet {
+    private static final Logger errorLogger = Logger.getLogger(Worker.class.getName());
     private static final Logger log = Logger.getLogger(Worker.class.getName());
 
     @Override
@@ -49,12 +50,10 @@ public class Worker extends HttpServlet {
         if (bufferedReader != null) {
             jsonPlayLoad = jsonPlayLoad + bufferedReader.readLine();
         }
-        log.info("Decoded payload: " + jsonPlayLoad);
         Gson gson = MyGson.getGson();
         MyPayLoad myPayLoad = gson.fromJson(jsonPlayLoad, MyPayLoad.class);
 
         if (myPayLoad.getEvent() == MyPayLoad.Event.GAME_RESULT_UPDATED) {
-            log.info("Time to call: notifyUsersGameResultUpdated");
             notifyUsersGameResultUpdated(myPayLoad);
         }
 
@@ -68,14 +67,13 @@ public class Worker extends HttpServlet {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot item : dataSnapshot.getChildren()) {
                     User user = item.getValue(User.class);
-                    log.info("onDataChange: " + user.getName());
                 }
                 latch.countDown();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                log.info("firebase error: " + databaseError.getMessage());
+                errorLogger.info("firebase error: " + databaseError.getMessage());
                 latch.countDown();
             }
         });
@@ -95,7 +93,6 @@ public class Worker extends HttpServlet {
         if (gameLocation == null) {
             return;
         }
-        log.info("notifyUsersGameResultUpdated: debug1");
         try {
             MyFirebase.makeSureEverythingIsInOrder();
             //get the game
@@ -117,31 +114,27 @@ public class Worker extends HttpServlet {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    log.info("firebase error: " + databaseError.getMessage());
+                    errorLogger.info("firebase error: " + databaseError.getMessage());
                     latch01.countDown();
                 }
             });
 
             latch01.await();
-            log.info("notifyUsersGameResultUpdated: debug2 end of await: ");
             if (game.getTableNumber() == -1) {
                 return;
             }
             //wee have data
             if (game.getWhitePlayer() != null) {
                 Player whitePlayer = game.getWhitePlayer();
-                List<Device> devices = getDevicesToNotify(whitePlayer, game);
-                log.info("debug 3: device size = " + devices.size() + "for playerKey = " + whitePlayer.getPlayerKey());
-                for (Device device : devices) {
-                    log.info("I should notify device: " + device.getDeviceType() + ":" + device.getDeviceKey());
-                }
+                computeDevicesAndNotify(whitePlayer, game);
+
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private List<Device> getDevicesToNotify(Player player, Game game) {
+    private List<Device> computeDevicesAndNotify(Player player, Game game) {
         String playerKey = player.getPlayerKey();
         final List<String> userKeys = new ArrayList<>();
         final List<Device> devices = new ArrayList<>();
@@ -218,25 +211,20 @@ public class Worker extends HttpServlet {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "key=" + MySecurityValues.securityValues.getFirebaseServerKey());
 
-            JSONObject message = new JSONObject();
-            message.put("data", "chess-data! " + player.getName() + " just finished his game");
-            message.put("to", deviceKey);
+            JSONObject simpleNotification = new JSONObject();
+            simpleNotification.put("body", "chess-data updates: " +
+                    game.getWhitePlayer().getName() + " " +
+                    game.getResult() + " " +
+                    game.getBlackPlayer().getName());
+            simpleNotification.put("title", "new results");
 
-            String data = "chess-data! "+player.getName()+" just finished his game";
-            String myMessage = "{\n" +
-                    "\t\"data\": {\n" +
-                    "    \"score\": \"5x1\",\n" +
-                    "    \"time\": \"15:10\"\n" +
-                    "  },\n" +
-                    "\t\"to\": \"$myKey\"\n" +
-                    "}";
-            myMessage = myMessage.replace("$myData",data).replace("$myKey",deviceKey);
-            log.info("myMessage = " + myMessage);
+            JSONObject firebaseNotification = new JSONObject();
+            firebaseNotification.put("notification", simpleNotification);
+            firebaseNotification.put("to", deviceKey);
 
-            String jsonContent = message.toString();
-            log.info("chess-data: json content = " + jsonContent);
+            String jsonContent = firebaseNotification.toString();
             OutputStreamWriter streamWriter = new OutputStreamWriter(conn.getOutputStream());
-            streamWriter.write(myMessage);
+            streamWriter.write(jsonContent);
             streamWriter.flush();
 
             //todo decode the fcm response
@@ -251,12 +239,12 @@ public class Worker extends HttpServlet {
                 br.close();
                 log.info("chess-data-response " + sb.toString());
             } else {
-                log.info("chess-data-error: " + conn.getResponseMessage()+", errorCode = " + result);
+                errorLogger.info("chess-data-error: " + conn.getResponseMessage() + ", errorCode = " + result);
             }
         } catch (MalformedURLException e) {
-            log.info("chess-data-errorMalformedURLException: " + e.getMessage());
+            errorLogger.info("chess-data-errorMalformedURLException: " + e.getMessage());
         } catch (IOException e) {
-            log.info("chess-data-IOException: " + e.getMessage());
+            errorLogger.info("chess-data-IOException: " + e.getMessage());
         }
     }
 }
