@@ -42,9 +42,11 @@ import eu.chessdata.backend.utils.MySecurityValues;
 public class Worker extends HttpServlet {
     private static final Logger errorLogger = Logger.getLogger(Worker.class.getName());
     private static final Logger log = Logger.getLogger(Worker.class.getName());
+    private List<String> deviceKeys;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        deviceKeys = new ArrayList<>();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(req.getInputStream()));
         String jsonPlayLoad = "";
         if (bufferedReader != null) {
@@ -127,7 +129,10 @@ public class Worker extends HttpServlet {
             if (game.getWhitePlayer() != null) {
                 Player whitePlayer = game.getWhitePlayer();
                 computeDevicesAndNotify(whitePlayer, game);
-
+            }
+            if (game.getBlackPlayer() != null) {
+                Player blackPlayer = game.getBlackPlayer();
+                computeDevicesAndNotify(blackPlayer, game);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -202,6 +207,11 @@ public class Worker extends HttpServlet {
     }
 
     private void sendNotification(String deviceKey, Player player, Game game) {
+        if (deviceKeys.contains(deviceKey)){
+            return;
+        }
+        deviceKeys.add(deviceKey);
+
         try {
             URL url = new URL("https://fcm.googleapis.com/fcm/send");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -212,11 +222,12 @@ public class Worker extends HttpServlet {
             conn.setRequestProperty("Authorization", "key=" + MySecurityValues.securityValues.getFirebaseServerKey());
 
             JSONObject simpleNotification = new JSONObject();
-            simpleNotification.put("body", "chess-data updates: " +
-                    game.getWhitePlayer().getName() + " " +
-                    game.getResult() + " " +
+            simpleNotification.put("title", "chess-data updates");
+            simpleNotification.put("body", "" +
+                    game.getWhitePlayer().getName() +
+                    formatResult(game.getResult()) +
                     game.getBlackPlayer().getName());
-            simpleNotification.put("title", "new results");
+
 
             JSONObject firebaseNotification = new JSONObject();
             firebaseNotification.put("notification", simpleNotification);
@@ -246,5 +257,16 @@ public class Worker extends HttpServlet {
         } catch (IOException e) {
             errorLogger.info("chess-data-IOException: " + e.getMessage());
         }
+    }
+
+    private String formatResult(int result) {
+        if (result == 1) {
+            return " 1 - 0 ";
+        } else if (result == 2) {
+            return " 0 - 1 ";
+        } else if (result == 3) {
+            return " 1/2 - 1/2 ";
+        }
+        return " 0 - 0 ";
     }
 }
