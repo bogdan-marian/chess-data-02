@@ -212,20 +212,32 @@ public class Worker extends HttpServlet {
         try {
             URL url = new URL("https://fcm.googleapis.com/fcm/send");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
             conn.setDoInput(true);
-            conn.setRequestMethod("PUT");
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "key=" + MySecurityValues.securityValues.getFirebaseServerKey());
 
             JSONObject message = new JSONObject();
-            message.put("data", "chess-data: " + player.getName() + " just finished his game");
+            message.put("data", "chess-data! " + player.getName() + " just finished his game");
             message.put("to", deviceKey);
+
+            String data = "chess-data! "+player.getName()+" just finished his game";
+            String myMessage = "{\n" +
+                    "\t\"data\": {\n" +
+                    "    \"score\": \"5x1\",\n" +
+                    "    \"time\": \"15:10\"\n" +
+                    "  },\n" +
+                    "\t\"to\": \"$myKey\"\n" +
+                    "}";
+            myMessage = myMessage.replace("$myData",data).replace("$myKey",deviceKey);
+            log.info("myMessage = " + myMessage);
 
             String jsonContent = message.toString();
             log.info("chess-data: json content = " + jsonContent);
-            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-            wr.write(jsonContent);
-            wr.flush();
+            OutputStreamWriter streamWriter = new OutputStreamWriter(conn.getOutputStream());
+            streamWriter.write(myMessage);
+            streamWriter.flush();
 
             //todo decode the fcm response
             StringBuilder sb = new StringBuilder();
@@ -239,7 +251,7 @@ public class Worker extends HttpServlet {
                 br.close();
                 log.info("chess-data-response " + sb.toString());
             } else {
-                log.info("chess-data-error: " + conn.getResponseMessage());
+                log.info("chess-data-error: " + conn.getResponseMessage()+", errorCode = " + result);
             }
         } catch (MalformedURLException e) {
             log.info("chess-data-errorMalformedURLException: " + e.getMessage());
