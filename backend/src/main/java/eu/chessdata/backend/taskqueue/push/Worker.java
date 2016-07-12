@@ -7,9 +7,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,6 +34,7 @@ import eu.chessdata.backend.model.User;
 import eu.chessdata.backend.utils.Constants;
 import eu.chessdata.backend.utils.MyFirebase;
 import eu.chessdata.backend.utils.MyGson;
+import eu.chessdata.backend.utils.MySecurityValues;
 
 /**
  * Created by Bogdan Oloeriu on 06/07/2016.
@@ -127,10 +131,10 @@ public class Worker extends HttpServlet {
             //wee have data
             if (game.getWhitePlayer() != null) {
                 Player whitePlayer = game.getWhitePlayer();
-                List<Device> devices = getDevicesToNotify(whitePlayer.getPlayerKey());
-                log.info("debug 3: device size = " + devices.size()+"for playerKey = " + whitePlayer.getPlayerKey());
-                for(Device device: devices) {
-                    log.info("I should notify device: " + device.getDeviceType()+":"+ device.getDeviceKey());
+                List<Device> devices = getDevicesToNotify(whitePlayer, game);
+                log.info("debug 3: device size = " + devices.size() + "for playerKey = " + whitePlayer.getPlayerKey());
+                for (Device device : devices) {
+                    log.info("I should notify device: " + device.getDeviceType() + ":" + device.getDeviceKey());
                 }
             }
         } catch (InterruptedException e) {
@@ -138,7 +142,8 @@ public class Worker extends HttpServlet {
         }
     }
 
-    private List<Device> getDevicesToNotify(String playerKey) {
+    private List<Device> getDevicesToNotify(Player player, Game game) {
+        String playerKey = player.getPlayerKey();
         final List<String> userKeys = new ArrayList<>();
         final List<Device> devices = new ArrayList<>();
         String globalFollowersLoc = Constants.LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER
@@ -166,18 +171,18 @@ public class Worker extends HttpServlet {
 
             latch.await();
 
-            for (String userKey: userKeys){
+            for (String userKey : userKeys) {
                 final CountDownLatch secondLatch = new CountDownLatch(1);
                 String myDevicesLoc = Constants.LOCATION_MY_DEVICES
-                        .replace(Constants.USER_KEY,userKey);
+                        .replace(Constants.USER_KEY, userKey);
                 DatabaseReference myDevicesRef = FirebaseDatabase.getInstance().getReference(myDevicesLoc);
                 myDevicesRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.hasChildren()){
-                            for (DataSnapshot item: dataSnapshot.getChildren()){
+                        if (dataSnapshot.hasChildren()) {
+                            for (DataSnapshot item : dataSnapshot.getChildren()) {
                                 Device device = item.getValue(Device.class);
-                                if (device != null){
+                                if (device != null) {
                                     devices.add(device);
                                 }
                             }
@@ -192,6 +197,11 @@ public class Worker extends HttpServlet {
                 });
                 secondLatch.await();
             }
+            for (Device device : devices) {
+                if (device.getDeviceType().equals(String.valueOf(Device.DeviceType.ANDROID))) {
+                    sendNotification(device.getDeviceKey(), player, game);
+                }
+            }
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -199,13 +209,39 @@ public class Worker extends HttpServlet {
         return devices;
     }
 
-    private void sendNotification(String deviceId){
+    private void sendNotification(String deviceKey, Player player, Game game) {
         try {
             URL url = new URL("https://fcm.googleapis.com/fcm/send");
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setRequestMethod("PUT");
-            
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "key=" + MySecurityValues.securityValues.getFirebaseServerKey());
+
+            JSONObject message = new JSONObject();
+            message.put("data", "chess-data: " + player.getName() + " just finished his game");
+            message.put("to", deviceKey);
+
+            String jsonContent = message.toString();
+            log.info("chess-data: json content = " + jsonContent);
+            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+            wr.write(jsonContent);
+            wr.flush();
+
+            //todo decode the fcm response
+            StringBuilder sb = new StringBuilder();
+            int result = conn.getResponseCode();
+            if (result == HttpURLConnection.HTTP_OK) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+                log.info("chess-data-response " + sb.toString());
+            } else {
+                log.info("chess-data-error: " + conn.getResponseMessage());
+            }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
