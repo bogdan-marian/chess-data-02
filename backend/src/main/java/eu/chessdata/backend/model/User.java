@@ -12,6 +12,7 @@ import eu.chessdata.backend.utils.Constants;
 public class User {
     private String name;
     private String email;
+    private String userKey;
     private HashMap<String, Object> dateCreated;
 
     public User() {
@@ -34,6 +35,16 @@ public class User {
         this.dateCreated = timeStamp;
     }
 
+    public User(String name, String email, String userKey) {
+        HashMap<String, Object> timeStamp = new HashMap<>();
+        timeStamp.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+
+        this.name = name;
+        this.email = email;
+        this.dateCreated = timeStamp;
+        this.userKey = userKey;
+    }
+
     public String getName() {
         return name;
     }
@@ -54,7 +65,11 @@ public class User {
         return dateCreated;
     }
 
-    public void setDateCreated(HashMap<String, Object> dateCreated) {
-        this.dateCreated = dateCreated;
+    public String getUserKey() {
+        return userKey;
+    }
+
+    public void setUserKey(String userKey) {
+        this.userKey = userKey;
     }
 }

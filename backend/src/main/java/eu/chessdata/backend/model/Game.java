@@ -1,4 +1,4 @@
-package eu.chessdata.model;
+package eu.chessdata.backend.model;
 
 /**
  * Created by Bogdan Oloeriu on 6/19/2016.

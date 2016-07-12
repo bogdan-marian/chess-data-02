@@ -18,6 +18,8 @@ public class Constants {
     public static final String MANAGER_KEY = "$managerKey";
     public static final String USER_SETTINGS = "userSettings";
     public static final String MY_CLUBS = "myClubs";
+    public static final String MY_DEVICES = "myDevices";
+    public static final String DEVICE_KEY = "$deviceKey";
 
     public static final String DEFAULT_CLUB = "defaultClub";
     public static final String TOURNAMENTS = "tournaments";
@@ -52,6 +54,11 @@ public class Constants {
     public static final String LOCATION_MY_CLUBS = USER_SETTINGS + "/" + USER_KEY + "/" + MY_CLUBS;
     public static final String LOCATION_MY_CLUB = LOCATION_MY_CLUBS + "/" + CLUB_KEY;
 
+    //userSettings/$userKey/myDevices
+    public static final String LOCATION_MY_DEVICES = USER_SETTINGS+"/"+USER_KEY+"/"+MY_DEVICES;
+    //userSettings/$userKey/myDevices/$deviceKey
+    public static final String LOCATION_MY_DEVICE = LOCATION_MY_DEVICES+"/"+DEVICE_KEY;
+
     //userSettings/$userKey/followedPlayers/
     public static final String LOCATION_MY_FOLLOWED_PLAYERS = USER_SETTINGS + "/" + USER_KEY + "/" + FOLLOWED_PLAYERS;
     //userSettings/$userKey/followedPlayers/byPlayer/$playerKey
@@ -81,8 +88,11 @@ public class Constants {
     //tournamentRounds/$tournamentKey/$roundNumber/roundPlayers
     public static final String LOCATION_ROUND_PLAYERS = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + ROUND_PLAYERS;
 
+
+    //globalFollowers/byPlayer/$playerKey
+    public static final String LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER = GLOBAL_FOLLOWERS + "/" + BY_PLAYER + "/" + PLAYER_KEY ;
     //globalFollowers/byPlayer/$playerKey/$userKey
-    public static final String LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER = GLOBAL_FOLLOWERS + "/" + BY_PLAYER + "/" + PLAYER_KEY + "/" + USER_KEY;
+    public static final String LOCATION_GLOBAL_FOLLOWER_BY_PLAYER = LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER + "/" + USER_KEY;
 
     /**
      * Constants for Firebase URL
