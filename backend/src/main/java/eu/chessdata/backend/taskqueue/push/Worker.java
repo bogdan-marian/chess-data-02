@@ -81,7 +81,6 @@ public class Worker extends HttpServlet {
         });
         try {
             latch.await();
-            log.info("Worker threads complete!");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -243,9 +242,9 @@ public class Worker extends HttpServlet {
                 log.info("chess-data-error: " + conn.getResponseMessage());
             }
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            log.info("chess-data-errorMalformedURLException: " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.info("chess-data-IOException: " + e.getMessage());
         }
     }
 }
