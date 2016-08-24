@@ -1,4 +1,8 @@
 apply plugin: 'com.android.application'
+repositories{
+    mavenLocal()
+    mavenCentral()
+}
 
 android {
     compileSdkVersion 23
@@ -47,6 +51,7 @@ dependencies {
     compile 'com.firebaseui:firebase-ui-auth:0.4.0'
     compile 'com.google.code.gson:gson:2.6.2'
 
+    compile 'eu.chesdata:chess-pairing:1.0-SNAPSHOT'
 }
 
 

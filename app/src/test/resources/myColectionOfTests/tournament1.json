@@ -1,0 +1,38 @@
+{
+    "name": "Tournament 1",
+    "totalRounds": 0,
+    "players": [{
+        "name": "Bogdan Marian",
+        "elo": 1450,
+        "playerKey": "1450Bogdan Marian"
+    }, {
+        "name": "Lacramioara",
+        "elo": 1320,
+        "playerKey": "1320Lacramioara"
+    }, {
+        "name": "Calin Constantin",
+        "elo": 1550,
+        "playerKey": "1550Calin Constantin"
+    }, {
+        "name": "Cezar Andrei",
+        "elo": 1200,
+        "playerKey": "1200Cezar Andrei"
+    }, {
+        "name": "Rares",
+        "elo": 1600,
+        "playerKey": "1600Rares"
+    }, {
+        "name": "Catalin Ioan",
+        "elo": 1750,
+        "playerKey": "1750Catalin Ioan"
+    }, {
+        "name": "Maria",
+        "elo": 1700,
+        "playerKey": "1700Maria"
+    }, {
+        "name": "Delia Ioana",
+        "elo": 1750,
+        "playerKey": "1750Delia Ioana"
+    }],
+    "rounds": []
+}
