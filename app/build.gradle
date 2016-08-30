@@ -30,8 +30,8 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE-FIREBASE.txt'
         exclude 'META-INF/NOTICE'
-        exclude('META-INF/maven/eu.chesdata/chess-pairing/pom.xml')
-        exclude('META-INF/maven/eu.chesdata/chess-pairing/pom.properties')
+        exclude 'META-INF/maven/eu.chesdata/chess-pairing/pom.xml'
+        exclude 'META-INF/maven/eu.chesdata/chess-pairing/pom.properties'
     }
 }
 
