@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import eu.chessdata.backend.model.MyPayLoad;
 import eu.chessdata.backend.utils.MyGson;
-import eu.chessdata.backend.utils.MySecurityValues;
 
 /**
  * Created by Bogdan Oloeriu on 05/07/2016.
@@ -46,8 +45,8 @@ public class BasicApi extends HttpServlet {
         resp.getWriter().print("Task added to default queue: " + bufferedReader);
         log.info("bogdanTag Task added to default queue: " + bufferedReader);
 
-        String firebaseId = MySecurityValues.securityValues.getFirebaseServerKey();
-        System.out.println("Firebase id = " + firebaseId);
+//        String firebaseId = MySecurityValues.securityValues.getFirebaseServerKey();
+//        System.out.println("Firebase id = " + firebaseId);
 
     }
 }
