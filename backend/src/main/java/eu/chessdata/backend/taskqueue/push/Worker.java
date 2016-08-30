@@ -32,6 +32,7 @@ import eu.chessdata.backend.model.MyPayLoad;
 import eu.chessdata.backend.model.Player;
 import eu.chessdata.backend.model.User;
 import eu.chessdata.backend.utils.Constants;
+import eu.chessdata.backend.utils.MyAuth;
 import eu.chessdata.backend.utils.MyFirebase;
 import eu.chessdata.backend.utils.MyGson;
 import eu.chessdata.backend.utils.MySecurityValues;
@@ -56,37 +57,63 @@ public class Worker extends HttpServlet {
         MyPayLoad myPayLoad = gson.fromJson(jsonPlayLoad, MyPayLoad.class);
 
         if (myPayLoad.getEvent() == MyPayLoad.Event.GAME_RESULT_UPDATED) {
-            notifyUsersGameResultUpdated(myPayLoad);
+            restNotifyUsersGameResultUpdated(myPayLoad);
+            //notifyUsersGameResultUpdated(myPayLoad);
         }
-
-        MyFirebase.makeSureEverythingIsInOrder();
-
-
-        final CountDownLatch latch = new CountDownLatch(1);
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(Constants.USERS);
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot item : dataSnapshot.getChildren()) {
-                    User user = item.getValue(User.class);
-                }
-                latch.countDown();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                errorLogger.info("firebase error: " + databaseError.getMessage());
-                latch.countDown();
-            }
-        });
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//
+//        MyFirebase.makeSureEverythingIsInOrder();
+//
+//
+//        final CountDownLatch latch = new CountDownLatch(1);
+//        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(Constants.USERS);
+//        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot item : dataSnapshot.getChildren()) {
+//                    User user = item.getValue(User.class);
+//                }
+//                latch.countDown();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                errorLogger.info("firebase error: " + databaseError.getMessage());
+//                latch.countDown();
+//            }
+//        });
+//        try {
+//            latch.await();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
+    private void restNotifyUsersGameResultUpdated(MyPayLoad myPayLoad) {
+        if (myPayLoad.getEvent() != MyPayLoad.Event.GAME_RESULT_UPDATED) {
+            return;
+        }
+
+        String gameLocation = myPayLoad.getGameLocation();
+        if (gameLocation == null) {
+            return;
+        }
+
+        String accessToken = MyAuth.getAccessToken();
+        if (accessToken == null) {
+            return;
+        }
+        gameLocation = gameLocation + ".json?access_token=<" + accessToken + ">";
+        Game game = firebaseGetGame(gameLocation);
+    }
+
+    private Game firebaseGetGame(String gameLocation) {
+        Game game = new Game();
+        log.info("Time to read game dat from firebase: " + gameLocation);
+        return game;
+    }
+
+    @Deprecated
     private void notifyUsersGameResultUpdated(MyPayLoad myPayLoad) {
         if (myPayLoad.getEvent() != MyPayLoad.Event.GAME_RESULT_UPDATED) {
             return;
@@ -207,7 +234,7 @@ public class Worker extends HttpServlet {
     }
 
     private void sendNotification(String deviceKey, Player player, Game game) {
-        if (deviceKeys.contains(deviceKey)){
+        if (deviceKeys.contains(deviceKey)) {
             return;
         }
         deviceKeys.add(deviceKey);
