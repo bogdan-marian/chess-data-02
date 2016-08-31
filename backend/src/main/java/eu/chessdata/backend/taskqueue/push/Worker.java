@@ -6,6 +6,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 
@@ -13,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -94,8 +96,8 @@ public class Worker extends HttpServlet {
             return;
         }
 
-        String gameLocation = myPayLoad.getGameLocation();
-        if (gameLocation == null) {
+        String gameUrl = myPayLoad.getGameLocation();
+        if (gameUrl == null) {
             return;
         }
 
@@ -103,14 +105,96 @@ public class Worker extends HttpServlet {
         if (accessToken == null) {
             return;
         }
-        gameLocation = gameLocation + ".json?access_token=<" + accessToken + ">";
-        Game game = firebaseGetGame(gameLocation);
+        gameUrl = Constants.FIREBASE_URL + gameUrl + ".json?access_token=" + accessToken;
+        Game game = getGame(gameUrl);
+        if (game.getWhitePlayer() != null) {
+            Player whitePlayer = game.getWhitePlayer();
+            restComputeDevicesAndNotify(whitePlayer, game);
+        }
+        if (game.getBlackPlayer() != null) {
+            Player blackPlayer = game.getBlackPlayer();
+            restComputeDevicesAndNotify(blackPlayer, game);
+        }
     }
 
-    private Game firebaseGetGame(String gameLocation) {
-        Game game = new Game();
-        log.info("Time to read game dat from firebase: " + gameLocation);
+    private void restComputeDevicesAndNotify(Player player, Game game) {
+        String accessToken = MyAuth.getAccessToken();
+        if (accessToken == null) {
+            return;
+        }
+        String playerKey = player.getPlayerKey();
+        List<String> userKeys = new ArrayList<>();
+        List<Device> devices = new ArrayList<>();
+
+        String globalFollowersLoc = Constants.LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER
+                .replace(Constants.PLAYER_KEY, playerKey);
+        globalFollowersLoc = Constants.FIREBASE_URL + globalFollowersLoc + ".json?access_token=" + accessToken;
+        List<User> followers = getFollowers(globalFollowersLoc);
+    }
+    private List<User> getFollowers(String globalFollowersUrl){
+        String jsonUsers = restFirebaseGetContent(globalFollowersUrl);
+        if (jsonUsers == null){
+            return new ArrayList<>();
+        }
+        log.info("chess-data-jsonUsers: " + jsonUsers);
+        Type listType = new TypeToken<List<User>>(){}.getType();
+
+        List<User> users = MyGson.getGson().fromJson(jsonUsers,listType);
+        log.info("chess-data-decodedListSize = " + users.size());
+        return users;
+    }
+
+    private Game getGame(String gameUrl) {
+        String gameJson = restFirebaseGetContent(gameUrl);
+        Gson gson = MyGson.getGson();
+        Game game = gson.fromJson(gameJson, Game.class);
+        log.info("chess-data-decoded-game: " + gson.toJson(game));
         return game;
+    }
+
+    /**
+     * it gets the content from firebase using the REST api.
+     *
+     * @param locationUrl
+     * @return
+     */
+    private String restFirebaseGetContent(String locationUrl) {
+        String responseJson = "no-response";
+
+        try {
+            URL url = new URL(locationUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("GET");
+
+            StringBuilder sb = new StringBuilder();
+            int result = conn.getResponseCode();
+            if (result == HttpURLConnection.HTTP_OK) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+
+                responseJson = sb.toString();
+
+            } else {
+                errorLogger.info("chess-data-error: " + conn.getResponseMessage() + ", errorCode = " + result);
+                throw new IllegalStateException("chess-data-error: response = " + result + ", request = " + locationUrl);
+            }
+
+        } catch (MalformedURLException e) {
+            errorLogger.info("chess-data-error: " + e.getMessage());
+            throw new IllegalStateException(e.getMessage());
+        } catch (IOException e) {
+            errorLogger.info("chess-data-error: " + e.getMessage());
+            throw new IllegalStateException(e.getMessage());
+        }
+
+        log.info("chess-data-restFirebaseGetContent locationUrl=" + locationUrl);
+        log.info("chess-data-restFirebaseGetContent response="+responseJson);
+        return responseJson;
     }
 
     @Deprecated
@@ -166,6 +250,7 @@ public class Worker extends HttpServlet {
         }
     }
 
+    @Deprecated
     private List<Device> computeDevicesAndNotify(Player player, Game game) {
         String playerKey = player.getPlayerKey();
         final List<String> userKeys = new ArrayList<>();

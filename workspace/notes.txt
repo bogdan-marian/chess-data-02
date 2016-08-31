@@ -1,1 +1,11 @@
 http://localhost:8080/tempFiles/DemoServlet02.html
+
+single follower request/response:
+https://chess-data.firebaseio.com/globalFollowers/byPlayer/-KK4PfAzRXC1pJRZ7qtf
+{"ZWw9LeF7NTUdUlsrKR9VuqJInzp1":{"dateCreated":{"timestamp":1472681476247},"email":"bogdan.oloeriu@gmail.com","name":"Bogdan Marian Oloeriu","userKey":"ZWw9LeF7NTUdUlsrKR9VuqJInzp1"}}
+
+multiple follower request/response:
+https://chess-data.firebaseio.com/globalFollowers/byPlayer/-KK4PfAzRXC1pJRZ7qtf
+{"A1xSSo1FdbV3wcclP33l1II7Qak1":{"dateCreated":{"timestamp":1472682149428},"email":"lacra.et.oli@gmail.com","name":"Lacra si Oli","userKey":"A1xSSo1FdbV3wcclP33l1II7Qak1"},"ZWw9LeF7NTUdUlsrKR9VuqJInzp1":{"dateCreated":{"timestamp":1472681476247},"email":"bogdan.oloeriu@gmail.com","name":"Bogdan Marian Oloeriu","userKey":"ZWw9LeF7NTUdUlsrKR9VuqJInzp1"}}
+
+this might help fix the problem: http://stackoverflow.com/questions/9151619/how-to-iterate-over-a-jsonobject
