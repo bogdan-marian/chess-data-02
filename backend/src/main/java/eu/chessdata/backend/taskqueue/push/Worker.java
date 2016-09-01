@@ -1,12 +1,8 @@
 package eu.chessdata.backend.taskqueue.push;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -19,7 +15,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -34,7 +29,6 @@ import eu.chessdata.backend.model.Player;
 import eu.chessdata.backend.model.User;
 import eu.chessdata.backend.utils.Constants;
 import eu.chessdata.backend.utils.MyAuth;
-import eu.chessdata.backend.utils.MyFirebase;
 import eu.chessdata.backend.utils.MyGson;
 import eu.chessdata.backend.utils.MySecurityValues;
 
@@ -92,6 +86,7 @@ public class Worker extends HttpServlet {
 
     /**
      * starts the notification process for a specific game
+     *
      * @param myPayLoad contains the standard location in the firebase for that game
      */
     private void restNotifyUsersGameResultUpdated(MyPayLoad myPayLoad) {
@@ -122,8 +117,9 @@ public class Worker extends HttpServlet {
 
     /**
      * identifies what users are interested in this player
+     *
      * @param player the player that wee are referring
-     * @param game the game that wee are referring
+     * @param game   the game that wee are referring
      */
     private void restComputeDevicesAndNotify(Player player, Game game) {
         String accessToken = MyAuth.getAccessToken();
@@ -149,7 +145,7 @@ public class Worker extends HttpServlet {
             for (Device device : devices) {
                 if (device.getDeviceType().equals(String.valueOf(Device.DeviceType.ANDROID))) {
                     sendNotification(device.getDeviceKey(), player, game);
-                    log.info("chess-data-notification: userKey="+userKey+" deviceKey="+device.getDeviceKey());
+                    log.info("chess-data-notification: userKey=" + userKey + " deviceKey=" + device.getDeviceKey());
                 }
             }
 
@@ -157,31 +153,48 @@ public class Worker extends HttpServlet {
     }
 
     private List<Device> getUserDevices(String userDevicesUrl) {
-
         String jsonDevices = restFirebaseGetContent(userDevicesUrl);
+
+
         if (jsonDevices == null) {
+            log.info("chess-data-getUserDevices: no devices");
             return new ArrayList<>();
         }
+
+        //special case when reading from firebase
+        if (jsonDevices.indexOf("null") == 0) {
+            log.info("chess-data-null-text: no devices");
+            return new ArrayList<>();
+        }
+        ;
 
         Gson gson = MyGson.getGson();
         List<Device> devices = new ArrayList<>();
 
-        JSONObject jsonObject = new JSONObject(jsonDevices);
-        Iterator<?> keys = jsonObject.keys();
-        while (keys.hasNext()) {
-            String key = (String) keys.next();
-            if (jsonObject.get(key) instanceof JSONObject) {
-                JSONObject item = (JSONObject) jsonObject.get(key);
-                String testJson = item.toString();
-                log.info("chess-data-device-text: " + testJson);
-                Device device = gson.fromJson(testJson, Device.class);
-                if (device != null) {
-                    devices.add(device);
+        try {
+            JSONObject jsonObject = new JSONObject(jsonDevices.trim());
+            Iterator<?> keys = jsonObject.keys();
+            while (keys.hasNext()) {
+                String key = (String) keys.next();
+                if (jsonObject.get(key) instanceof JSONObject) {
+                    JSONObject item = (JSONObject) jsonObject.get(key);
+                    String testJson = item.toString();
+                    log.info("chess-data-device-text: " + testJson);
+                    Device device = gson.fromJson(testJson, Device.class);
+                    if (device != null) {
+                        devices.add(device);
+                    }
                 }
             }
+            log.info("chess-data-total-devices = " + devices.size());
+            return devices;
+        } catch (JSONException e) {
+            log.info("error-chess-data-message: " + e.getMessage());
+            log.info("error-chess-data-userDeviceUrl: " + userDevicesUrl);
+            log.info("error-chess-data-jsonDevices: <" + jsonDevices + ">");
         }
-        log.info("chess-data-total-devices = " + devices.size());
-        return devices;
+        //return empty list;
+        return new ArrayList<>();
     }
 
     /**
@@ -268,126 +281,6 @@ public class Worker extends HttpServlet {
         return responseJson;
     }
 
-    @Deprecated
-    private void notifyUsersGameResultUpdated(MyPayLoad myPayLoad) {
-        if (myPayLoad.getEvent() != MyPayLoad.Event.GAME_RESULT_UPDATED) {
-            return;
-        }
-        String gameLocation = myPayLoad.getGameLocation();
-        if (gameLocation == null) {
-            return;
-        }
-        try {
-            MyFirebase.makeSureEverythingIsInOrder();
-            //get the game
-            final Game game = new Game();
-            game.setTableNumber(-1);
-            final CountDownLatch latch01 = new CountDownLatch(1);
-            DatabaseReference gameRef = FirebaseDatabase.getInstance().getReference(gameLocation);
-            gameRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.getValue() != null) {
-                        Game newGame = dataSnapshot.getValue(Game.class);
-                        if (newGame != null) {
-                            game.copyValues(newGame);
-                        }
-                    }
-                    latch01.countDown();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    errorLogger.info("firebase error: " + databaseError.getMessage());
-                    latch01.countDown();
-                }
-            });
-
-            latch01.await();
-            if (game.getTableNumber() == -1) {
-                return;
-            }
-            //wee have data
-            if (game.getWhitePlayer() != null) {
-                Player whitePlayer = game.getWhitePlayer();
-                computeDevicesAndNotify(whitePlayer, game);
-            }
-            if (game.getBlackPlayer() != null) {
-                Player blackPlayer = game.getBlackPlayer();
-                computeDevicesAndNotify(blackPlayer, game);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Deprecated
-    private List<Device> computeDevicesAndNotify(Player player, Game game) {
-        String playerKey = player.getPlayerKey();
-        final List<String> userKeys = new ArrayList<>();
-        final List<Device> devices = new ArrayList<>();
-        String globalFollowersLoc = Constants.LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER
-                .replace(Constants.PLAYER_KEY, playerKey);
-        DatabaseReference globalFollowersRef = FirebaseDatabase.getInstance().getReference(globalFollowersLoc);
-        try {
-            final CountDownLatch latch = new CountDownLatch(1);
-            globalFollowersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChildren()) {
-                        for (DataSnapshot item : dataSnapshot.getChildren()) {
-                            User user = item.getValue(User.class);
-                            userKeys.add(user.getUserKey());
-                        }
-                    }
-                    latch.countDown();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    latch.countDown();
-                }
-            });
-
-            latch.await();
-
-            for (String userKey : userKeys) {
-                final CountDownLatch secondLatch = new CountDownLatch(1);
-                String myDevicesLoc = Constants.LOCATION_MY_DEVICES
-                        .replace(Constants.USER_KEY, userKey);
-                DatabaseReference myDevicesRef = FirebaseDatabase.getInstance().getReference(myDevicesLoc);
-                myDevicesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.hasChildren()) {
-                            for (DataSnapshot item : dataSnapshot.getChildren()) {
-                                Device device = item.getValue(Device.class);
-                                if (device != null) {
-                                    devices.add(device);
-                                }
-                            }
-                        }
-                        secondLatch.countDown();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        secondLatch.countDown();
-                    }
-                });
-                secondLatch.await();
-            }
-            for (Device device : devices) {
-                if (device.getDeviceType().equals(String.valueOf(Device.DeviceType.ANDROID))) {
-                    sendNotification(device.getDeviceKey(), player, game);
-                }
-            }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return devices;
-    }
 
     private void sendNotification(String deviceKey, Player player, Game game) {
         if (deviceKeys.contains(deviceKey)) {
