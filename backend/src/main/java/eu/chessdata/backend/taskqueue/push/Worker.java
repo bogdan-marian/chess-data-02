@@ -90,6 +90,10 @@ public class Worker extends HttpServlet {
 
     }
 
+    /**
+     * starts the notification process for a specific game
+     * @param myPayLoad contains the standard location in the firebase for that game
+     */
     private void restNotifyUsersGameResultUpdated(MyPayLoad myPayLoad) {
         if (myPayLoad.getEvent() != MyPayLoad.Event.GAME_RESULT_UPDATED) {
             return;
@@ -116,6 +120,11 @@ public class Worker extends HttpServlet {
         }
     }
 
+    /**
+     * identifies what users are interested in this player
+     * @param player the player that wee are referring
+     * @param game the game that wee are referring
+     */
     private void restComputeDevicesAndNotify(Player player, Game game) {
         String accessToken = MyAuth.getAccessToken();
         if (accessToken == null) {
@@ -140,6 +149,7 @@ public class Worker extends HttpServlet {
             for (Device device : devices) {
                 if (device.getDeviceType().equals(String.valueOf(Device.DeviceType.ANDROID))) {
                     sendNotification(device.getDeviceKey(), player, game);
+                    log.info("chess-data-notification: userKey="+userKey+" deviceKey="+device.getDeviceKey());
                 }
             }
 
