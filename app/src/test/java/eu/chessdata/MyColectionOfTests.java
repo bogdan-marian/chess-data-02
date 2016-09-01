@@ -12,7 +12,7 @@ import java.io.Reader;
 import eu.chessdata.chesspairing.Tools;
 import eu.chessdata.chesspairing.model.ChesspairingTournament;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
@@ -36,6 +36,11 @@ public class MyColectionOfTests {
         // simple line that tests that wee have the correct data
         Assert.assertTrue("Not the expected data", tournament.getName().equals("Tournament 1"));
 
+        assertEquals(6,3+3);
+    }
+
+    @Test
+    public void howToDecodeListOfObjectsFromJson()throws Exception{
         assertEquals(6,3+3);
     }
 }

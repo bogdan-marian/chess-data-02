@@ -6,7 +6,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 
@@ -14,11 +13,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
@@ -124,23 +123,85 @@ public class Worker extends HttpServlet {
         }
         String playerKey = player.getPlayerKey();
         List<String> userKeys = new ArrayList<>();
-        List<Device> devices = new ArrayList<>();
+
 
         String globalFollowersLoc = Constants.LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER
                 .replace(Constants.PLAYER_KEY, playerKey);
         globalFollowersLoc = Constants.FIREBASE_URL + globalFollowersLoc + ".json?access_token=" + accessToken;
         List<User> followers = getFollowers(globalFollowersLoc);
+
+        for (User user : followers) {
+            String userKey = user.getUserKey();
+            String myDevicesLoc = Constants.LOCATION_MY_DEVICES
+                    .replace(Constants.USER_KEY, userKey);
+            myDevicesLoc = Constants.FIREBASE_URL + myDevicesLoc + ".json?access_token=" + accessToken;
+
+            List<Device> devices = getUserDevices(myDevicesLoc);
+            for (Device device : devices) {
+                if (device.getDeviceType().equals(String.valueOf(Device.DeviceType.ANDROID))) {
+                    sendNotification(device.getDeviceKey(), player, game);
+                }
+            }
+
+        }
     }
-    private List<User> getFollowers(String globalFollowersUrl){
-        String jsonUsers = restFirebaseGetContent(globalFollowersUrl);
-        if (jsonUsers == null){
+
+    private List<Device> getUserDevices(String userDevicesUrl) {
+
+        String jsonDevices = restFirebaseGetContent(userDevicesUrl);
+        if (jsonDevices == null) {
             return new ArrayList<>();
         }
-        log.info("chess-data-jsonUsers: " + jsonUsers);
-        Type listType = new TypeToken<List<User>>(){}.getType();
 
-        List<User> users = MyGson.getGson().fromJson(jsonUsers,listType);
-        log.info("chess-data-decodedListSize = " + users.size());
+        Gson gson = MyGson.getGson();
+        List<Device> devices = new ArrayList<>();
+
+        JSONObject jsonObject = new JSONObject(jsonDevices);
+        Iterator<?> keys = jsonObject.keys();
+        while (keys.hasNext()) {
+            String key = (String) keys.next();
+            if (jsonObject.get(key) instanceof JSONObject) {
+                JSONObject item = (JSONObject) jsonObject.get(key);
+                String testJson = item.toString();
+                log.info("chess-data-device-text: " + testJson);
+                Device device = gson.fromJson(testJson, Device.class);
+                if (device != null) {
+                    devices.add(device);
+                }
+            }
+        }
+        log.info("chess-data-total-devices = " + devices.size());
+        return devices;
+    }
+
+    /**
+     * It decodes the list of followers from firebase referenced by globalFollowersUrl.
+     *
+     * @param globalFollowersUrl
+     * @return the list of users that follows a player
+     */
+    private List<User> getFollowers(String globalFollowersUrl) {
+        String jsonUsers = restFirebaseGetContent(globalFollowersUrl);
+        if (jsonUsers == null) {
+            return new ArrayList<>();
+        }
+
+        Gson gson = MyGson.getGson();
+        List<User> users = new ArrayList<>();
+
+        JSONObject jsonObject = new JSONObject(jsonUsers);
+        Iterator<?> keys = jsonObject.keys();
+        while (keys.hasNext()) {
+            String key = (String) keys.next();
+            if (jsonObject.get(key) instanceof JSONObject) {
+                JSONObject item = (JSONObject) jsonObject.get(key);
+                String text = item.toString();
+                User user = gson.fromJson(text, User.class);
+                if (user != null) {
+                    users.add(user);
+                }
+            }
+        }
         return users;
     }
 
@@ -193,7 +254,7 @@ public class Worker extends HttpServlet {
         }
 
         log.info("chess-data-restFirebaseGetContent locationUrl=" + locationUrl);
-        log.info("chess-data-restFirebaseGetContent response="+responseJson);
+        log.info("chess-data-restFirebaseGetContent response=" + responseJson);
         return responseJson;
     }
 
