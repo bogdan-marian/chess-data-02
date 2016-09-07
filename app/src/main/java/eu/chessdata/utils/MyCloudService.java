@@ -1,20 +1,16 @@
 package eu.chessdata.utils;
 
 import android.app.IntentService;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import eu.chessdata.model.MyPayLoad;
@@ -28,9 +24,10 @@ import eu.chessdata.model.MyPayLoad;
 public class MyCloudService extends IntentService {
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_GAME_RESULT_UPDATED = "eu.chessdata.utils.ACTION_GAME_RESULT_UPDATED";
-    private static final String ACTION_BAZ = "eu.chessdata.utils.action.BAZ";
+    private static final String ACTION_GENERATE_NEXT_ROUND = "eu.chessdata.utils.ACTION_GENERATE_NEXT_ROUND";
     private static final String EXTRA_GAME_LOCATION = "eu.chessdata.utils.EXTRA_GAME_LOCATION";
-    private static final String EXTRA_PARAM2 = "eu.chessdata.utils.extra.PARAM2";
+    private static final String EXTRA_TOURNAMENT_KEY = "eu.chessdata.utils.EXTRA_TOURNAMENT_KEY";
+    private static final String EXTRA_CLUB_KEY = "eu.chessdata.utils.EXTRA_CLUB_KEY";
     private static String tag = Constants.LOG_TAG;
 
     public MyCloudService() {
@@ -53,11 +50,11 @@ public class MyCloudService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
+    public static void startActionGenerateNextRound(Context context, String clubKey, String tournamentKey) {
         Intent intent = new Intent(context, MyCloudService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_GAME_LOCATION, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
+        intent.setAction(ACTION_GENERATE_NEXT_ROUND);
+        intent.putExtra(EXTRA_GAME_LOCATION, clubKey);
+        intent.putExtra(EXTRA_TOURNAMENT_KEY, tournamentKey);
         context.startService(intent);
     }
 
@@ -68,10 +65,10 @@ public class MyCloudService extends IntentService {
             if (ACTION_GAME_RESULT_UPDATED.equals(action)) {
                 final String gameLocation = intent.getStringExtra(EXTRA_GAME_LOCATION);
                 handleActionGameResultUpdated(gameLocation);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_GAME_LOCATION);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
+            } else if (ACTION_GENERATE_NEXT_ROUND.equals(action)) {
+                final String clubKey = intent.getStringExtra(EXTRA_CLUB_KEY);
+                final String tournamentKey = intent.getStringExtra(EXTRA_TOURNAMENT_KEY);
+                handleActionGenerateNextRound(clubKey, tournamentKey);
             }
         }
     }
@@ -126,8 +123,12 @@ public class MyCloudService extends IntentService {
      * Handle action Baz in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionBaz(String param1, String param2) {
+    private void handleActionGenerateNextRound(String clubKey, String tournamentKey) {
         // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+        if (!MyFirebaseUtils.isCurrentUserAdmin(clubKey)){
+            Log.d(tag,"User is not an admin ");
+            return;
+        }
+        Log.d(tag, "User is an admin time to move on");
     }
 }

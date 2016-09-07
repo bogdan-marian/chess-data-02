@@ -1,5 +1,6 @@
 package eu.chessdata.ui.round;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,6 +29,7 @@ import eu.chessdata.model.Game;
 import eu.chessdata.model.Player;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.utils.Constants;
+import eu.chessdata.utils.MyCloudService;
 import eu.chessdata.utils.MyFabInterface;
 import eu.chessdata.utils.MyFirebaseUtils;
 
@@ -44,6 +46,7 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
     private List<Player> mPlayers;
     private boolean mShowGames = false;
     private boolean mUserIsAdmin = false;
+    private Context mContext;
 
     public static Bundle getBundle(String tournamentKey, int roundNumber, String clubKey) {
         Bundle bundle = new Bundle();
@@ -170,6 +173,12 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
 
         @Override
         protected Void doInBackground(Void... params) {
+            boolean runNewAlgorithm = true;
+            if (runNewAlgorithm){
+                MyCloudService.startActionGenerateNextRound(mContext,mClubKey,mTournamentKey);
+                return null;
+            }
+
             String tournamentLoc = Constants.LOCATION_TOURNAMENTS
                     .replace(Constants.CLUB_KEY, mClubKey)
                     .replace(Constants.TOURNAMENT_KEY, mTournamentKey);
@@ -192,6 +201,8 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
             return null;
         }
     }
+
+
 
     /**
      * get the players and then generate the games

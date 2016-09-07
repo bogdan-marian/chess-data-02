@@ -11,6 +11,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import eu.chessdata.model.DefaultClub;
 import eu.chessdata.model.Tournament;
@@ -171,7 +172,6 @@ public class MyFirebaseUtils {
 
 
     public static void isCurrentUserAdmin(String clubKey, final OnUserIsAdmin onUserIsAdmin) {
-        Log.d(tag, "Tome to implement MyFirebaseUtils.isCurrentUserAdmin");
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String clubManagerLoc = Constants.LOCATION_CLUB_MANAGERS
                 .replace(Constants.CLUB_KEY, clubKey)
@@ -193,5 +193,44 @@ public class MyFirebaseUtils {
                 onUserIsAdmin.onUserIsAdmin(false);
             }
         });
+    }
+
+    /**
+     * It checks using the clubKey if the user is a manager
+     *
+     * @param clubKey
+     * @return
+     */
+    public static boolean isCurrentUserAdmin(String clubKey) {
+        Log.d(tag, "Tome to implementis_CurrentUser Admin! return boolean");
+        final Boolean managers[] = {false};//first boolean holds the result
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String clubManagerLoc = Constants.LOCATION_CLUB_MANAGERS
+                .replace(Constants.CLUB_KEY, clubKey)
+                .replace(Constants.MANAGER_KEY, uid);
+        final CountDownLatch latch = new CountDownLatch(1);
+        DatabaseReference managerRef = FirebaseDatabase.getInstance().getReference(clubManagerLoc);
+        managerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getValue() != null) {
+                    managers[0] = true;
+                    latch.countDown();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, databaseError.getMessage());
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Log.e(tag, "isCurrentUserAdmin " + e.getMessage());
+        }
+        return managers[0];
     }
 }
