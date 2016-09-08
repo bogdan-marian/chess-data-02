@@ -53,7 +53,7 @@ public class MyCloudService extends IntentService {
     public static void startActionGenerateNextRound(Context context, String clubKey, String tournamentKey) {
         Intent intent = new Intent(context, MyCloudService.class);
         intent.setAction(ACTION_GENERATE_NEXT_ROUND);
-        intent.putExtra(EXTRA_GAME_LOCATION, clubKey);
+        intent.putExtra(EXTRA_CLUB_KEY, clubKey);
         intent.putExtra(EXTRA_TOURNAMENT_KEY, tournamentKey);
         context.startService(intent);
     }

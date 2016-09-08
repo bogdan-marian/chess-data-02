@@ -60,6 +60,7 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
         mTournamentKey = getArguments().getString(Constants.TOURNAMENT_KEY);
         mRoundNumber = getArguments().getInt(Constants.ROUND_NUMBER);
         mClubKey = getArguments().getString(Constants.CLUB_KEY);
+        mContext = getActivity().getApplicationContext();
     }
 
     @Nullable
