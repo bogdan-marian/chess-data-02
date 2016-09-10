@@ -9,12 +9,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import eu.chessdata.chesspairing.model.ChesspairingTournament;
 import eu.chessdata.model.DefaultClub;
+import eu.chessdata.model.Player;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.model.User;
 import eu.chessdata.ui.MainActivity;
@@ -65,11 +69,39 @@ public class MyFirebaseUtils {
         } catch (InterruptedException e) {
             Log.e(tag, "tournamentDetailsError: " + e.getMessage());
         }
+
         //populate players
-
-
+        List<Player> players = getTournamentPlayers(tournamentKey);
         throw new IllegalStateException("Please finish this");
     }
+
+    public static List<Player> getTournamentPlayers(String tournamentKey){
+        final List<Player> playerList = new ArrayList<>();
+        final CountDownLatch latch = new CountDownLatch(1);
+        String playersLoc = Constants.LOCATION_TOURNAMENT_PLAYERS
+                .replace(Constants.TOURNAMENT_KEY,tournamentKey);
+        DatabaseReference playersRef = FirebaseDatabase.getInstance().getReference(playersLoc);
+        playersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot>it = dataSnapshot.getChildren().iterator();
+                while (it.hasNext()){
+                    DataSnapshot snapshot = (DataSnapshot)it.next();
+                    Player player = snapshot.getValue(Player.class);
+                    playerList.add(player);
+                }
+                latch.countDown();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag,databaseError.getMessage());
+                latch.countDown();
+            }
+        });
+        return playerList;
+    }
+
 
     public static void setDefaultClub(DefaultClub defaultManagedClub) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
