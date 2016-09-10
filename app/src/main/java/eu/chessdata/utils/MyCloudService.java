@@ -13,6 +13,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import eu.chessdata.chesspairing.model.ChesspairingTournament;
 import eu.chessdata.model.MyPayLoad;
 
 /**
@@ -125,10 +126,11 @@ public class MyCloudService extends IntentService {
      */
     private void handleActionGenerateNextRound(String clubKey, String tournamentKey) {
         // TODO: Handle action Baz
-        if (!MyFirebaseUtils.isCurrentUserAdmin(clubKey)){
-            Log.d(tag,"User is not an admin ");
+        if (!MyFirebaseUtils.isCurrentUserAdmin(clubKey)) {
+            Log.d(tag, "User is not an admin ");
             return;
         }
         Log.d(tag, "User is an admin time to move on");
+        ChesspairingTournament tournament = MyFirebaseUtils.buildChessPairingTournament(clubKey, tournamentKey);
     }
 }

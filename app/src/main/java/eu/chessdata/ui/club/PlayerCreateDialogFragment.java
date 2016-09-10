@@ -66,8 +66,8 @@ public class PlayerCreateDialogFragment extends DialogFragment {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        String playersLoc =  Constants.LOCATION_CLUB_PLAYERS
-                .replace(Constants.CLUB_KEY,mClubKey);
+        String playersLoc = Constants.LOCATION_CLUB_PLAYERS
+                .replace(Constants.CLUB_KEY, mClubKey);
         DatabaseReference playersRef = database.getReference(playersLoc);
         DatabaseReference playerRef = playersRef.push();
         String playerKey = playerRef.getKey();
@@ -78,7 +78,11 @@ public class PlayerCreateDialogFragment extends DialogFragment {
     private Player buildPlayer() {
         String name = ((EditText) mView.findViewById(R.id.profileName)).getText().toString();
         String email = ((EditText) mView.findViewById(R.id.email)).getText().toString();
-        Player player = new Player(name, email, mClubKey, mClubName);
+        String eloString = ((EditText) mView.findViewById(R.id.elo)).getText().toString();
+        int elo = Integer.valueOf(eloString);
+        String clubEloString = ((EditText) mView.findViewById(R.id.clubElo)).getText().toString();
+        int clubElo = Integer.valueOf(eloString);
+        Player player = new Player(name, email, mClubKey, mClubName,elo,clubElo);
         return player;
     }
 }

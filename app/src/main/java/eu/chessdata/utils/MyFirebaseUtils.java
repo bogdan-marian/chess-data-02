@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import eu.chessdata.chesspairing.model.ChesspairingTournament;
 import eu.chessdata.model.DefaultClub;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.model.User;
@@ -24,16 +25,50 @@ import eu.chessdata.ui.MainActivity;
 public class MyFirebaseUtils {
     private static final String tag = Constants.LOG_TAG;
 
-    public interface OnOneTimeResultsListener {
-        public void onClubValue(DefaultClub defaultClub, MainActivity.ACTION action);
+    /**
+     * it collects the entire required data from firebase in order to build the current state
+     * of the tournament
+     *
+     * @param clubKey
+     * @param tournamentKey
+     * @return
+     */
+    public static ChesspairingTournament buildChessPairingTournament(String clubKey, String tournamentKey) {
+        final ChesspairingTournament chesspairingTournament = new ChesspairingTournament();
+        final CountDownLatch latch1 = new CountDownLatch(1);
+        //get the general description
+        String tournamentLoc = Constants.LOCATION_TOURNAMENT
+                .replace(Constants.CLUB_KEY, clubKey)
+                .replace(Constants.TOURNAMENT_KEY,tournamentKey);
+        DatabaseReference tournamentRef = FirebaseDatabase.getInstance().getReference(tournamentLoc);
+        tournamentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Tournament tournament = dataSnapshot.getValue(Tournament.class);
+                if (tournament!=null){
+                    chesspairingTournament.setName(tournament.getName());
+                    chesspairingTournament.setDescription(tournament.getDescription());
+                    chesspairingTournament.setTotalRounds(tournament.getTotalRounds());
+                    chesspairingTournament.setTotalRounds(tournament.getTotalRounds());
+                }
+                latch1.countDown();
+            }
 
-        public void onClubValue(DefaultClub defaultClub);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag,databaseError.getMessage());
+                latch1.countDown();
+            }
+        });
+        try {
+            latch1.await();
+        } catch (InterruptedException e) {
+            Log.e(tag, "tournamentDetailsError: " + e.getMessage());
+        }
+        //populate players
 
-        public void onUserIsClubManager(Map<String, String> dataMap, MainActivity.ACTION action);
-    }
 
-    public interface OnUserIsAdmin {
-        public void onUserIsAdmin(boolean isAdmin);
+        throw new IllegalStateException("Please finish this");
     }
 
     public static void setDefaultClub(DefaultClub defaultManagedClub) {
@@ -45,7 +80,6 @@ public class MyFirebaseUtils {
         DatabaseReference managedClubRef = database.getReference(defaultClubLocation);
         managedClubRef.setValue(defaultManagedClub);
     }
-
 
     public static void getDefaultClub(final OnOneTimeResultsListener listener, final MainActivity.ACTION action) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -170,7 +204,6 @@ public class MyFirebaseUtils {
 
     }
 
-
     public static void isCurrentUserAdmin(String clubKey, final OnUserIsAdmin onUserIsAdmin) {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String clubManagerLoc = Constants.LOCATION_CLUB_MANAGERS
@@ -232,5 +265,18 @@ public class MyFirebaseUtils {
             Log.e(tag, "isCurrentUserAdmin " + e.getMessage());
         }
         return managers[0];
+    }
+
+
+    public interface OnOneTimeResultsListener {
+        public void onClubValue(DefaultClub defaultClub, MainActivity.ACTION action);
+
+        public void onClubValue(DefaultClub defaultClub);
+
+        public void onUserIsClubManager(Map<String, String> dataMap, MainActivity.ACTION action);
+    }
+
+    public interface OnUserIsAdmin {
+        public void onUserIsAdmin(boolean isAdmin);
     }
 }

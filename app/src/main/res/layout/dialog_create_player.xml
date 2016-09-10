@@ -31,5 +31,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="Email"/>
+    <EditText
+        android:id="@+id/elo"
+        android:inputType="number"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="Elo"/>
+    <EditText
+        android:id="@+id/clubElo"
+        android:inputType="number"
+        android:hint="Club elo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 
 </LinearLayout>
