@@ -12,7 +12,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
+import eu.chessdata.chesspairing.algoritms.fideswissduch.Algorithm;
+import eu.chessdata.chesspairing.algoritms.fideswissduch.FideSwissDutchAlgorithm;
+import eu.chessdata.chesspairing.model.ChesspairingRound;
 import eu.chessdata.chesspairing.model.ChesspairingTournament;
 import eu.chessdata.model.MyPayLoad;
 
@@ -129,7 +133,12 @@ public class MyCloudService extends IntentService {
             Log.d(tag, "User is not an admin ");
             return;
         }
-        Log.d(tag, "User is an admin time to move on");
         ChesspairingTournament tournament = MyFirebaseUtils.buildChessPairingTournament(clubKey, tournamentKey);
+        Algorithm algorithm = new FideSwissDutchAlgorithm();
+        tournament = algorithm.generateNextRound(tournament);
+        List<ChesspairingRound> rounds = tournament.getRounds();
+        ChesspairingRound round = rounds.get(rounds.size()-1);
+        MyFirebaseUtils.persistNewGames(clubKey,tournamentKey,round);
+        Log.d(tag, "Round has bean generated time to store it");
     }
 }

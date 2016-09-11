@@ -1,5 +1,6 @@
 package eu.chessdata.utils;
 
+import android.util.ArrayMap;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -388,7 +389,6 @@ public class MyFirebaseUtils {
      * @return
      */
     public static boolean isCurrentUserAdmin(String clubKey) {
-        Log.d(tag, "Tome to implementis_CurrentUser Admin! return boolean");
         final Boolean managers[] = {false};//first boolean holds the result
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String clubManagerLoc = Constants.LOCATION_CLUB_MANAGERS
@@ -418,6 +418,75 @@ public class MyFirebaseUtils {
             Log.e(tag, "isCurrentUserAdmin " + e.getMessage());
         }
         return managers[0];
+    }
+
+
+    public static void persistNewGames(String clubKey, String tournamentKey, ChesspairingRound round) {
+        int firstTableNumber = MyFirebaseUtils.getFirstTableNumber(clubKey,tournamentKey);
+        List<Player> tempList = MyFirebaseUtils.getTournamentPlayers(tournamentKey);
+        Map<String, Player> playerMap = new HashMap<>();
+        for (Player player: tempList){
+            playerMap.put(player.getPlayerKey(),player);
+        }
+
+        //copy the games data
+        List<ChesspairingGame>chesspairingGames = round.getGames();
+        List<Game> games = new ArrayList<>();
+        int table = 0;
+        for(ChesspairingGame chesspairingGame: chesspairingGames){
+            Game game = new Game();
+            game.setTableNumber(chesspairingGame.getTableNumber());
+            game.setActualNumber(chesspairingGame.getTableNumber()+firstTableNumber+1);
+            game.setWhitePlayer(playerMap.get(chesspairingGame.getWhitePlayer().getPlayerKey()));
+            if (chesspairingGame.getBlackPlayer()!=null){
+                //white player ad black player are present
+                game.setBlackPlayer(playerMap.get(chesspairingGame.getBlackPlayer().getPlayerKey()));
+            }else {
+                game.setResult(4);
+            }
+            games.add(game);
+        }
+        String roundNumber = String.valueOf(round.getRoundNumber());
+        String gamesLoc = Constants.LOCATION_ROUND_GAMES
+                .replace(Constants.TOURNAMENT_KEY, tournamentKey)
+                .replace(Constants.ROUND_NUMBER, roundNumber);
+        DatabaseReference allGamesRef = FirebaseDatabase.getInstance().getReference(gamesLoc);
+        for (Game gameItem: games){
+            DatabaseReference gameRef = allGamesRef.getRef().child(String.valueOf(gameItem.getTableNumber()));
+            gameRef.setValue(gameItem);
+        }
+    }
+
+    private static int getFirstTableNumber(String clubKey, String tournamentKey) {
+        final int numbers[]={1};//first number holds the result
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        String tournamentLoc = Constants.LOCATION_TOURNAMENTS
+                .replace(Constants.CLUB_KEY, clubKey)
+                .replace(Constants.TOURNAMENT_KEY, tournamentKey);
+        DatabaseReference tournamentRef = FirebaseDatabase.getInstance().getReference(tournamentLoc);
+        tournamentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    Tournament tournament = dataSnapshot.getValue(Tournament.class);
+                    numbers[0] = tournament.getFirstTableNumber();
+                }
+                latch.countDown();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, "getFirstTableNumber: " + databaseError.getMessage());
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Log.e(tag, "getFirstTableNumber " + e.getMessage());
+        }
+        return numbers[0];
     }
 
 

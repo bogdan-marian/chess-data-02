@@ -36,7 +36,7 @@ import eu.chessdata.utils.MyFirebaseUtils;
 /**
  * Created by Bogdan Oloeriu on 6/13/2016.
  */
-public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUserIsAdmin{
+public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUserIsAdmin {
     private String tag = Constants.LOG_TAG;
 
     private String mTournamentKey;
@@ -47,6 +47,9 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
     private boolean mShowGames = false;
     private boolean mUserIsAdmin = false;
     private Context mContext;
+
+    private enum CURRENT_STATE {PRESENCE, GAMES};
+    private CURRENT_STATE mCurrentState;
 
     public static Bundle getBundle(String tournamentKey, int roundNumber, String clubKey) {
         Bundle bundle = new Bundle();
@@ -70,7 +73,7 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
         View view = inflater.inflate(R.layout.fragment_round_state, container, false);
         setParameters();
         computeData();
-        MyFirebaseUtils.isCurrentUserAdmin(mClubKey,this);
+        MyFirebaseUtils.isCurrentUserAdmin(mClubKey, this);
         return view;
     }
 
@@ -168,44 +171,6 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
     }
 
     /**
-     * Int starts the initial flow for paring game players
-     */
-    class GamesGenerationTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            boolean runNewAlgorithm = true;
-            if (runNewAlgorithm){
-                MyCloudService.startActionGenerateNextRound(mContext,mClubKey,mTournamentKey);
-                return null;
-            }
-
-            String tournamentLoc = Constants.LOCATION_TOURNAMENTS
-                    .replace(Constants.CLUB_KEY, mClubKey)
-                    .replace(Constants.TOURNAMENT_KEY, mTournamentKey);
-            DatabaseReference tournamentRef = FirebaseDatabase.getInstance().getReference(tournamentLoc);
-            tournamentRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.getValue() != null) {
-                        Tournament tournament = dataSnapshot.getValue(Tournament.class);
-                        mFirstTableNumber = tournament.getFirstTableNumber();
-                        onTimeToDecideIfWeeNeedToGenerateGames();
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e(tag, "Firebase error: " + databaseError.getMessage());
-                }
-            });
-            return null;
-        }
-    }
-
-
-
-    /**
      * get the players and then generate the games
      */
     private void onTimeToDecideIfWeeNeedToGenerateGames() {
@@ -288,7 +253,7 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
         }
 
         //persist the games
-        Log.d(tag,"Time to persist games. total= "+ games.size());
+        Log.d(tag, "Time to persist games. total= " + games.size());
         String gamesLoc = Constants.LOCATION_ROUND_GAMES
                 .replace(Constants.TOURNAMENT_KEY, mTournamentKey)
                 .replace(Constants.ROUND_NUMBER, String.valueOf(mRoundNumber));
@@ -300,5 +265,52 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
         showGames();
         MyFabInterface myFabInterface = (MyFabInterface) getActivity();
         myFabInterface.disableFab();
+    }
+
+    /**
+     * Int starts the initial flow for paring game players
+     */
+    class GamesGenerationTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            boolean runNewAlgorithm = true;
+            if (runNewAlgorithm) {
+                MyCloudService.startActionGenerateNextRound(mContext, mClubKey, mTournamentKey);
+//                showGames();
+//                MyFabInterface myFabInterface = (MyFabInterface) getActivity();
+//                myFabInterface.disableFab();
+                return null;
+            }
+
+            String tournamentLoc = Constants.LOCATION_TOURNAMENTS
+                    .replace(Constants.CLUB_KEY, mClubKey)
+                    .replace(Constants.TOURNAMENT_KEY, mTournamentKey);
+            DatabaseReference tournamentRef = FirebaseDatabase.getInstance().getReference(tournamentLoc);
+            tournamentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
+                        Tournament tournament = dataSnapshot.getValue(Tournament.class);
+                        mFirstTableNumber = tournament.getFirstTableNumber();
+                        onTimeToDecideIfWeeNeedToGenerateGames();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e(tag, "Firebase error: " + databaseError.getMessage());
+                }
+            });
+            return null;
+        }
+    }
+
+    class LivePresenceGamesSwap extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            return null;
+        }
     }
 }
