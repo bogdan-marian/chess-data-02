@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import eu.chessdata.chesspairing.model.ChesspairingGame;
 import eu.chessdata.chesspairing.model.ChesspairingPlayer;
 import eu.chessdata.chesspairing.model.ChesspairingRound;
 import eu.chessdata.chesspairing.model.ChesspairingTournament;
@@ -100,6 +101,15 @@ public class MyFirebaseUtils {
         }
 
         //todo see what round wee need to set as present
+        for (ChesspairingRound round: chesspairingTournament.getRounds()){
+            List<ChesspairingGame> games = round.getGames();
+            if (games==null || games.size()==0){
+                for (ChesspairingPlayer player: round.getPresentPlayers()){
+                    ChesspairingPlayer reference = chesspairingPlayerMap.get(player.getPlayerKey());
+                    reference.setPresent(true);
+                }
+            }
+        }
         throw new IllegalStateException("Please finish this");
     }
 
