@@ -88,6 +88,18 @@ public class MyFirebaseUtils {
 
         //populate the rounds
         chesspairingTournament.setRounds(getTournamentRounds(tournamentKey));
+        /**
+         * get the last round that has no games and copy the presence in the main list.
+         * For the moment I consider the last round the first round that has no games;
+         * Wee remove from the list the first round that has no games
+         */
+        Map<String, ChesspairingPlayer> chesspairingPlayerMap = new HashMap<>();
+        for (ChesspairingPlayer chesspairingPlayer:chesspairingTournament.getPlayers()){
+            chesspairingPlayer.setPresent(false);
+            chesspairingPlayerMap.put(chesspairingPlayer.getPlayerKey(),chesspairingPlayer);
+        }
+
+        //todo see what round wee need to set as present
         throw new IllegalStateException("Please finish this");
     }
 
@@ -120,10 +132,7 @@ public class MyFirebaseUtils {
                         Iterator<DataSnapshot> playersIterator = playersSnapshot.getChildren().iterator();
                         while (playersIterator.hasNext()) {
                             DataSnapshot playerSnapshot = (DataSnapshot) playersIterator.next();
-                            Player player = snapshot.getValue(Player.class);
-                            if (player.getName()==null){
-                                throw new IllegalStateException("Not able to decode player name");
-                            }
+                            Player player = playerSnapshot.getValue(Player.class);
                             players.add(player);
                         }
                     }
@@ -155,6 +164,12 @@ public class MyFirebaseUtils {
                 latch.countDown();
             }
         });
+        //wait for the thread to finish computation
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Log.e(tag, "tournamentDetailsError: " + e.getMessage());
+        }
         return chesspairingRounds;
     }
 
