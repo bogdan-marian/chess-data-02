@@ -95,6 +95,7 @@ public class MyFirebaseUtils {
          * Wee remove from the list the first round that has no games
          */
         Map<String, ChesspairingPlayer> chesspairingPlayerMap = new HashMap<>();
+        Log.i(tag,"debug: " + chesspairingTournament.getName()+chesspairingTournament.getPlayers().size());
         for (ChesspairingPlayer chesspairingPlayer:chesspairingTournament.getPlayers()){
             chesspairingPlayer.setPresent(false);
             chesspairingPlayerMap.put(chesspairingPlayer.getPlayerKey(),chesspairingPlayer);
@@ -106,6 +107,9 @@ public class MyFirebaseUtils {
             if (games==null || games.size()==0){
                 for (ChesspairingPlayer player: round.getPresentPlayers()){
                     ChesspairingPlayer reference = chesspairingPlayerMap.get(player.getPlayerKey());
+                    if (reference==null){
+                        throw new IllegalStateException("Please debug and see why the reference is null");
+                    }
                     reference.setPresent(true);
                 }
             }
@@ -208,6 +212,11 @@ public class MyFirebaseUtils {
                 latch.countDown();
             }
         });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Log.e(tag, "getTournamentPlayers: " + e.getMessage());
+        }
         return playerList;
     }
 
