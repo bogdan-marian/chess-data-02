@@ -125,7 +125,6 @@ public class MyCloudService extends IntentService {
      * parameters.
      */
     private void handleActionGenerateNextRound(String clubKey, String tournamentKey) {
-        // TODO: Handle action Baz
         if (!MyFirebaseUtils.isCurrentUserAdmin(clubKey)) {
             Log.d(tag, "User is not an admin ");
             return;

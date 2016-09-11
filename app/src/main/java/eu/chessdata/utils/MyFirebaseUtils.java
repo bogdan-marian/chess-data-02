@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import eu.chessdata.chesspairing.algoritms.fideswissduch.Algorithm;
+import eu.chessdata.chesspairing.algoritms.fideswissduch.FideSwissDutchAlgorithm;
 import eu.chessdata.chesspairing.model.ChesspairingGame;
 import eu.chessdata.chesspairing.model.ChesspairingPlayer;
 import eu.chessdata.chesspairing.model.ChesspairingRound;
@@ -101,20 +103,21 @@ public class MyFirebaseUtils {
             chesspairingPlayerMap.put(chesspairingPlayer.getPlayerKey(),chesspairingPlayer);
         }
 
-        //todo see what round wee need to set as present
+        //see what round wee need to set as present
+        int k = -1;
         for (ChesspairingRound round: chesspairingTournament.getRounds()){
+            k++;
             List<ChesspairingGame> games = round.getGames();
             if (games==null || games.size()==0){
                 for (ChesspairingPlayer player: round.getPresentPlayers()){
                     ChesspairingPlayer reference = chesspairingPlayerMap.get(player.getPlayerKey());
-                    if (reference==null){
-                        throw new IllegalStateException("Please debug and see why the reference is null");
-                    }
                     reference.setPresent(true);
                 }
+                chesspairingTournament.getRounds().remove(k);
+                break;
             }
         }
-        throw new IllegalStateException("Please finish this");
+        return chesspairingTournament;
     }
 
     public static List<ChesspairingRound> getTournamentRounds(String tournamentKey) {
