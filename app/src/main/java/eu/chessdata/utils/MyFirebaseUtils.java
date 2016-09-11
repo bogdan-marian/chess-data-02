@@ -12,12 +12,16 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import eu.chessdata.chesspairing.model.ChesspairingPlayer;
+import eu.chessdata.chesspairing.model.ChesspairingRound;
 import eu.chessdata.chesspairing.model.ChesspairingTournament;
 import eu.chessdata.model.DefaultClub;
+import eu.chessdata.model.Game;
 import eu.chessdata.model.Player;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.model.User;
@@ -43,13 +47,13 @@ public class MyFirebaseUtils {
         //get the general description
         String tournamentLoc = Constants.LOCATION_TOURNAMENT
                 .replace(Constants.CLUB_KEY, clubKey)
-                .replace(Constants.TOURNAMENT_KEY,tournamentKey);
+                .replace(Constants.TOURNAMENT_KEY, tournamentKey);
         DatabaseReference tournamentRef = FirebaseDatabase.getInstance().getReference(tournamentLoc);
         tournamentRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Tournament tournament = dataSnapshot.getValue(Tournament.class);
-                if (tournament!=null){
+                if (tournament != null) {
                     chesspairingTournament.setName(tournament.getName());
                     chesspairingTournament.setDescription(tournament.getDescription());
                     chesspairingTournament.setTotalRounds(tournament.getTotalRounds());
@@ -60,7 +64,7 @@ public class MyFirebaseUtils {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(tag,databaseError.getMessage());
+                Log.e(tag, databaseError.getMessage());
                 latch1.countDown();
             }
         });
@@ -72,21 +76,101 @@ public class MyFirebaseUtils {
 
         //populate players
         List<Player> players = getTournamentPlayers(tournamentKey);
+        List<ChesspairingPlayer> chesspairingPlayers = new ArrayList<>();
+        int i = 0;
+        for (Player player : players) {
+            i++;//set the player order as the natural one collected from firebase
+            ChesspairingPlayer chesspairingPlayer = MyChesspairingUtils.scanPlayer(player);
+            chesspairingPlayer.setInitialOrderId(i);
+            chesspairingPlayers.add(chesspairingPlayer);
+        }
+        chesspairingTournament.setPlayers(chesspairingPlayers);
+
+        //populate the rounds
+        chesspairingTournament.setRounds(getTournamentRounds(tournamentKey));
         throw new IllegalStateException("Please finish this");
     }
 
-    public static List<Player> getTournamentPlayers(String tournamentKey){
+    public static List<ChesspairingRound> getTournamentRounds(String tournamentKey) {
+        final List<ChesspairingRound> chesspairingRounds = new ArrayList<>();
+        final CountDownLatch latch = new CountDownLatch(1);
+        String sectionNotRequired = "/" + Constants.ROUND_NUMBER + "/" + Constants.ROUND_PLAYERS;
+        //get the rounds data
+        String roundsLoc = Constants.LOCATION_ROUND_PLAYERS
+                .replace(sectionNotRequired, "")
+                .replace(Constants.TOURNAMENT_KEY, tournamentKey);
+        DatabaseReference roundsRef = FirebaseDatabase.getInstance().getReference(roundsLoc);
+        roundsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> roundIterator = dataSnapshot.getChildren().iterator();
+                while (roundIterator.hasNext()) {
+                    DataSnapshot snapshot = (DataSnapshot) roundIterator.next();
+                    ChesspairingRound chesspairingRound = new ChesspairingRound();
+                    //get the round number
+                    String roundNumber = snapshot.getKey();
+                    chesspairingRound.setRoundNumber(Integer.valueOf(roundNumber));
+
+                    List<Player> players = new ArrayList<Player>();
+                    List<Game> games = new ArrayList<Game>();
+
+                    //get the players
+                    if (snapshot.hasChild(Constants.ROUND_PLAYERS)) {
+                        DataSnapshot playersSnapshot = snapshot.child(Constants.ROUND_PLAYERS);
+                        Iterator<DataSnapshot> playersIterator = playersSnapshot.getChildren().iterator();
+                        while (playersIterator.hasNext()) {
+                            DataSnapshot playerSnapshot = (DataSnapshot) playersIterator.next();
+                            Player player = snapshot.getValue(Player.class);
+                            if (player.getName()==null){
+                                throw new IllegalStateException("Not able to decode player name");
+                            }
+                            players.add(player);
+                        }
+                    }
+                    List<ChesspairingPlayer> chesspairingPlayers = new ArrayList<ChesspairingPlayer>();
+                    for (Player player: players){
+                        ChesspairingPlayer chesspairingPlayer = MyChesspairingUtils.scanPlayer(player);
+                        chesspairingPlayers.add(chesspairingPlayer);
+                    }
+                    chesspairingRound.setPresentPlayers(chesspairingPlayers);
+
+                    Log.i(tag,"Time to decode game");
+                    //get the games
+                    if (snapshot.hasChild(Constants.GAMES)){
+                        Log.i(tag,"Wee have games for round: " + roundNumber);
+                        throw new IllegalStateException("Please decode the games");
+                    }else{
+                        Log.i(tag,"No games for round: " + roundNumber);
+                    }
+
+                    //add the round
+                    chesspairingRounds.add(chesspairingRound);
+                }
+
+                latch.countDown();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                latch.countDown();
+            }
+        });
+        return chesspairingRounds;
+    }
+
+
+    public static List<Player> getTournamentPlayers(String tournamentKey) {
         final List<Player> playerList = new ArrayList<>();
         final CountDownLatch latch = new CountDownLatch(1);
         String playersLoc = Constants.LOCATION_TOURNAMENT_PLAYERS
-                .replace(Constants.TOURNAMENT_KEY,tournamentKey);
+                .replace(Constants.TOURNAMENT_KEY, tournamentKey);
         DatabaseReference playersRef = FirebaseDatabase.getInstance().getReference(playersLoc);
         playersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot>it = dataSnapshot.getChildren().iterator();
-                while (it.hasNext()){
-                    DataSnapshot snapshot = (DataSnapshot)it.next();
+                Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
+                while (it.hasNext()) {
+                    DataSnapshot snapshot = (DataSnapshot) it.next();
                     Player player = snapshot.getValue(Player.class);
                     playerList.add(player);
                 }
@@ -95,7 +179,7 @@ public class MyFirebaseUtils {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(tag,databaseError.getMessage());
+                Log.e(tag, databaseError.getMessage());
                 latch.countDown();
             }
         });

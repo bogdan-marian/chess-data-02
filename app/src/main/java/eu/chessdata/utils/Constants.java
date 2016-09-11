@@ -68,6 +68,7 @@ public class Constants {
 
     //tournaments/$clubKey
     public static final String LOCATION_TOURNAMENTS = TOURNAMENTS + "/" + CLUB_KEY;
+
     //tournaments/$clubKey/$tournamentKey
     public static final String LOCATION_TOURNAMENT = LOCATION_TOURNAMENTS + "/" + TOURNAMENT_KEY;
 
