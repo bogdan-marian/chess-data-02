@@ -135,6 +135,12 @@ public class MyCloudService extends IntentService {
         }
         ChesspairingTournament tournament = MyFirebaseUtils.buildChessPairingTournament(clubKey, tournamentKey);
         Algorithm algorithm = new FideSwissDutchAlgorithm();
+
+        //<debug> collect tournament state
+        Gson gson = new Gson();
+        String tournamentJson = gson.toJson(tournament);
+        //<end debug>
+
         tournament = algorithm.generateNextRound(tournament);
         List<ChesspairingRound> rounds = tournament.getRounds();
         ChesspairingRound round = rounds.get(rounds.size()-1);

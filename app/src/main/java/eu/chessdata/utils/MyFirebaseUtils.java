@@ -164,8 +164,24 @@ public class MyFirebaseUtils {
                     Log.i(tag,"Time to decode game");
                     //get the games
                     if (snapshot.hasChild(Constants.GAMES)){
+                        DataSnapshot gamesSnapshot = snapshot.child(Constants.GAMES);
+                        Iterator<DataSnapshot>gamesIterator = gamesSnapshot.getChildren().iterator();
+                        List<ChesspairingGame> chesspairingGames = new ArrayList<ChesspairingGame>();
+                        List<ChesspairingPlayer> presentPlayers = new ArrayList<ChesspairingPlayer>();
+                        while(gamesIterator.hasNext()){
+                            DataSnapshot gameSnapshot = (DataSnapshot)gamesIterator.next();
+                            Game game = gameSnapshot.getValue(Game.class);
+                            ChesspairingGame chesspairingGame = MyChesspairingUtils.scanGame(game);
+                            chesspairingGames.add(chesspairingGame);
+
+                            presentPlayers.add(chesspairingGame.getWhitePlayer());
+                            if (chesspairingGame.getBlackPlayer()!= null){
+                                presentPlayers.add(chesspairingGame.getBlackPlayer());
+                            }
+                        }
+                        chesspairingRound.setGames(chesspairingGames);
+                        chesspairingRound.setPresentPlayers(presentPlayers);
                         Log.i(tag,"Wee have games for round: " + roundNumber);
-                        throw new IllegalStateException("Please decode the games");
                     }else{
                         Log.i(tag,"No games for round: " + roundNumber);
                     }

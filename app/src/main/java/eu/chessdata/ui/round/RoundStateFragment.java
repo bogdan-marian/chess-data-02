@@ -47,9 +47,9 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
     private boolean mShowGames = false;
     private boolean mUserIsAdmin = false;
     private Context mContext;
-
-    private enum CURRENT_STATE {PRESENCE, GAMES};
     private CURRENT_STATE mCurrentState;
+
+    ;
 
     public static Bundle getBundle(String tournamentKey, int roundNumber, String clubKey) {
         Bundle bundle = new Bundle();
@@ -170,102 +170,8 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
         mUserIsAdmin = isAdmin;
     }
 
-    /**
-     * get the players and then generate the games
-     */
-    private void onTimeToDecideIfWeeNeedToGenerateGames() {
 
-
-        String gamesLoc = Constants.LOCATION_ROUND_GAMES
-                .replace(Constants.TOURNAMENT_KEY, mTournamentKey)
-                .replace(Constants.ROUND_NUMBER, String.valueOf(mRoundNumber));
-        DatabaseReference gamesRef = FirebaseDatabase.getInstance().getReference(gamesLoc);
-        gamesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() == null) {
-                    //time to generate the games;
-                    onTimeToCollectRoundPlayers();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(tag, "Database error: " + databaseError.getMessage());
-            }
-        });
-    }
-
-    public void onTimeToCollectRoundPlayers() {
-        mPlayers = new ArrayList<>();
-        Log.d(tag, "onTimeToCollectRoundPlayers round: " + mRoundNumber
-                + " / clubKey = " + mClubKey
-                + " / firstTableNumber = " + mFirstTableNumber);
-        String playersLoc = Constants.LOCATION_ROUND_PLAYERS
-                .replace(Constants.TOURNAMENT_KEY, mTournamentKey)
-                .replace(Constants.ROUND_NUMBER, String.valueOf(mRoundNumber));
-        DatabaseReference playersRef = FirebaseDatabase.getInstance().getReference(playersLoc);
-        playersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> items = dataSnapshot.getChildren();
-                for (DataSnapshot item : items) {
-                    mPlayers.add(item.getValue(Player.class));
-                }
-                onTimeToGenerateGames();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(tag, "Database error: " + databaseError.getMessage());
-            }
-        });
-    }
-
-    public void onTimeToGenerateGames() {
-        Log.d(tag, "onTimeToGenerateGames round: " + mRoundNumber
-                + " / clubKey = " + mClubKey
-                + " / firstTableNumber = " + mFirstTableNumber);
-        int i = 0;
-        List<Game> games = new ArrayList<>();
-        Game game = new Game();
-
-        //create the games
-        int table = 0;
-
-        for (Player player : mPlayers) {
-            i++;
-            if (i % 2 == 1) {
-                table++;
-                game = new Game();
-                game.setTableNumber(table);
-                game.setActualNumber(table + mFirstTableNumber - 1);
-                game.setWhitePlayer(player);
-            } else {
-                game.setBlackPlayer(player);
-                games.add(game);
-                game = new Game();
-            }
-            if (i == mPlayers.size() && i % 2 == 1) {
-                game.setResult(4);
-                games.add(game);
-            }
-        }
-
-        //persist the games
-        Log.d(tag, "Time to persist games. total= " + games.size());
-        String gamesLoc = Constants.LOCATION_ROUND_GAMES
-                .replace(Constants.TOURNAMENT_KEY, mTournamentKey)
-                .replace(Constants.ROUND_NUMBER, String.valueOf(mRoundNumber));
-        DatabaseReference allGamesRef = FirebaseDatabase.getInstance().getReference(gamesLoc);
-        for (Game gameItem : games) {
-            DatabaseReference gameRef = allGamesRef.getRef().child(String.valueOf(gameItem.getTableNumber()));
-            gameRef.setValue(gameItem);
-        }
-        showGames();
-        MyFabInterface myFabInterface = (MyFabInterface) getActivity();
-        myFabInterface.disableFab();
-    }
+    private enum CURRENT_STATE {PRESENCE, GAMES}
 
     /**
      * Int starts the initial flow for paring game players
@@ -274,43 +180,14 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
 
         @Override
         protected Void doInBackground(Void... params) {
-            boolean runNewAlgorithm = true;
-            if (runNewAlgorithm) {
-                MyCloudService.startActionGenerateNextRound(mContext, mClubKey, mTournamentKey);
-//                showGames();
-//                MyFabInterface myFabInterface = (MyFabInterface) getActivity();
-//                myFabInterface.disableFab();
-                return null;
-            }
-
-            String tournamentLoc = Constants.LOCATION_TOURNAMENTS
-                    .replace(Constants.CLUB_KEY, mClubKey)
-                    .replace(Constants.TOURNAMENT_KEY, mTournamentKey);
-            DatabaseReference tournamentRef = FirebaseDatabase.getInstance().getReference(tournamentLoc);
-            tournamentRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.getValue() != null) {
-                        Tournament tournament = dataSnapshot.getValue(Tournament.class);
-                        mFirstTableNumber = tournament.getFirstTableNumber();
-                        onTimeToDecideIfWeeNeedToGenerateGames();
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e(tag, "Firebase error: " + databaseError.getMessage());
-                }
-            });
+            MyCloudService.startActionGenerateNextRound(mContext, mClubKey, mTournamentKey);
             return null;
         }
-    }
-
-    class LivePresenceGamesSwap extends AsyncTask<Void,Void,Void>{
 
         @Override
-        protected Void doInBackground(Void... params) {
-            return null;
+        protected void onPostExecute(Void aVoid) {
+            mShowGames = true;
+            showGames();
         }
     }
 }
