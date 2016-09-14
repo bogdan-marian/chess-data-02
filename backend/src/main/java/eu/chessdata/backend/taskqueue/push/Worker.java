@@ -208,6 +208,11 @@ public class Worker extends HttpServlet {
         if (jsonUsers == null) {
             return new ArrayList<>();
         }
+        int indexNull = jsonUsers.indexOf("null");
+        if (indexNull==0){
+            return new ArrayList<>();
+        }
+
 
         Gson gson = MyGson.getGson();
         List<User> users = new ArrayList<>();

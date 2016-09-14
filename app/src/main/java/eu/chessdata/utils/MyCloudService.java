@@ -145,6 +145,6 @@ public class MyCloudService extends IntentService {
         List<ChesspairingRound> rounds = tournament.getRounds();
         ChesspairingRound round = rounds.get(rounds.size()-1);
         MyFirebaseUtils.persistNewGames(clubKey,tournamentKey,round);
-        Log.d(tag, "Round has bean generated time to store it");
+        Log.d(tag, "persistNewGames has bean initiated");
     }
 }
