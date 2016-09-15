@@ -139,6 +139,7 @@ public class MyCloudService extends IntentService {
         //<debug> collect tournament state
         Gson gson = new Gson();
         String tournamentJson = gson.toJson(tournament);
+
         //<end debug>
 
         tournament = algorithm.generateNextRound(tournament);
