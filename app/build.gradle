@@ -4,14 +4,22 @@ repositories{
     mavenCentral()
 }
 
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+    }
+}
+
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
 
     defaultConfig {
         applicationId "eu.chessdata"
-        minSdkVersion 16
-        targetSdkVersion 23
+        minSdkVersion 21
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -38,22 +46,24 @@ android {
 dependencies {
     //compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.google.android.gms:play-services-auth:9.2.0'
-    compile 'com.google.firebase:firebase-core:9.2.0'
-    compile 'com.google.firebase:firebase-auth:9.2.0'
-    compile 'com.google.firebase:firebase-messaging:9.2.0'
-    compile 'com.google.firebase:firebase-database:9.2.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.google.android.gms:play-services-auth:11.8.0'
+    compile 'com.google.firebase:firebase-core:11.8.0'
+    compile 'com.google.firebase:firebase-auth:11.8.0'
+    compile 'com.google.firebase:firebase-messaging:11.8.0'
+    compile 'com.google.firebase:firebase-database:11.8.0'
 
     compile 'com.firebase:firebase-client-android:2.4.0'
 
     compile 'com.firebaseui:firebase-ui:0.4.0'
     compile 'com.firebaseui:firebase-ui-database:0.4.0'
     compile 'com.firebaseui:firebase-ui-auth:0.4.0'
-    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.google.code.gson:gson:2.8.0'
 
     compile 'eu.chesdata:chess-pairing:1.0-SNAPSHOT'
+    compile 'com.android.support:support-annotations:25.3.1'
+   //s compile 'com.android.support:support:25.3.1'
 }
 
 
