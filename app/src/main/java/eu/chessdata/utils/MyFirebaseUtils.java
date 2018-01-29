@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import eu.chessdata.chesspairing.algoritms.fideswissduch.Algorithm;
-import eu.chessdata.chesspairing.algoritms.fideswissduch.FideSwissDutchAlgorithm;
+import eu.chessdata.chesspairing.algoritms.javafo.JavafoWrapp;
 import eu.chessdata.chesspairing.model.ChesspairingGame;
 import eu.chessdata.chesspairing.model.ChesspairingPlayer;
 import eu.chessdata.chesspairing.model.ChesspairingRound;

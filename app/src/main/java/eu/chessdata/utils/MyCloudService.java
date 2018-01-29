@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.List;
 
 import eu.chessdata.chesspairing.algoritms.fideswissduch.Algorithm;
-import eu.chessdata.chesspairing.algoritms.fideswissduch.FideSwissDutchAlgorithm;
+import eu.chessdata.chesspairing.algoritms.javafo.JavafoWrapp;
 import eu.chessdata.chesspairing.model.ChesspairingRound;
 import eu.chessdata.chesspairing.model.ChesspairingTournament;
 import eu.chessdata.model.MyPayLoad;
@@ -134,7 +134,7 @@ public class MyCloudService extends IntentService {
             return;
         }
         ChesspairingTournament tournament = MyFirebaseUtils.buildChessPairingTournament(clubKey, tournamentKey);
-        Algorithm algorithm = new FideSwissDutchAlgorithm();
+        Algorithm algorithm = new JavafoWrapp();
 
         //<debug> collect tournament state
         Gson gson = new Gson();
