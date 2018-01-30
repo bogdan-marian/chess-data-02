@@ -141,6 +141,7 @@ public class MyCloudService extends IntentService {
         String tournamentJson = gson.toJson(tournament);
 
         //<end debug>
+        Log.d(tag, "new_game = "+ tournamentJson);
         tournament = algorithm.generateNextRound(tournament);
         List<ChesspairingRound> rounds = tournament.getRounds();
         ChesspairingRound round = rounds.get(rounds.size()-1);
