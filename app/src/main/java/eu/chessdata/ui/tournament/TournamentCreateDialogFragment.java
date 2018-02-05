@@ -8,8 +8,10 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -56,17 +58,49 @@ public class TournamentCreateDialogFragment extends DialogFragment {
             }
         });
 
+
+
         builder.setPositiveButton(R.string.create_tournament, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                persistTournament();
+                StringBuilder sb = new StringBuilder();
+
+                String tournamentName = ((EditText) mView.findViewById(R.id.tournamentName)).getText().toString();
+                if (tournamentName == null || tournamentName.isEmpty()) {
+                    sb.append("Tournament name is empty\n");
+                }
+
+                String tournamentDescription = ((EditText) mView.findViewById(R.id.tournamentDescription)).getText().toString();
+                if (tournamentDescription == null || tournamentDescription.isEmpty()){
+                    sb.append("Tournament description is empty\n");
+                }
+
+                String tournamentLocation = ((EditText) mView.findViewById(R.id.tournamentLocation)).getText().toString();
+                if (tournamentLocation == null || tournamentLocation.isEmpty()){
+                    sb.append("Torunament location is empty\n");
+                }
+
+                String firstNumber = ((EditText) mView.findViewById(R.id.tournamentFirstTableNumber)).getText().toString();
+                if (firstNumber == null || firstNumber.isEmpty()){
+                    sb.append("Tournament first table number is empty\n");
+                }
+
+                if (!sb.toString().isEmpty()) {
+                    sb.append("Please try again");
+                    Toast.makeText(getContext(), sb.toString(), Toast.LENGTH_LONG).show();
+                } else {
+                    persistTournament();
+                }
             }
         });
+
 
         return builder.create();
     }
 
     private void persistTournament() {
+
+
         Tournament tournament = new Tournament(
                 ((EditText) mView.findViewById(R.id.tournamentName)).getText().toString(),
                 ((EditText) mView.findViewById(R.id.tournamentDescription)).getText().toString(),
@@ -87,6 +121,6 @@ public class TournamentCreateDialogFragment extends DialogFragment {
 
         //update reversed order
         String tournamentKey = tournamentRef.getKey();
-        MyFirebaseUtils.updateTournamentReversedOrder(mClubKey,tournamentKey);
+        MyFirebaseUtils.updateTournamentReversedOrder(mClubKey, tournamentKey);
     }
 }

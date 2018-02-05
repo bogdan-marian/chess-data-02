@@ -364,6 +364,16 @@ public class MainActivity extends AppCompatActivity
                     addPlayerDialog.show(getSupportFragmentManager(),"TournamentAddPlayerDialog");
                 }
             });
+            mFab.setOnLongClickListener(new View.OnLongClickListener(){
+
+                @Override
+                public boolean onLongClick(View v) {
+                    String clubKey = mVipMap.get(Constants.CLUB_KEY);
+                    String tournamentKey = mVipMap.get(Constants.TOURNAMENT_KEY);
+                    Toast.makeText(getApplicationContext(), "Time to add all players", Toast.LENGTH_SHORT);
+                    return true;
+                }
+            });
             mFab.setVisibility(View.VISIBLE);
         } else if (action == ACTION.SHOW_ROUND){
             //for the moment no fab
