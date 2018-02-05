@@ -97,27 +97,36 @@ public class MyFirebaseUtils {
          * For the moment I consider the last round the first round that has no games;
          * Wee remove from the list the first round that has no games
          */
-        Map<String, ChesspairingPlayer> chesspairingPlayerMap = new HashMap<>();
-        Log.i(tag,"debug: " + chesspairingTournament.getName()+chesspairingTournament.getPlayers().size());
-        for (ChesspairingPlayer chesspairingPlayer:chesspairingTournament.getPlayers()){
-            chesspairingPlayer.setPresent(false);
-            chesspairingPlayerMap.put(chesspairingPlayer.getPlayerKey(),chesspairingPlayer);
-        }
+//        Map<String, ChesspairingPlayer> chesspairingPlayerMap = new HashMap<>();
+//        Log.i(tag,"debug: " + chesspairingTournament.getName()+chesspairingTournament.getPlayers().size());
+//        for (ChesspairingPlayer chesspairingPlayer:chesspairingTournament.getPlayers()){
+//            chesspairingPlayer.setPresent(ture);
+//            chesspairingPlayerMap.put(chesspairingPlayer.getPlayerKey(),chesspairingPlayer);
+//        }
 
-        //see what round wee need to set as present
-        int k = -1;
-        for (ChesspairingRound round: chesspairingTournament.getRounds()){
-            k++;
-            List<ChesspairingGame> games = round.getGames();
-            if (games==null || games.size()==0){
-                for (ChesspairingPlayer player: round.getPresentPlayers()){
-                    ChesspairingPlayer reference = chesspairingPlayerMap.get(player.getPlayerKey());
-                    reference.setPresent(true);
-                }
-                chesspairingTournament.getRounds().remove(k);
-                break;
-            }
-        }
+        //TODO set the presence
+//        for (ChesspairingRound round:chesspairingTournament.getRounds()){
+//            List<ChesspairingGame> games = round.getGames();
+//            if (games == null || games.size()==0 ){
+//                Log.d(tag, "Time to collect presence for round " + round.getRoundNumber());
+//            }
+//        }
+//
+//
+//        //see what round wee need to set as present
+//        int k = -1;
+//        for (ChesspairingRound round: chesspairingTournament.getRounds()){
+//            k++;
+//            List<ChesspairingGame> games = round.getGames();
+//            if (games==null || games.size()==0){
+//                for (ChesspairingPlayer player: round.getPresentPlayers()){
+//                    ChesspairingPlayer reference = chesspairingPlayerMap.get(player.getPlayerKey());
+//                    reference.setPresent(true);
+//                }
+//                chesspairingTournament.getRounds().remove(k);
+//                break;
+//            }
+//        }
         return chesspairingTournament;
     }
 
@@ -141,25 +150,27 @@ public class MyFirebaseUtils {
                     String roundNumber = snapshot.getKey();
                     chesspairingRound.setRoundNumber(Integer.valueOf(roundNumber));
 
-                    List<Player> players = new ArrayList<Player>();
+                    List<Player> absentPlayers = new ArrayList<Player>();
                     List<Game> games = new ArrayList<Game>();
 
-                    //get the players
+                    //get the absentPlayers
                     if (snapshot.hasChild(Constants.ROUND_ABSENT_PLAYERS)) {
                         DataSnapshot playersSnapshot = snapshot.child(Constants.ROUND_ABSENT_PLAYERS);
                         Iterator<DataSnapshot> playersIterator = playersSnapshot.getChildren().iterator();
                         while (playersIterator.hasNext()) {
                             DataSnapshot playerSnapshot = (DataSnapshot) playersIterator.next();
                             Player player = playerSnapshot.getValue(Player.class);
-                            players.add(player);
+                            absentPlayers.add(player);
                         }
                     }
-                    List<ChesspairingPlayer> chesspairingPlayers = new ArrayList<ChesspairingPlayer>();
-                    for (Player player: players){
+                    List<ChesspairingPlayer> absentChesspairingPlayers = new ArrayList<ChesspairingPlayer>();
+                    for (Player player: absentPlayers){
                         ChesspairingPlayer chesspairingPlayer = MyChesspairingUtils.scanPlayer(player);
-                        chesspairingPlayers.add(chesspairingPlayer);
+                        chesspairingPlayer.setPresent(false);
+                        absentChesspairingPlayers.add(chesspairingPlayer);
                     }
-                    chesspairingRound.setPresentPlayers(chesspairingPlayers);
+                    chesspairingRound.setPresentPlayers(absentChesspairingPlayers);
+
 
                     Log.i(tag,"Time to decode game");
                     //get the games
