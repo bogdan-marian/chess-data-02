@@ -135,12 +135,12 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
                 public void onClick(View v) {
                     Log.d(tag, "Configure tournament and round fab for round nr " + mRoundNumber);
                     // add one player dialog
-//                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, mRoundNumber);
-//                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
+                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, mRoundNumber);
+                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
 
                     // add all player dialog
-                    RoundAddAllPlayersDialog roundAddAllPlayers = RoundAddAllPlayersDialog.newInstance(mTournamentKey, mRoundNumber);
-                    roundAddAllPlayers.show(getActivity().getSupportFragmentManager(), "roundAddAllPlayers");
+//                    RoundAddAllPlayersDialog roundAddAllPlayers = RoundAddAllPlayersDialog.newInstance(mTournamentKey, mRoundNumber);
+//                    roundAddAllPlayers.show(getActivity().getSupportFragmentManager(), "roundAddAllPlayers");
                 }
             });
         }

@@ -108,11 +108,11 @@ public class RoundPagerFragment extends Fragment
             myFabInterface.enableFab(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, 1);
-//                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
+                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, 1);
+                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
 
-                    RoundAddAllPlayersDialog roundAddAllPlayersDialog = RoundAddAllPlayersDialog.newInstance(mTournamentKey, 1);
-                    roundAddAllPlayersDialog.show(getActivity().getSupportFragmentManager(), "roundAddAllPlayersDialog");
+//                    RoundAddAllPlayersDialog roundAddAllPlayersDialog = RoundAddAllPlayersDialog.newInstance(mTournamentKey, 1);
+//                    roundAddAllPlayersDialog.show(getActivity().getSupportFragmentManager(), "roundAddAllPlayersDialog");
                 }
             });
             roundZero = false;
