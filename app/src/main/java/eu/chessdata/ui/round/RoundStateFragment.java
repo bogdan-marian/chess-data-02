@@ -138,9 +138,6 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
                     RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, mRoundNumber);
                     roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
 
-                    // add all player dialog
-//                    RoundAddAllPlayersDialog roundAddAllPlayers = RoundAddAllPlayersDialog.newInstance(mTournamentKey, mRoundNumber);
-//                    roundAddAllPlayers.show(getActivity().getSupportFragmentManager(), "roundAddAllPlayers");
                 }
             });
         }

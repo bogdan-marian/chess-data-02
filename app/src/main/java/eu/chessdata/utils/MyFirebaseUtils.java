@@ -124,9 +124,9 @@ public class MyFirebaseUtils {
     public static List<ChesspairingRound> getTournamentRounds(String tournamentKey) {
         final List<ChesspairingRound> chesspairingRounds = new ArrayList<>();
         final CountDownLatch latch = new CountDownLatch(1);
-        String sectionNotRequired = "/" + Constants.ROUND_NUMBER + "/" + Constants.ROUND_PLAYERS;
+        String sectionNotRequired = "/" + Constants.ROUND_NUMBER + "/" + Constants.ROUND_ABSENT_PLAYERS;
         //get the rounds data
-        String roundsLoc = Constants.LOCATION_ROUND_PLAYERS
+        String roundsLoc = Constants.LOCATION_ROUND_ABSENT_PLAYERS
                 .replace(sectionNotRequired, "")
                 .replace(Constants.TOURNAMENT_KEY, tournamentKey);
         DatabaseReference roundsRef = FirebaseDatabase.getInstance().getReference(roundsLoc);
@@ -145,8 +145,8 @@ public class MyFirebaseUtils {
                     List<Game> games = new ArrayList<Game>();
 
                     //get the players
-                    if (snapshot.hasChild(Constants.ROUND_PLAYERS)) {
-                        DataSnapshot playersSnapshot = snapshot.child(Constants.ROUND_PLAYERS);
+                    if (snapshot.hasChild(Constants.ROUND_ABSENT_PLAYERS)) {
+                        DataSnapshot playersSnapshot = snapshot.child(Constants.ROUND_ABSENT_PLAYERS);
                         Iterator<DataSnapshot> playersIterator = playersSnapshot.getChildren().iterator();
                         while (playersIterator.hasNext()) {
                             DataSnapshot playerSnapshot = (DataSnapshot) playersIterator.next();
