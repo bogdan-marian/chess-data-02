@@ -364,6 +364,7 @@ public class MainActivity extends AppCompatActivity
                     addPlayerDialog.show(getSupportFragmentManager(),"TournamentAddPlayerDialog");
                 }
             });
+
             mFab.setOnLongClickListener(new View.OnLongClickListener(){
 
                 @Override
@@ -371,7 +372,8 @@ public class MainActivity extends AppCompatActivity
                     String clubKey = mVipMap.get(Constants.CLUB_KEY);
                     String tournamentKey = mVipMap.get(Constants.TOURNAMENT_KEY);
                     Toast.makeText(getApplicationContext(), "Time to add all players", Toast.LENGTH_SHORT);
-                    return true;
+
+                    return false;
                 }
             });
             mFab.setVisibility(View.VISIBLE);

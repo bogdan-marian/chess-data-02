@@ -103,43 +103,19 @@ public class RoundPagerFragment extends Fragment
     @Override
     public void onUserIsAdmin(boolean isAdmin) {
         mUserIsAdmin = isAdmin;
-        if (mUserIsAdmin && roundZero){
-            MyFabInterface myFabInterface = (MyFabInterface)getActivity();
+        if (mUserIsAdmin && roundZero) {
+            MyFabInterface myFabInterface = (MyFabInterface) getActivity();
             myFabInterface.enableFab(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, 1);
-                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
+//                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, 1);
+//                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
+
+                    RoundAddAllPlayersDialog roundAddAllPlayersDialog = RoundAddAllPlayersDialog.newInstance(mTournamentKey, 1);
+                    roundAddAllPlayersDialog.show(getActivity().getSupportFragmentManager(), "roundAddAllPlayersDialog");
                 }
             });
             roundZero = false;
-        }
-    }
-
-    private class SectionPagerAdapter extends FragmentStatePagerAdapter {
-        private final FragmentManager mFragmentManager;
-
-
-        public SectionPagerAdapter(FragmentManager fm) {
-            super(fm);
-            mFragmentManager = fm;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            int round = position + 1;
-            Bundle bundle = RoundStateFragment.getBundle(mTournamentKey, round, mClubKey);
-            RoundStateFragment roundStateFragment = new RoundStateFragment();
-            roundStateFragment.setArguments(bundle);
-
-            mStateFragmentMap.put(getTag(round), roundStateFragment);
-
-            return roundStateFragment;
-        }
-
-        @Override
-        public int getCount() {
-            return mRoundsWithData;
         }
     }
 
@@ -158,7 +134,6 @@ public class RoundPagerFragment extends Fragment
             stateFragment.configureFab();
         }
     }
-
 
     /**
      * It is to messy to detect when round 1 finishes the creation process for the first time only
@@ -181,7 +156,7 @@ public class RoundPagerFragment extends Fragment
                 if (dataSnapshot.getValue() == null) {
                     //create and activate fab listener and show add players
                     roundZero = true;
-                    MyFirebaseUtils.isCurrentUserAdmin(mClubKey,getOnUserIsAdmin());
+                    MyFirebaseUtils.isCurrentUserAdmin(mClubKey, getOnUserIsAdmin());
                 }
             }
 
@@ -190,36 +165,6 @@ public class RoundPagerFragment extends Fragment
                 Log.e(tag, "Firebase error: " + databaseError.getMessage());
             }
         });
-    }
-
-
-    private class ExtractTournamentData extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            //get tournament total rounds
-            String tournamentLoc = Constants.LOCATION_TOURNAMENT
-                    .replace(Constants.CLUB_KEY, mClubKey)
-                    .replace(Constants.TOURNAMENT_KEY, mTournamentKey);
-            DatabaseReference tournamentRef = FirebaseDatabase.getInstance().getReference(tournamentLoc);
-            tournamentRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Tournament tournament = dataSnapshot.getValue(Tournament.class);
-                    if (tournament != null) {
-                        mTotalRounds = tournament.getTotalRounds();
-                        timeToDecideHowManyRoundsToShow();
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-            return null;
-        }
     }
 
     protected void timeToDecideHowManyRoundsToShow() {
@@ -284,7 +229,63 @@ public class RoundPagerFragment extends Fragment
         });
     }
 
-    private MyFirebaseUtils.OnUserIsAdmin getOnUserIsAdmin(){
+    private MyFirebaseUtils.OnUserIsAdmin getOnUserIsAdmin() {
         return this;
+    }
+
+    private class SectionPagerAdapter extends FragmentStatePagerAdapter {
+        private final FragmentManager mFragmentManager;
+
+
+        public SectionPagerAdapter(FragmentManager fm) {
+            super(fm);
+            mFragmentManager = fm;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            int round = position + 1;
+            Bundle bundle = RoundStateFragment.getBundle(mTournamentKey, round, mClubKey);
+            RoundStateFragment roundStateFragment = new RoundStateFragment();
+            roundStateFragment.setArguments(bundle);
+
+            mStateFragmentMap.put(getTag(round), roundStateFragment);
+
+            return roundStateFragment;
+        }
+
+        @Override
+        public int getCount() {
+            return mRoundsWithData;
+        }
+    }
+
+    private class ExtractTournamentData extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            //get tournament total rounds
+            String tournamentLoc = Constants.LOCATION_TOURNAMENT
+                    .replace(Constants.CLUB_KEY, mClubKey)
+                    .replace(Constants.TOURNAMENT_KEY, mTournamentKey);
+            DatabaseReference tournamentRef = FirebaseDatabase.getInstance().getReference(tournamentLoc);
+            tournamentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Tournament tournament = dataSnapshot.getValue(Tournament.class);
+                    if (tournament != null) {
+                        mTotalRounds = tournament.getTotalRounds();
+                        timeToDecideHowManyRoundsToShow();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            return null;
+        }
     }
 }

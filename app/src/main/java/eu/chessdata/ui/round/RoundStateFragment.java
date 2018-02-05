@@ -21,13 +21,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import eu.chessdata.R;
-import eu.chessdata.model.Game;
 import eu.chessdata.model.Player;
-import eu.chessdata.model.Tournament;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyCloudService;
 import eu.chessdata.utils.MyFabInterface;
@@ -136,8 +133,14 @@ public class RoundStateFragment extends Fragment implements MyFirebaseUtils.OnUs
             myFabInterface.enableFab(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, mRoundNumber);
-                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
+                    Log.d(tag, "Configure tournament and round fab for round nr " + mRoundNumber);
+                    // add one player dialog
+//                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, mRoundNumber);
+//                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
+
+                    // add all player dialog
+                    RoundAddAllPlayersDialog roundAddAllPlayers = RoundAddAllPlayersDialog.newInstance(mTournamentKey, mRoundNumber);
+                    roundAddAllPlayers.show(getActivity().getSupportFragmentManager(), "roundAddAllPlayers");
                 }
             });
         }
