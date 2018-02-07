@@ -163,14 +163,12 @@ public class MyFirebaseUtils {
                             absentPlayers.add(player);
                         }
                     }
-                    List<ChesspairingPlayer> absentChesspairingPlayers = new ArrayList<ChesspairingPlayer>();
+                    //List<ChesspairingPlayer> absentChesspairingPlayers = new ArrayList<ChesspairingPlayer>();
                     for (Player player : absentPlayers) {
                         ChesspairingPlayer chesspairingPlayer = MyChesspairingUtils.scanPlayer(player);
                         chesspairingPlayer.setPresent(false);
-                        absentChesspairingPlayers.add(chesspairingPlayer);
+                        chesspairingRound.addAbsentPlayer(chesspairingPlayer);
                     }
-                    chesspairingRound.setPresentPlayers(absentChesspairingPlayers);
-
 
                     Log.i(tag, "Time to decode game");
                     //get the games
@@ -192,9 +190,6 @@ public class MyFirebaseUtils {
                         }
                         chesspairingRound.setGames(chesspairingGames);
                         chesspairingRound.setPresentPlayers(presentPlayers);
-                        Log.i(tag, "Wee have games for round: " + roundNumber);
-                    } else {
-                        Log.i(tag, "No games for round: " + roundNumber);
                     }
 
                     //add the round
@@ -217,7 +212,6 @@ public class MyFirebaseUtils {
         }
         return chesspairingRounds;
     }
-
 
     public static List<Player> getTournamentPlayers(String tournamentKey) {
         final List<Player> playerList = new ArrayList<>();
