@@ -40,6 +40,7 @@ import eu.chessdata.ui.club.MyClubsFragment;
 import eu.chessdata.ui.club.PlayerCreateDialogFragment;
 import eu.chessdata.ui.home.HomeFragment;
 import eu.chessdata.ui.round.RoundPagerFragment;
+import eu.chessdata.ui.standings.StandingsPagerFragment;
 import eu.chessdata.ui.tournament.TournamentAddPlayerDialog;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
 import eu.chessdata.ui.tournament.TournamentDetailsFragment;
@@ -450,6 +451,11 @@ public class MainActivity extends AppCompatActivity
             RoundPagerFragment roundPagerFragment = new RoundPagerFragment();
             roundPagerFragment.setArguments(bundle);
             runFragmentTransaction(R.id.fragment_container,roundPagerFragment,"RoundPagerFragment");
+        }else if (position == 3){//standings
+            String param1 = "text param 1";
+            String param2 = "text param 2";
+            StandingsPagerFragment standingsPagerFragment = StandingsPagerFragment.newInstance(param1, param2);
+            runFragmentTransaction(R.id.fragment_container, standingsPagerFragment,"StandingPagerFragment");
         }
     }
 }

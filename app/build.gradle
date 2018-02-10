@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-repositories{
+repositories {
     mavenLocal()
     mavenCentral()
 }
@@ -45,6 +45,8 @@ android {
 
 dependencies {
     //compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:support-v4:25.4.0'
+    implementation 'com.android.support:recyclerview-v7:25.4.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support:appcompat-v7:25.3.1'
     implementation 'com.android.support:design:25.3.1'
@@ -63,7 +65,7 @@ dependencies {
 
     implementation 'eu.chesdata:chess-pairing:1.0-SNAPSHOT'
     implementation 'com.android.support:support-annotations:25.3.1'
-   //s compile 'com.android.support:support:25.3.1'
+    //s compile 'com.android.support:support:25.3.1'
 }
 
 

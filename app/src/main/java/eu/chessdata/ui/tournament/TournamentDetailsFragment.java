@@ -28,7 +28,7 @@ public class TournamentDetailsFragment extends Fragment {
     private String mTournamentKey;
     private String mTournamentName;
 
-    String[] mValues = {"Categories", "Players", "Rounds", "Results", "Get social"};
+    String[] mValues = {"Categories", "Players", "Rounds", "Standings", "Get social"};
     private ListView mListView;
     private ArrayAdapter<String> mArrayAdapter;
 
