@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,8 @@ public class StandingsPagerFragment extends Fragment {
     private int mRoundsWithData = 1;
     private String mClubKey;
     private boolean roundZero = false;
+    
+
 
     public static Bundle getBundle(String tournamentKey, String clubKey) {
         Bundle bundle = new Bundle();
@@ -44,4 +48,25 @@ public class StandingsPagerFragment extends Fragment {
     }
 
 
+    private class SectionPagerAdapter extends FragmentStatePagerAdapter{
+        private final FragmentManager mFragmentManager;
+
+        public SectionPagerAdapter(FragmentManager fm){
+            super(fm);
+            mFragmentManager = fm;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            int round = position + 1;
+
+            return null;
+        }
+
+
+        @Override
+        public int getCount() {
+            return 0;
+        }
+    }
 }
