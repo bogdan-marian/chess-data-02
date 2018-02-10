@@ -53,9 +53,9 @@ public class RoundPlayersFragment extends Fragment{
         setParameters();
         View view = inflater.inflate(R.layout.fragment_round_players,container,false);
         TextView textView = (TextView)view.findViewById(R.id.round_players_simple_header);
-        textView.setText("Round " + mRoundNumber+": players");
+        textView.setText("Round " + mRoundNumber+": Absent players");
 
-        String roundPlayersLoc = Constants.LOCATION_ROUND_PLAYERS
+        String roundPlayersLoc = Constants.LOCATION_ROUND_ABSENT_PLAYERS
                 .replace(Constants.TOURNAMENT_KEY,mTournamentKey)
                 .replace(Constants.ROUND_NUMBER,String.valueOf(mRoundNumber));
         mReference = FirebaseDatabase.getInstance().getReference(roundPlayersLoc);

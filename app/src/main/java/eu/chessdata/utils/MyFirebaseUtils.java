@@ -97,36 +97,45 @@ public class MyFirebaseUtils {
          * For the moment I consider the last round the first round that has no games;
          * Wee remove from the list the first round that has no games
          */
-        Map<String, ChesspairingPlayer> chesspairingPlayerMap = new HashMap<>();
-        Log.i(tag,"debug: " + chesspairingTournament.getName()+chesspairingTournament.getPlayers().size());
-        for (ChesspairingPlayer chesspairingPlayer:chesspairingTournament.getPlayers()){
-            chesspairingPlayer.setPresent(false);
-            chesspairingPlayerMap.put(chesspairingPlayer.getPlayerKey(),chesspairingPlayer);
-        }
+//        Map<String, ChesspairingPlayer> chesspairingPlayerMap = new HashMap<>();
+//        Log.i(tag,"debug: " + chesspairingTournament.getName()+chesspairingTournament.getPlayers().size());
+//        for (ChesspairingPlayer chesspairingPlayer:chesspairingTournament.getPlayers()){
+//            chesspairingPlayer.setPresent(ture);
+//            chesspairingPlayerMap.put(chesspairingPlayer.getPlayerKey(),chesspairingPlayer);
+//        }
 
-        //see what round wee need to set as present
-        int k = -1;
-        for (ChesspairingRound round: chesspairingTournament.getRounds()){
-            k++;
-            List<ChesspairingGame> games = round.getGames();
-            if (games==null || games.size()==0){
-                for (ChesspairingPlayer player: round.getPresentPlayers()){
-                    ChesspairingPlayer reference = chesspairingPlayerMap.get(player.getPlayerKey());
-                    reference.setPresent(true);
-                }
-                chesspairingTournament.getRounds().remove(k);
-                break;
-            }
-        }
+        //TODO set the presence
+//        for (ChesspairingRound round:chesspairingTournament.getRounds()){
+//            List<ChesspairingGame> games = round.getGames();
+//            if (games == null || games.size()==0 ){
+//                Log.d(tag, "Time to collect presence for round " + round.getRoundNumber());
+//            }
+//        }
+//
+//
+//        //see what round wee need to set as present
+//        int k = -1;
+//        for (ChesspairingRound round: chesspairingTournament.getRounds()){
+//            k++;
+//            List<ChesspairingGame> games = round.getGames();
+//            if (games==null || games.size()==0){
+//                for (ChesspairingPlayer player: round.getPresentPlayers()){
+//                    ChesspairingPlayer reference = chesspairingPlayerMap.get(player.getPlayerKey());
+//                    reference.setPresent(true);
+//                }
+//                chesspairingTournament.getRounds().remove(k);
+//                break;
+//            }
+//        }
         return chesspairingTournament;
     }
 
     public static List<ChesspairingRound> getTournamentRounds(String tournamentKey) {
         final List<ChesspairingRound> chesspairingRounds = new ArrayList<>();
         final CountDownLatch latch = new CountDownLatch(1);
-        String sectionNotRequired = "/" + Constants.ROUND_NUMBER + "/" + Constants.ROUND_PLAYERS;
+        String sectionNotRequired = "/" + Constants.ROUND_NUMBER + "/" + Constants.ROUND_ABSENT_PLAYERS;
         //get the rounds data
-        String roundsLoc = Constants.LOCATION_ROUND_PLAYERS
+        String roundsLoc = Constants.LOCATION_ROUND_ABSENT_PLAYERS
                 .replace(sectionNotRequired, "")
                 .replace(Constants.TOURNAMENT_KEY, tournamentKey);
         DatabaseReference roundsRef = FirebaseDatabase.getInstance().getReference(roundsLoc);
@@ -141,49 +150,46 @@ public class MyFirebaseUtils {
                     String roundNumber = snapshot.getKey();
                     chesspairingRound.setRoundNumber(Integer.valueOf(roundNumber));
 
-                    List<Player> players = new ArrayList<Player>();
+                    List<Player> absentPlayers = new ArrayList<Player>();
                     List<Game> games = new ArrayList<Game>();
 
-                    //get the players
-                    if (snapshot.hasChild(Constants.ROUND_PLAYERS)) {
-                        DataSnapshot playersSnapshot = snapshot.child(Constants.ROUND_PLAYERS);
+                    //get the absentPlayers
+                    if (snapshot.hasChild(Constants.ROUND_ABSENT_PLAYERS)) {
+                        DataSnapshot playersSnapshot = snapshot.child(Constants.ROUND_ABSENT_PLAYERS);
                         Iterator<DataSnapshot> playersIterator = playersSnapshot.getChildren().iterator();
                         while (playersIterator.hasNext()) {
                             DataSnapshot playerSnapshot = (DataSnapshot) playersIterator.next();
                             Player player = playerSnapshot.getValue(Player.class);
-                            players.add(player);
+                            absentPlayers.add(player);
                         }
                     }
-                    List<ChesspairingPlayer> chesspairingPlayers = new ArrayList<ChesspairingPlayer>();
-                    for (Player player: players){
+                    //List<ChesspairingPlayer> absentChesspairingPlayers = new ArrayList<ChesspairingPlayer>();
+                    for (Player player : absentPlayers) {
                         ChesspairingPlayer chesspairingPlayer = MyChesspairingUtils.scanPlayer(player);
-                        chesspairingPlayers.add(chesspairingPlayer);
+                        chesspairingPlayer.setPresent(false);
+                        chesspairingRound.addAbsentPlayer(chesspairingPlayer);
                     }
-                    chesspairingRound.setPresentPlayers(chesspairingPlayers);
 
-                    Log.i(tag,"Time to decode game");
+                    Log.i(tag, "Time to decode game");
                     //get the games
-                    if (snapshot.hasChild(Constants.GAMES)){
+                    if (snapshot.hasChild(Constants.GAMES)) {
                         DataSnapshot gamesSnapshot = snapshot.child(Constants.GAMES);
-                        Iterator<DataSnapshot>gamesIterator = gamesSnapshot.getChildren().iterator();
+                        Iterator<DataSnapshot> gamesIterator = gamesSnapshot.getChildren().iterator();
                         List<ChesspairingGame> chesspairingGames = new ArrayList<ChesspairingGame>();
                         List<ChesspairingPlayer> presentPlayers = new ArrayList<ChesspairingPlayer>();
-                        while(gamesIterator.hasNext()){
-                            DataSnapshot gameSnapshot = (DataSnapshot)gamesIterator.next();
+                        while (gamesIterator.hasNext()) {
+                            DataSnapshot gameSnapshot = (DataSnapshot) gamesIterator.next();
                             Game game = gameSnapshot.getValue(Game.class);
                             ChesspairingGame chesspairingGame = MyChesspairingUtils.scanGame(game);
                             chesspairingGames.add(chesspairingGame);
 
                             presentPlayers.add(chesspairingGame.getWhitePlayer());
-                            if (chesspairingGame.getBlackPlayer()!= null){
+                            if (chesspairingGame.getBlackPlayer() != null) {
                                 presentPlayers.add(chesspairingGame.getBlackPlayer());
                             }
                         }
                         chesspairingRound.setGames(chesspairingGames);
                         chesspairingRound.setPresentPlayers(presentPlayers);
-                        Log.i(tag,"Wee have games for round: " + roundNumber);
-                    }else{
-                        Log.i(tag,"No games for round: " + roundNumber);
                     }
 
                     //add the round
@@ -206,7 +212,6 @@ public class MyFirebaseUtils {
         }
         return chesspairingRounds;
     }
-
 
     public static List<Player> getTournamentPlayers(String tournamentKey) {
         final List<Player> playerList = new ArrayList<>();
@@ -438,26 +443,26 @@ public class MyFirebaseUtils {
 
 
     public static void persistNewGames(String clubKey, String tournamentKey, ChesspairingRound round) {
-        int firstTableNumber = MyFirebaseUtils.getFirstTableNumber(clubKey,tournamentKey);
+        int firstTableNumber = MyFirebaseUtils.getFirstTableNumber(clubKey, tournamentKey);
         List<Player> tempList = MyFirebaseUtils.getTournamentPlayers(tournamentKey);
         Map<String, Player> playerMap = new HashMap<>();
-        for (Player player: tempList){
-            playerMap.put(player.getPlayerKey(),player);
+        for (Player player : tempList) {
+            playerMap.put(player.getPlayerKey(), player);
         }
 
         //copy the games data
-        List<ChesspairingGame>chesspairingGames = round.getGames();
+        List<ChesspairingGame> chesspairingGames = round.getGames();
         List<Game> games = new ArrayList<>();
         int table = 0;
-        for(ChesspairingGame chesspairingGame: chesspairingGames){
+        for (ChesspairingGame chesspairingGame : chesspairingGames) {
             Game game = new Game();
             game.setTableNumber(chesspairingGame.getTableNumber());
-            game.setActualNumber(chesspairingGame.getTableNumber()+firstTableNumber+1);
+            game.setActualNumber(chesspairingGame.getTableNumber() + firstTableNumber + 1);
             game.setWhitePlayer(playerMap.get(chesspairingGame.getWhitePlayer().getPlayerKey()));
-            if (chesspairingGame.getBlackPlayer()!=null){
+            if (chesspairingGame.getBlackPlayer() != null) {
                 //white player ad black player are present
                 game.setBlackPlayer(playerMap.get(chesspairingGame.getBlackPlayer().getPlayerKey()));
-            }else {
+            } else {
                 game.setResult(4);
             }
             games.add(game);
@@ -467,14 +472,14 @@ public class MyFirebaseUtils {
                 .replace(Constants.TOURNAMENT_KEY, tournamentKey)
                 .replace(Constants.ROUND_NUMBER, roundNumber);
         DatabaseReference allGamesRef = FirebaseDatabase.getInstance().getReference(gamesLoc);
-        for (Game gameItem: games){
+        for (Game gameItem : games) {
             DatabaseReference gameRef = allGamesRef.getRef().child(String.valueOf(gameItem.getTableNumber()));
             gameRef.setValue(gameItem);
         }
     }
 
     private static int getFirstTableNumber(String clubKey, String tournamentKey) {
-        final int numbers[]={1};//first number holds the result
+        final int numbers[] = {1};//first number holds the result
         final CountDownLatch latch = new CountDownLatch(1);
 
         String tournamentLoc = Constants.LOCATION_TOURNAMENTS

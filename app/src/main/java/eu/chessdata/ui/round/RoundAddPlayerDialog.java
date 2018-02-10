@@ -100,7 +100,7 @@ public class RoundAddPlayerDialog extends DialogFragment{
     }
 
     private void addPlayer(final Player player) {
-        String playerLoc = Constants.LOCATION_ROUND_PLAYERS
+        String playerLoc = Constants.LOCATION_ROUND_ABSENT_PLAYERS
                 .replace(Constants.TOURNAMENT_KEY,mTournamentKey)
                 .replace(Constants.ROUND_NUMBER, String.valueOf(mRoundNumber))+"/"+player.getPlayerKey();
         final DatabaseReference playerRef = FirebaseDatabase.getInstance().getReference(playerLoc);

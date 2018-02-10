@@ -108,11 +108,9 @@ public class RoundPagerFragment extends Fragment
             myFabInterface.enableFab(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, 1);
-//                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
+                    RoundAddPlayerDialog roundAddPlayerDialog = RoundAddPlayerDialog.newInstance(mTournamentKey, 1);
+                    roundAddPlayerDialog.show(getActivity().getSupportFragmentManager(), "roundAddPlayerDialog");
 
-                    RoundAddAllPlayersDialog roundAddAllPlayersDialog = RoundAddAllPlayersDialog.newInstance(mTournamentKey, 1);
-                    roundAddAllPlayersDialog.show(getActivity().getSupportFragmentManager(), "roundAddAllPlayersDialog");
                 }
             });
             roundZero = false;
@@ -168,8 +166,8 @@ public class RoundPagerFragment extends Fragment
     }
 
     protected void timeToDecideHowManyRoundsToShow() {
-        String sectionNotRequired = "/" + Constants.ROUND_NUMBER + "/" + Constants.ROUND_PLAYERS;
-        String roundsLoc = Constants.LOCATION_ROUND_PLAYERS
+        String sectionNotRequired = "/" + Constants.ROUND_NUMBER + "/" + Constants.ROUND_ABSENT_PLAYERS;
+        String roundsLoc = Constants.LOCATION_ROUND_ABSENT_PLAYERS
                 .replace(sectionNotRequired, "")
                 .replace(Constants.TOURNAMENT_KEY, mTournamentKey);
         DatabaseReference roundsRef = FirebaseDatabase.getInstance().getReference(roundsLoc);
