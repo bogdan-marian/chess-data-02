@@ -452,10 +452,10 @@ public class MainActivity extends AppCompatActivity
             roundPagerFragment.setArguments(bundle);
             runFragmentTransaction(R.id.fragment_container,roundPagerFragment,"RoundPagerFragment");
         }else if (position == 3){//standings
-            String param1 = "text param 1";
-            String param2 = "text param 2";
-            StandingsPagerFragment standingsPagerFragment = StandingsPagerFragment.newInstance(param1, param2);
-            runFragmentTransaction(R.id.fragment_container, standingsPagerFragment,"StandingPagerFragment");
+            Bundle bundle = StandingsPagerFragment.getBundle(tournamentKey, clubKey);
+            StandingsPagerFragment standingsPagerFragment = new StandingsPagerFragment();
+            standingsPagerFragment.setArguments(bundle);
+            runFragmentTransaction(R.id.fragment_container,standingsPagerFragment,"StandingsPagerFragment");
         }
     }
 }
