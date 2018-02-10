@@ -2,7 +2,7 @@
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee">
     <servlet>
         <servlet-name>DemoServlet01</servlet-name>
-        <servlet-class>eu.chessdata.backend.api.DemoServlet01</servlet-class>
+        <servlet-class>eu.chessout.backend.api.DemoServlet01</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DemoServlet01</servlet-name>
@@ -11,7 +11,7 @@
 
     <servlet>
         <servlet-name>DemoServlet02</servlet-name>
-        <servlet-class>eu.chessdata.backend.api.DemoServlet02</servlet-class>
+        <servlet-class>eu.chessout.backend.api.DemoServlet02</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DemoServlet02</servlet-name>
@@ -20,7 +20,7 @@
 
     <servlet>
         <servlet-name>BasicApi</servlet-name>
-        <servlet-class>eu.chessdata.backend.api.BasicApi</servlet-class>
+        <servlet-class>eu.chessout.backend.api.BasicApi</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>BasicApi</servlet-name>
@@ -29,7 +29,7 @@
     
     <servlet>
         <servlet-name>Worker</servlet-name>
-        <servlet-class>eu.chessdata.backend.taskqueue.push.Worker</servlet-class>
+        <servlet-class>eu.chessout.backend.taskqueue.push.Worker</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Worker</servlet-name>
