@@ -1,6 +1,7 @@
 package eu.chessout.ui.standings;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import eu.chessout.R;
+import eu.chessout.ui.round.RoundStateFragment;
 import eu.chessout.utils.Constants;
 
 
@@ -24,6 +26,7 @@ public class StandingsPagerFragment extends Fragment {
     private int mRoundsWithData = 1;
     private String mClubKey;
     private boolean roundZero = false;
+    private SectionPagerAdapter mSectionPagerAdapter;
 
 
 
@@ -44,6 +47,13 @@ public class StandingsPagerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setParameters();
         View fragmentView = inflater.inflate(R.layout.fragment_standings_pager, container,false);
+
+        mSectionPagerAdapter = new SectionPagerAdapter(getFragmentManager());
+        mViewPager = (ViewPager) fragmentView.findViewById(R.id.container_round_pager);
+        mViewPager.setAdapter(mSectionPagerAdapter);
+        (new ExtractTournamentData()).execute();
+
+
         return fragmentView;
     }
 
@@ -59,14 +69,23 @@ public class StandingsPagerFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             int round = position + 1;
+            StandingsFragment standingsFragment = new StandingsFragment();
 
-            return null;
+            return standingsFragment;
         }
 
 
         @Override
         public int getCount() {
             return 0;
+        }
+    }
+
+    private class ExtractTournamentData extends AsyncTask<Void, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            return null;
         }
     }
 }
