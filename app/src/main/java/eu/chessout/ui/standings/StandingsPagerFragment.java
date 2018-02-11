@@ -24,7 +24,7 @@ public class StandingsPagerFragment extends Fragment {
     private int mRoundsWithData = 1;
     private String mClubKey;
     private boolean roundZero = false;
-    
+
 
 
     public static Bundle getBundle(String tournamentKey, String clubKey) {
