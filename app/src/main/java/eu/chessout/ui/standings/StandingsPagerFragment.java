@@ -49,8 +49,10 @@ public class StandingsPagerFragment extends Fragment {
         View fragmentView = inflater.inflate(R.layout.fragment_standings_pager, container,false);
 
         mSectionPagerAdapter = new SectionPagerAdapter(getFragmentManager());
-        mViewPager = (ViewPager) fragmentView.findViewById(R.id.container_round_pager);
+        mViewPager = (ViewPager) fragmentView.findViewById(R.id.container_standings_pager);
         mViewPager.setAdapter(mSectionPagerAdapter);
+
+        
         (new ExtractTournamentData()).execute();
 
 
