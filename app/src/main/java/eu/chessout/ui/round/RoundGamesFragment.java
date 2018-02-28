@@ -117,7 +117,7 @@ public class RoundGamesFragment extends Fragment
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Game game = mAdapter.getItem(position);
                 if (mIsAdmin){
-                    GameSetResultDialog gameSetResultDialog = GameSetResultDialog.newInstance(mTournamentKey, mRoundNumber, game);
+                    GameSetResultDialog gameSetResultDialog = GameSetResultDialog.newInstance(mClubKey, mTournamentKey, mRoundNumber, game);
                     gameSetResultDialog.show(getActivity().getSupportFragmentManager(), "gameSetResultDialog");
                 }else {
                     Toast.makeText(getContext(), "You are not authorized to update the result", Toast.LENGTH_SHORT).show();
@@ -132,7 +132,7 @@ public class RoundGamesFragment extends Fragment
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Game game = mAdapter.getItem(position);
 
-                GameSetResultDialog gameSetResultDialog = GameSetResultDialog.newInstance(mTournamentKey, mRoundNumber, game);
+                GameSetResultDialog gameSetResultDialog = GameSetResultDialog.newInstance(mClubKey, mTournamentKey, mRoundNumber, game);
                 //override update protection
                 gameSetResultDialog.disablePreventUpdateResults();
                 gameSetResultDialog.show(getActivity().getSupportFragmentManager(), "gameSetResultDialog");

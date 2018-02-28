@@ -506,6 +506,26 @@ public class MyFirebaseUtils {
         return numbers[0];
     }
 
+    public static void persistDefaultStandings(String tournamentKey, int roundNumber, List<ChesspairingPlayer> standings) {
+        List<Player> players = new ArrayList<>();
+        for (ChesspairingPlayer item : standings) {
+            Player player = new Player(item.getName(), "nomail@mail.com", "noClubKey", "noClubName", item.getElo(), 0);
+            players.add(player);
+        }
+
+        int i=0;
+        for (Player player:players){
+            i++;
+            String standingsLocation = Constants.LOCATION_STANDINGS
+                    .replace(Constants.TOURNAMENT_KEY, tournamentKey)
+                    .replace(Constants.ROUND_NUMBER,String.valueOf(roundNumber))
+                    .replace(Constants.CATEGORY_NUMBER,"0")
+                    .replace(Constants.STANDING_NUMBER,String.valueOf(i));
+            DatabaseReference standingsReference = FirebaseDatabase.getInstance().getReference(standingsLocation);
+            standingsReference.setValue(player);
+        }
+    }
+
 
     public interface OnOneTimeResultsListener {
         public void onClubValue(DefaultClub defaultClub, MainActivity.ACTION action);

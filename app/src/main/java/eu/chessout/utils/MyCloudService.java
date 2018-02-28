@@ -16,6 +16,7 @@ import java.util.List;
 
 import eu.chessdata.chesspairing.algoritms.fideswissduch.Algorithm;
 import eu.chessdata.chesspairing.algoritms.javafo.JavafoWrapp;
+import eu.chessdata.chesspairing.model.ChesspairingPlayer;
 import eu.chessdata.chesspairing.model.ChesspairingRound;
 import eu.chessdata.chesspairing.model.ChesspairingTournament;
 import eu.chessout.model.MyPayLoad;
@@ -29,9 +30,11 @@ import eu.chessout.model.MyPayLoad;
 public class MyCloudService extends IntentService {
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_GAME_RESULT_UPDATED = "eu.chessdata.utils.ACTION_GAME_RESULT_UPDATED";
+    private static final String ACTION_COMPUTE_STANDINGS = "eu.chessdata.util.ACTION_COMPUTE_STANDINGS";
     private static final String ACTION_GENERATE_NEXT_ROUND = "eu.chessdata.utils.ACTION_GENERATE_NEXT_ROUND";
     private static final String EXTRA_GAME_LOCATION = "eu.chessdata.utils.EXTRA_GAME_LOCATION";
     private static final String EXTRA_TOURNAMENT_KEY = "eu.chessdata.utils.EXTRA_TOURNAMENT_KEY";
+    private static final String EXTRA_ROUND_NUMBER = "eu.chessout.utils.EXTRA_ROUND_NUMBER";
     private static final String EXTRA_CLUB_KEY = "eu.chessdata.utils.EXTRA_CLUB_KEY";
     private static String tag = Constants.LOG_TAG;
 
@@ -45,6 +48,15 @@ public class MyCloudService extends IntentService {
         Intent intent = new Intent(context, MyCloudService.class);
         intent.setAction(ACTION_GAME_RESULT_UPDATED);
         intent.putExtra(EXTRA_GAME_LOCATION, gameLocation);
+        context.startService(intent);
+    }
+
+    public static void startActionComputeStandings(Context context, String clubKey, String tournamentKey, int roundNumber) {
+        Intent intent = new Intent(context, MyCloudService.class);
+        intent.setAction(ACTION_COMPUTE_STANDINGS);
+        intent.putExtra(EXTRA_CLUB_KEY, clubKey);
+        intent.putExtra(EXTRA_TOURNAMENT_KEY, tournamentKey);
+        intent.putExtra(EXTRA_ROUND_NUMBER, roundNumber);
         context.startService(intent);
     }
 
@@ -74,7 +86,34 @@ public class MyCloudService extends IntentService {
                 final String clubKey = intent.getStringExtra(EXTRA_CLUB_KEY);
                 final String tournamentKey = intent.getStringExtra(EXTRA_TOURNAMENT_KEY);
                 handleActionGenerateNextRound(clubKey, tournamentKey);
+            } else if (ACTION_COMPUTE_STANDINGS.equals(action)) {
+                final String clubKey = intent.getStringExtra(EXTRA_CLUB_KEY);
+                final String tournamentKey = intent.getStringExtra(EXTRA_TOURNAMENT_KEY);
+                final int roundNumber = intent.getIntExtra(EXTRA_ROUND_NUMBER, 1);
+                handleActionComputeStandings(clubKey, tournamentKey, roundNumber);
             }
+        }
+    }
+
+    private void handleActionComputeStandings(String clubKey, String tournamentKey, int roundNumber) {
+        Log.d(tag, "Compute standings initiated:club= " + clubKey + " tournament=" + tournamentKey + " round=" + roundNumber);
+
+        if (!MyFirebaseUtils.isCurrentUserAdmin(clubKey)) {
+            return;
+        }
+
+        ChesspairingTournament tournament = MyFirebaseUtils.buildChessPairingTournament(clubKey, tournamentKey);
+        for (ChesspairingRound round : tournament.getRounds()) {
+            //todo implement compute standings
+            int rNumber = round.getRoundNumber();
+            if (!round.allGamesHaveBeanPlayed()) {
+                //if current round still hesse games to play then impossible to compute standings
+                break;
+            }
+            List<ChesspairingPlayer> standings = tournament.computeStandings(rNumber);
+
+            MyFirebaseUtils.persistDefaultStandings(tournamentKey, rNumber, standings);
+
         }
     }
 
@@ -141,11 +180,11 @@ public class MyCloudService extends IntentService {
         String tournamentJson = gson.toJson(tournament);
 
         //<end debug>
-        Log.d(tag, "new_game = "+ tournamentJson);
+        Log.d(tag, "new_game = " + tournamentJson);
         tournament = algorithm.generateNextRound(tournament);
         List<ChesspairingRound> rounds = tournament.getRounds();
-        ChesspairingRound round = rounds.get(rounds.size()-1);
-        MyFirebaseUtils.persistNewGames(clubKey,tournamentKey,round);
+        ChesspairingRound round = rounds.get(rounds.size() - 1);
+        MyFirebaseUtils.persistNewGames(clubKey, tournamentKey, round);
         Log.d(tag, "persistNewGames has bean initiated");
     }
 }

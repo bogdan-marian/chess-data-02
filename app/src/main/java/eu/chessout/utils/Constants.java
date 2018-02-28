@@ -31,6 +31,8 @@ public class Constants {
     public static final String TOURNAMENT_PLAYERS = "tournamentPlayers";
 
     public static final String TOURNAMENT_ROUNDS = "tournamentRounds";
+    public static final String STANDINGS = "standings";
+    public static final String STANDING_NUMBER = "$standingNumber";
     public static final String TOTAL_ROUNDS = "totalRounds";
     public static final String ROUND_NUMBER = "$roundNumber";
     //public static final String ROUND_PLAYERS = "roundPlayers";
@@ -91,6 +93,19 @@ public class Constants {
     //public static final String LOCATION_ROUND_PLAYERS = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + ROUND_PLAYERS;
     //tournamentRounds/$tournamentKey/$roundNumber/absentPlayers
     public static final String LOCATION_ROUND_ABSENT_PLAYERS = TOURNAMENT_ROUNDS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + ROUND_ABSENT_PLAYERS;
+
+    /**
+     * For the moment wee only deal with the absolute category soo wee just hard code it
+     * CategoryName = absoluteCategory
+     * CategoryNumber = 0
+     */
+    public static final String CATEGORY_ABSOLUTE_NAME = "Standings";
+    public static final String CATEGORY_ABSOLUTE_NUMBER = "0";
+
+    public static final String CATEGORY_NUMBER = "$categoryNumber";
+
+    //standings/$tournamentKey/$roundNumber/$categoryNumber/$standingNumber
+    public static final String LOCATION_STANDINGS = STANDINGS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + CATEGORY_NUMBER + "/" + STANDING_NUMBER;
 
 
     //globalFollowers/byPlayer/$playerKey

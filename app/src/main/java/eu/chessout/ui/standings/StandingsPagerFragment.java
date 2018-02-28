@@ -52,7 +52,7 @@ public class StandingsPagerFragment extends Fragment {
         mViewPager = (ViewPager) fragmentView.findViewById(R.id.container_standings_pager);
         mViewPager.setAdapter(mSectionPagerAdapter);
 
-        
+
         (new ExtractTournamentData()).execute();
 
 
@@ -87,6 +87,7 @@ public class StandingsPagerFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            
             return null;
         }
     }

@@ -22,6 +22,7 @@ import eu.chessout.utils.MyCloudService;
  */
 public class GameSetResultDialog extends DialogFragment {
     private String tag = Constants.LOG_TAG;
+    private String mClubKey;
     private String mTournamentKey;
     private int mRoundNumber;
     private int mTableNumber;
@@ -32,9 +33,10 @@ public class GameSetResultDialog extends DialogFragment {
     private boolean mPreventUpdateResult = true;
     private Context mContext;
 
-    private static Bundle getBundle(String tournamentKey, int roundNumber, Game game) {
+    private static Bundle getBundle(String clubKey, String tournamentKey, int roundNumber, Game game) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.TOURNAMENT_KEY, tournamentKey);
+        bundle.putString(Constants.CLUB_KEY, clubKey);
         bundle.putInt(Constants.ROUND_NUMBER, roundNumber);
         bundle.putInt(Constants.TABLE_NUMBER, game.getTableNumber());
         bundle.putString(Constants.WHITE_PLAYER_NAME, game.getWhitePlayer().getName());
@@ -56,6 +58,7 @@ public class GameSetResultDialog extends DialogFragment {
     }
 
     private void setParameters() {
+        mClubKey = getArguments().getString(Constants.CLUB_KEY);
         mTournamentKey = getArguments().getString(Constants.TOURNAMENT_KEY);
         mRoundNumber = getArguments().getInt(Constants.ROUND_NUMBER);
         mTableNumber = getArguments().getInt(Constants.TABLE_NUMBER);
@@ -65,9 +68,9 @@ public class GameSetResultDialog extends DialogFragment {
         mCurrentResult = getArguments().getInt(Constants.CURRENT_RESULT);
     }
 
-    public static GameSetResultDialog newInstance(String tournamentKey, int roundNumber, Game game) {
+    public static GameSetResultDialog newInstance(String clubKey, String tournamentKey, int roundNumber, Game game) {
         GameSetResultDialog dialog = new GameSetResultDialog();
-        dialog.setArguments(getBundle(tournamentKey, roundNumber, game));
+        dialog.setArguments(getBundle(clubKey, tournamentKey, roundNumber, game));
         return dialog;
     }
 
@@ -125,6 +128,9 @@ public class GameSetResultDialog extends DialogFragment {
                     .replace(Constants.TABLE_NUMBER,String.valueOf(mTableNumber));
 
             MyCloudService.startActionGameResultUpdated(mContext,gameLoc);
+
+            //initiate compute standings on backend
+            MyCloudService.startActionComputeStandings(mContext,mClubKey, mTournamentKey, mRoundNumber);
             return null;
         }
 
