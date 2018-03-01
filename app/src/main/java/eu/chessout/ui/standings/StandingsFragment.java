@@ -7,9 +7,16 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import eu.chessout.R;
+import eu.chessout.model.Game;
+import eu.chessout.model.RankedPlayer;
 import eu.chessout.utils.Constants;
 
 /**
@@ -23,6 +30,10 @@ public class StandingsFragment extends Fragment {
     private int mRoundNumber;
     private String mClubKey;
     private Context mContext;
+
+    private ListView mListView;
+    private DatabaseReference mReference;
+    private FirebaseListAdapter<RankedPlayer> mAdapter;
 
     public StandingsFragment() {
         // Required empty public constructor
@@ -59,7 +70,35 @@ public class StandingsFragment extends Fragment {
         TextView headerView = (TextView) view.findViewById(R.id.standings_simple_header);
         headerView.setText("Ranking round " + mRoundNumber);
 
+        //standings/$tournamentKey/$roundNumber/$categoryNumber/$standingNumber
+        String standingsLocation = Constants.LOCATION_STANDINGS
+                .replace(Constants.TOURNAMENT_KEY, mTournamentKey)
+                .replace(Constants.ROUND_NUMBER, String.valueOf(mRoundNumber))
+                .replace(Constants.CATEGORY_NUMBER, Constants.CATEGORY_ABSOLUTE_NUMBER)
+                .replace("/" + Constants.STANDING_NUMBER, "");
+        mReference = FirebaseDatabase.getInstance().getReference(standingsLocation);
+        mListView = (ListView) view.findViewById(R.id.list_view_standings);
+        mAdapter = buildAdapter();
+        mListView.setAdapter(mAdapter);
+
         return view;
+    }
+
+    private FirebaseListAdapter<RankedPlayer> buildAdapter() {
+        FirebaseListAdapter<RankedPlayer> adapter = new FirebaseListAdapter<RankedPlayer>(getActivity(), RankedPlayer.class, R.layout.list_item_text, mReference) {
+
+
+            @Override
+            protected void populateView(View v, RankedPlayer model, int position) {
+                StringBuffer sb = new StringBuffer();
+                sb.append(model.getRankNumber());
+                sb.append(". ");
+                sb.append(model.getPlayerName());
+                ((TextView) v.findViewById(R.id.list_item_text_simple_view)).setText(sb.toString());
+            }
+        };
+
+        return adapter;
     }
 
 

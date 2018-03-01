@@ -11,4 +11,9 @@
         android:layout_height="match_parent"
         android:text="Hello standings fragment" />
 
+    <ListView
+        android:id="@+id/list_view_standings"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></ListView>
+
 </FrameLayout>
