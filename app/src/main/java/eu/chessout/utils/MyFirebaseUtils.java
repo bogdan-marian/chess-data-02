@@ -23,6 +23,7 @@ import eu.chessdata.chesspairing.model.ChesspairingTournament;
 import eu.chessout.model.DefaultClub;
 import eu.chessout.model.Game;
 import eu.chessout.model.Player;
+import eu.chessout.model.RankedPlayer;
 import eu.chessout.model.Tournament;
 import eu.chessout.model.User;
 import eu.chessout.ui.MainActivity;
@@ -513,9 +514,21 @@ public class MyFirebaseUtils {
             players.add(player);
         }
 
+        List<RankedPlayer> rankedPlayers = new ArrayList<>();
         int i=0;
-        for (Player player:players){
+        for (ChesspairingPlayer item: standings){
             i++;
+            RankedPlayer player = new RankedPlayer();
+            player.setPlayerKey(item.getPlayerKey());
+            player.setTournamentKey(tournamentKey);
+            player.setRankNumber(i);
+            player.setPlayerName(item.getName());
+            rankedPlayers.add(player);
+        }
+
+
+        for (RankedPlayer player:rankedPlayers){
+            i = player.getRankNumber();
             String standingsLocation = Constants.LOCATION_STANDINGS
                     .replace(Constants.TOURNAMENT_KEY, tournamentKey)
                     .replace(Constants.ROUND_NUMBER,String.valueOf(roundNumber))
