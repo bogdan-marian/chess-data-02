@@ -8,6 +8,56 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:264714598866:android:cf96edcb23e3ef13",
+        "android_client_info": {
+          "package_name": "eu.chessData"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264714598866-g56idsjnjirk5m4qdcrq40d2aff6h90e.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "264714598866-5benmmuk47gvjglo3a9en22ce0kfs65u.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "264714598866-ne3a6fp88topjmnidocrt86u7inokqlr.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "264714598866-i22jlm7kefj2s791ad7889s3uupsb1uo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "eu.chessData",
+            "certificate_hash": "4ece3152b5281b59fb4a0e0f9aef5cb66eff8a9a"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDl7Uhifg9_EUz1Gc-kgW21L6tnuGdq57U"
+        },
+        {
+          "current_key": "AIzaSyCKMLUTAZ48Z-TQC6sQpyARnQn-5oBpi6g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:264714598866:android:fd072d43ff0f21f9",
         "android_client_info": {
           "package_name": "eu.chessdata"
@@ -15,11 +65,61 @@
       },
       "oauth_client": [
         {
+          "client_id": "264714598866-g56idsjnjirk5m4qdcrq40d2aff6h90e.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "264714598866-5benmmuk47gvjglo3a9en22ce0kfs65u.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
           "client_id": "264714598866-m9n6qopvg0l815u9q4bi9tahhvq3lucu.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "eu.chessdata",
-            "certificate_hash": "4ECE3152B5281B59FB4A0E0F9AEF5CB66EFF8A9A"
+            "certificate_hash": "4ece3152b5281b59fb4a0e0f9aef5cb66eff8a9a"
+          }
+        },
+        {
+          "client_id": "264714598866-ne3a6fp88topjmnidocrt86u7inokqlr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDl7Uhifg9_EUz1Gc-kgW21L6tnuGdq57U"
+        },
+        {
+          "current_key": "AIzaSyCKMLUTAZ48Z-TQC6sQpyARnQn-5oBpi6g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264714598866:android:d7cc8ac4271058b1",
+        "android_client_info": {
+          "package_name": "eu.chessout"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264714598866-ea70fml38tc03ok1v4ft35lhqu2keja9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "eu.chessout",
+            "certificate_hash": "4ece3152b5281b59fb4a0e0f9aef5cb66eff8a9a"
           }
         },
         {
@@ -37,6 +137,9 @@
       ],
       "api_key": [
         {
+          "current_key": "AIzaSyDl7Uhifg9_EUz1Gc-kgW21L6tnuGdq57U"
+        },
+        {
           "current_key": "AIzaSyCKMLUTAZ48Z-TQC6sQpyARnQn-5oBpi6g"
         }
       ],
@@ -45,11 +148,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "264714598866-g56idsjnjirk5m4qdcrq40d2aff6h90e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }
