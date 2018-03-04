@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "264714598866-cokldabgb8vdagpb9hhs8at3gi1eojmi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "eu.chessData",
+            "certificate_hash": "20c9595141e8d60aed036d14b6dce650eabea9ea"
+          }
+        },
+        {
+          "client_id": "264714598866-i22jlm7kefj2s791ad7889s3uupsb1uo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "eu.chessData",
+            "certificate_hash": "4ece3152b5281b59fb4a0e0f9aef5cb66eff8a9a"
+          }
+        },
+        {
           "client_id": "264714598866-g56idsjnjirk5m4qdcrq40d2aff6h90e.apps.googleusercontent.com",
           "client_type": 3
         },
@@ -25,14 +41,6 @@
         {
           "client_id": "264714598866-ne3a6fp88topjmnidocrt86u7inokqlr.apps.googleusercontent.com",
           "client_type": 3
-        },
-        {
-          "client_id": "264714598866-i22jlm7kefj2s791ad7889s3uupsb1uo.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "eu.chessData",
-            "certificate_hash": "4ece3152b5281b59fb4a0e0f9aef5cb66eff8a9a"
-          }
         }
       ],
       "api_key": [
@@ -64,6 +72,22 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "264714598866-pomagtfeo8e3h88ku404jqcd5hopd6d3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "eu.chessdata",
+            "certificate_hash": "833ad88e07826ae68cc161d7cf0c2e119e0ec33c"
+          }
+        },
+        {
+          "client_id": "264714598866-fpp8cb800ger23ljgof74nj8oi080bci.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "eu.chessdata",
+            "certificate_hash": "20c9595141e8d60aed036d14b6dce650eabea9ea"
+          }
+        },
         {
           "client_id": "264714598866-g56idsjnjirk5m4qdcrq40d2aff6h90e.apps.googleusercontent.com",
           "client_type": 3
@@ -103,61 +127,6 @@
         },
         "ads_service": {
           "status": 1
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:264714598866:android:d7cc8ac4271058b1",
-        "android_client_info": {
-          "package_name": "eu.chessout"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "264714598866-ea70fml38tc03ok1v4ft35lhqu2keja9.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "eu.chessout",
-            "certificate_hash": "4ece3152b5281b59fb4a0e0f9aef5cb66eff8a9a"
-          }
-        },
-        {
-          "client_id": "264714598866-g56idsjnjirk5m4qdcrq40d2aff6h90e.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "264714598866-5benmmuk47gvjglo3a9en22ce0kfs65u.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "264714598866-ne3a6fp88topjmnidocrt86u7inokqlr.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDl7Uhifg9_EUz1Gc-kgW21L6tnuGdq57U"
-        },
-        {
-          "current_key": "AIzaSyCKMLUTAZ48Z-TQC6sQpyARnQn-5oBpi6g"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "264714598866-g56idsjnjirk5m4qdcrq40d2aff6h90e.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }
