@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import eu.chessout.R;
 
@@ -19,7 +20,12 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        View fragmentView = inflater.inflate(R.layout.fragment_home,container,false);
+        View fragmentView = inflater.inflate(R.layout.fragment_home, container, false);
+
+        String quote = "Wee aim to make chess more social and fun. Wee are currently in beta. Wee also strongly encourage you to  reach out play chess in the real world have fun and let us know how wee are doing. ";
+
+        TextView textView = (TextView) fragmentView.findViewById(R.id.home_quote);
+        textView.setText(quote);
 
         return fragmentView;
     }
@@ -27,6 +33,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-        inflater.inflate(R.menu.main,menu);
+        inflater.inflate(R.menu.main, menu);
     }
 }
