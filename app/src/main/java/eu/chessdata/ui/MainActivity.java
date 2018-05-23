@@ -35,6 +35,7 @@ import java.util.Map;
 import eu.chessdata.ui.club.ClubPlayersFragment;
 import eu.chessdata.ui.club.PlayerCreateDialogFragment;
 import eu.chessdata.ui.home.HomeFragment;
+import eu.chessdata.ui.open.OpenMainActivity;
 import eu.chessdata.ui.tournament.TournamentAddPlayerDialog;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
 import eu.chessdata.ui.tournament.TournamentPlayersFragment;
@@ -233,6 +234,9 @@ public class MainActivity extends AppCompatActivity
             transaction.commit();
             disableFab();
             getSupportActionBar().setTitle("Followed players");
+        }else if (id == R.id.nav_open_tournaments){
+            Intent intent = new Intent(this, OpenMainActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
