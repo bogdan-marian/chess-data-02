@@ -1,15 +1,17 @@
 package eu.chessdata.ui.open;
 
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import eu.chessdata.R;
 
-public class OpenMainActivity extends AppCompatActivity {
+public class CrowdMainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
 
@@ -36,11 +38,27 @@ public class OpenMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_open_main);
+        setContentView(R.layout.activity_crowd_main);
 
-        mTextMessage = (TextView) findViewById(R.id.message);
+        initializeScreen();
+
+//        mTextMessage = (TextView) findViewById(R.id.message);
+//        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+//        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+    }
+
+    private void initializeScreen(){
+
+        //bottom navigation
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        //show home fragment
+//        CrowdHomeFragment crowdHomeFragment = new CrowdHomeFragment();
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.fragment_crowd_container, crowdHomeFragment);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
     }
 
 }
