@@ -1,4 +1,4 @@
-package eu.chessdata.ui.open;
+package eu.chessdata.ui.crowd;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import eu.chessdata.R;
-import eu.chessdata.ui.open.CrowdHomeFragment.OnListFragmentInteractionListener;
-import eu.chessdata.ui.open.dummy.DummyContent.DummyItem;
+import eu.chessdata.ui.crowd.CrowdHomeFragment.OnListFragmentInteractionListener;
+import eu.chessdata.ui.crowd.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 

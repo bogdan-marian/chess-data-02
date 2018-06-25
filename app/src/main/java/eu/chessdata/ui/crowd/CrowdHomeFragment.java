@@ -1,4 +1,4 @@
-package eu.chessdata.ui.open;
+package eu.chessdata.ui.crowd;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import eu.chessdata.R;
-import eu.chessdata.ui.open.dummy.DummyContent;
-import eu.chessdata.ui.open.dummy.DummyContent.DummyItem;
+import eu.chessdata.ui.crowd.dummy.DummyContent;
+import eu.chessdata.ui.crowd.dummy.DummyContent.DummyItem;
 
 /**
  * A fragment representing a list of Items.

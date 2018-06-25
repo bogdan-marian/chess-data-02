@@ -1,4 +1,4 @@
-package eu.chessdata.ui.open.dummy;
+package eu.chessdata.ui.crowd.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
