@@ -41,10 +41,6 @@
             </intent-filter>
         </service>
 
-        <activity
-            android:name=".ui.crowd.CrowdMainActivity"
-            android:label="@string/title_activity_open_main"
-            android:parentActivityName=".ui.MainActivity"></activity>
     </application>
 
 </manifest>
