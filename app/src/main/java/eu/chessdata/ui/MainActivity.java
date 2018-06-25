@@ -35,7 +35,7 @@ import java.util.Map;
 import eu.chessdata.ui.club.ClubPlayersFragment;
 import eu.chessdata.ui.club.PlayerCreateDialogFragment;
 import eu.chessdata.ui.home.HomeFragment;
-import eu.chessdata.ui.open.CrowdMainActivity;
+import eu.chessdata.ui.crowd.CrowdMainActivity;
 import eu.chessdata.ui.tournament.TournamentAddPlayerDialog;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
 import eu.chessdata.ui.tournament.TournamentPlayersFragment;
