@@ -129,4 +129,10 @@ public class Constants {
     public static final String LOG_TAG = "my-debug";
 
     public static final java.lang.String IS_ADMIN = "isAdmin";
+
+    //crowd tournaments section
+    public static final String LOCATION_CROWD_TOURNAMENTS = "crowd-tournaments";
+
+    //crowd-tournaments/$tournamentKey
+    public static final String LOCATION_CROWD_TOURNAMENT = LOCATION_CROWD_TOURNAMENTS +"/"+TOURNAMENT_KEY;
 }

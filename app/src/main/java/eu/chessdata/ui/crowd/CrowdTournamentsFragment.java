@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 
 import eu.chessdata.R;
+import eu.chessdata.ui.club.ClubCreateDialogFragment;
+import eu.chessdata.utils.MyFabInterface;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,7 +75,8 @@ public class CrowdTournamentsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_crowd_tournaments, container, false);
-        Toast.makeText(getActivity().getApplicationContext(), "User id = " + mUserId, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity().getApplicationContext(), "Short press to follow a Crowd Tournament and long press to create a Crowd Tournament", Toast.LENGTH_SHORT).show();
+        configureFab();
         return mView;
     }
 
@@ -108,5 +111,28 @@ public class CrowdTournamentsFragment extends Fragment {
     public interface OnCrowdFragmentInteractionListener {
         // TODO: Update argument type and name
         void onNavToCrowdTournament(String crowdTournamentId);
+    }
+
+    private void configureFab() {
+
+        MyFabInterface myFabInterface = (MyFabInterface) getActivity();
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Time to search a cowd tournament", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                CrowdTournamentCreateDialogFragment createDialogFragment = new CrowdTournamentCreateDialogFragment();
+                createDialogFragment.show(getActivity().getSupportFragmentManager(), "CrowdTournamentCreateDialogFragment");
+                //Toast.makeText(getContext(), "Time to create a crowd tournament", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        };
+
+        myFabInterface.enableFab(onClickListener, onLongClickListener);
     }
 }

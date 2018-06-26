@@ -60,9 +60,7 @@ public class MainActivity extends AppCompatActivity
         TournamentsFragment.TournamentsCallback,
         TournamentDetailsFragment.TournamentDetailsCallback,
         CrowdTournamentsFragment.OnCrowdFragmentInteractionListener,
-        Utils.VipMap, MyFabInterface{
-
-
+        Utils.VipMap, MyFabInterface {
 
 
     public enum ACTION {
@@ -71,7 +69,6 @@ public class MainActivity extends AppCompatActivity
         SHOW_TOURNAMENT_PLAYERS,
         SHOW_ROUND
     }
-
 
 
     public static final String ANONYMOUS = "anonymous";
@@ -95,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void updateVipValue(String key, String value) {
-        mVipMap.put(key,value);
+        mVipMap.put(key, value);
     }
 
     @Override
@@ -145,7 +142,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         //
-        Log.d(TAG,"MainActivity: firebase instance id = " + FirebaseInstanceId.getInstance().getToken());
+        Log.d(TAG, "MainActivity: firebase instance id = " + FirebaseInstanceId.getInstance().getToken());
     }
 
     @Override
@@ -227,15 +224,15 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_members) {
             MyFirebaseUtils.getDefaultClub(this, ACTION.SHOW_PLAYERS);
             MyFirebaseUtils.isManagerForDefaultClub(this, ACTION.SHOW_PLAYERS);
-        } else if (id == R.id.nav_followed_players){
+        } else if (id == R.id.nav_followed_players) {
             AllMyFollowedPlayersFragment allMyFollowedPlayersFragment = new AllMyFollowedPlayersFragment();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container,allMyFollowedPlayersFragment);
+            transaction.replace(R.id.fragment_container, allMyFollowedPlayersFragment);
             transaction.addToBackStack(null);
             transaction.commit();
             disableFab();
             getSupportActionBar().setTitle("Followed players");
-        }else if (id == R.id.nav_crowd_tournaments){
+        } else if (id == R.id.nav_crowd_tournaments) {
             CrowdTournamentsFragment crowdTournamentsFragment = CrowdTournamentsFragment.newInstance();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, crowdTournamentsFragment);
@@ -299,7 +296,7 @@ public class MainActivity extends AppCompatActivity
                 transaction.commit();
 
                 getSupportActionBar().setTitle("Club: " + club.getClubName());
-            } else if (action == ACTION.SHOW_ROUND){
+            } else if (action == ACTION.SHOW_ROUND) {
 
             }
 
@@ -334,13 +331,13 @@ public class MainActivity extends AppCompatActivity
      * onClickListener
      */
     @Override
-    public void onUserIsClubManager(final Map<String,String> myMap, ACTION action) {
+    public void onUserIsClubManager(final Map<String, String> myMap, ACTION action) {
         //todo create reset fab
         if (action == ACTION.SHOW_TOURNAMENTS) {
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TournamentCreateDialogFragment dialogFragment = TournamentCreateDialogFragment.newInstance(myMap.get(Constants.CLUB_KEY) );
+                    TournamentCreateDialogFragment dialogFragment = TournamentCreateDialogFragment.newInstance(myMap.get(Constants.CLUB_KEY));
                     dialogFragment.show(getSupportFragmentManager(), "tournamentCreateDialogFragment");
                 }
             });
@@ -355,7 +352,7 @@ public class MainActivity extends AppCompatActivity
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    PlayerCreateDialogFragment dialogFragment = PlayerCreateDialogFragment.newInstance(myMap.get(Constants.CLUB_NAME),myMap.get(Constants.CLUB_KEY) );
+                    PlayerCreateDialogFragment dialogFragment = PlayerCreateDialogFragment.newInstance(myMap.get(Constants.CLUB_NAME), myMap.get(Constants.CLUB_KEY));
                     dialogFragment.show(getSupportFragmentManager(), "playerCreateDialogFragment");
                 }
             });
@@ -365,18 +362,18 @@ public class MainActivity extends AppCompatActivity
                     return false;
                 }
             });
-        } else if (action == ACTION.SHOW_TOURNAMENT_PLAYERS){
+        } else if (action == ACTION.SHOW_TOURNAMENT_PLAYERS) {
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String clubKey = mVipMap.get(Constants.CLUB_KEY);
                     String tournamentKey = mVipMap.get(Constants.TOURNAMENT_KEY);
-                    TournamentAddPlayerDialog addPlayerDialog = TournamentAddPlayerDialog.newInstance(tournamentKey,clubKey);
-                    addPlayerDialog.show(getSupportFragmentManager(),"TournamentAddPlayerDialog");
+                    TournamentAddPlayerDialog addPlayerDialog = TournamentAddPlayerDialog.newInstance(tournamentKey, clubKey);
+                    addPlayerDialog.show(getSupportFragmentManager(), "TournamentAddPlayerDialog");
                 }
             });
 
-            mFab.setOnLongClickListener(new View.OnLongClickListener(){
+            mFab.setOnLongClickListener(new View.OnLongClickListener() {
 
                 @Override
                 public boolean onLongClick(View v) {
@@ -388,23 +385,23 @@ public class MainActivity extends AppCompatActivity
                 }
             });
             mFab.setVisibility(View.VISIBLE);
-        } else if (action == ACTION.SHOW_ROUND){
+        } else if (action == ACTION.SHOW_ROUND) {
             //for the moment no fab
         }
     }
 
     /**
      * use this function to run fragment transactions. It will make the code more readable
+     *
      * @param containerViewId
      * @param fragment
      */
-    private void runFragmentTransaction(int containerViewId, Fragment fragment, String fragmentTag){
+    private void runFragmentTransaction(int containerViewId, Fragment fragment, String fragmentTag) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(containerViewId,fragment,fragmentTag);
+        transaction.replace(containerViewId, fragment, fragmentTag);
         transaction.addToBackStack(fragmentTag);
         transaction.commit();
     }
-
 
 
     @Override
@@ -422,6 +419,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void enableFab(View.OnClickListener onClickListener) {
         mFab.setOnClickListener(onClickListener);
+        mFab.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void enableFab(View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener) {
+        mFab.setOnClickListener(onClickListener);
+        mFab.setOnLongClickListener(onLongClickListener);
         mFab.setVisibility(View.VISIBLE);
     }
 
@@ -444,8 +448,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onTournamentDetailsItemSelected(String clubKey, String tournamentKey, String tournamentName, int position) {
 
-        updateVipValue(Constants.CLUB_KEY,clubKey);
-        updateVipValue(Constants.TOURNAMENT_KEY,tournamentKey);
+        updateVipValue(Constants.CLUB_KEY, clubKey);
+        updateVipValue(Constants.TOURNAMENT_KEY, tournamentKey);
 
         disableFab();
         if (position == 1) {//players
@@ -455,22 +459,23 @@ public class MainActivity extends AppCompatActivity
             transaction.replace(R.id.fragment_container, tournamentPlayersFragment);
             transaction.addToBackStack(null);
             transaction.commit();
-            MyFirebaseUtils.isManagerForClubKey(clubKey,this,ACTION.SHOW_TOURNAMENT_PLAYERS);
-        }else if (position == 2){//rounds
+            MyFirebaseUtils.isManagerForClubKey(clubKey, this, ACTION.SHOW_TOURNAMENT_PLAYERS);
+        } else if (position == 2) {//rounds
             Bundle bundle = RoundPagerFragment.getBundle(tournamentKey, clubKey);
             RoundPagerFragment roundPagerFragment = new RoundPagerFragment();
             roundPagerFragment.setArguments(bundle);
-            runFragmentTransaction(R.id.fragment_container,roundPagerFragment,"RoundPagerFragment");
-        }else if (position == 3){//standings
+            runFragmentTransaction(R.id.fragment_container, roundPagerFragment, "RoundPagerFragment");
+        } else if (position == 3) {//standings
             Bundle bundle = StandingsPagerFragment.getBundle(tournamentKey, clubKey);
             StandingsPagerFragment standingsPagerFragment = new StandingsPagerFragment();
             standingsPagerFragment.setArguments(bundle);
-            runFragmentTransaction(R.id.fragment_container,standingsPagerFragment,"StandingsPagerFragment");
+            runFragmentTransaction(R.id.fragment_container, standingsPagerFragment, "StandingsPagerFragment");
         }
     }
 
     /**
      * Time to navigate to specific crowd tournament
+     *
      * @param crowdTournamentId
      */
     @Override

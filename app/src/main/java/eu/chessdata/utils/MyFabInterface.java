@@ -7,5 +7,6 @@ import android.view.View;
  */
 public interface MyFabInterface {
     public void enableFab(View.OnClickListener onClickListener);
+    public void enableFab(View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener);
     public void disableFab();
 }
