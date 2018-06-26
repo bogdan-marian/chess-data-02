@@ -11,7 +11,7 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Tournaments" />
         <item
-            android:id="@+id/nav_open_tournaments"
+            android:id="@+id/nav_crowd_tournaments"
             android:icon="@drawable/ic_menu_manage"
             android:title="Open Tournaments"/>
         <item

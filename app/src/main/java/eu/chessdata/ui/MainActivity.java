@@ -34,6 +34,7 @@ import java.util.Map;
 
 import eu.chessdata.ui.club.ClubPlayersFragment;
 import eu.chessdata.ui.club.PlayerCreateDialogFragment;
+import eu.chessdata.ui.crowd.CrowdTournamentsFragment;
 import eu.chessdata.ui.home.HomeFragment;
 import eu.chessdata.ui.tournament.TournamentAddPlayerDialog;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity
         MyFirebaseUtils.OnOneTimeResultsListener,
         TournamentsFragment.TournamentsCallback,
         TournamentDetailsFragment.TournamentDetailsCallback,
+        CrowdTournamentsFragment.OnCrowdFragmentInteractionListener,
         Utils.VipMap, MyFabInterface{
 
 
@@ -233,9 +235,14 @@ public class MainActivity extends AppCompatActivity
             transaction.commit();
             disableFab();
             getSupportActionBar().setTitle("Followed players");
-        }else if (id == R.id.nav_open_tournaments){
-            //Intent intent = new Intent(this, CrowdMainActivity.class);
-            //startActivity(intent);
+        }else if (id == R.id.nav_crowd_tournaments){
+            CrowdTournamentsFragment crowdTournamentsFragment = CrowdTournamentsFragment.newInstance();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, crowdTournamentsFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+            disableFab();
+            getSupportActionBar().setTitle("Crowd Tournaments");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -460,5 +467,14 @@ public class MainActivity extends AppCompatActivity
             standingsPagerFragment.setArguments(bundle);
             runFragmentTransaction(R.id.fragment_container,standingsPagerFragment,"StandingsPagerFragment");
         }
+    }
+
+    /**
+     * Time to navigate to specific crowd tournament
+     * @param crowdTournamentId
+     */
+    @Override
+    public void onNavToCrowdTournament(String crowdTournamentId) {
+        Toast.makeText(getApplicationContext(), "Time to navigate to specific croud tournament", Toast.LENGTH_SHORT).show();
     }
 }
