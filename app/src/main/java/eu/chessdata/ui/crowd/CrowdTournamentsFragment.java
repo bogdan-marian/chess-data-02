@@ -75,7 +75,7 @@ public class CrowdTournamentsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_crowd_tournaments, container, false);
-        Toast.makeText(getActivity().getApplicationContext(), "Short press to follow a Crowd Tournament and long press to create a Crowd Tournament", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity().getApplicationContext(), "Short press to follow a Crowd Tournament and long press to create a Crowd Tournament", Toast.LENGTH_LONG).show();
         configureFab();
         return mView;
     }

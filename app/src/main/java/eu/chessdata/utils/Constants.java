@@ -133,6 +133,11 @@ public class Constants {
     //crowd tournaments section
     public static final String LOCATION_CROWD_TOURNAMENTS = "crowd-tournaments";
 
+    public static final String LOCATION_CROWD_USER_TOURNAMENTS = "crowd-user-tournaments"+"/"+USER_KEY+"/"+TOURNAMENT_KEY;
+
+    //"crowd-who-follows-tournament/TOURNAMENT_KEY/USER_KEY
+    public static final String LOCATION_CROWD_WHO_FOLLOWS_TOURNAMENT = "crowd-who-follows-tournament"+"/"+TOURNAMENT_KEY;
+
     //crowd-tournaments/$tournamentKey
-    public static final String LOCATION_CROWD_TOURNAMENT = LOCATION_CROWD_TOURNAMENTS +"/"+TOURNAMENT_KEY;
+    //public static final String LOCATION_CROWD_TOURNAMENT = LOCATION_CROWD_TOURNAMENTS +"/"+TOURNAMENT_KEY;
 }
