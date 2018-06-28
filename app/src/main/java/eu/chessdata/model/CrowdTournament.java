@@ -2,6 +2,7 @@ package eu.chessdata.model;
 
 import com.firebase.client.ServerValue;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import eu.chessdata.utils.Constants;
@@ -16,6 +17,9 @@ public class CrowdTournament {
     private int totalRounds;
     private HashMap<String, Object> dateCreated;
     private HashMap<String, Object> updateStamp;
+    private long reversedDateCreated;
+
+    public CrowdTournament(){}
 
     public CrowdTournament (String name,
                             String description,
@@ -30,6 +34,7 @@ public class CrowdTournament {
         this.totalRounds = totalRounds;
         this.dateCreated = timeStamp;
         this.updateStamp = timeStamp;
+        this.reversedDateCreated = -1 * (new Date().getTime());
     }
 
     public String getName() {
@@ -78,5 +83,13 @@ public class CrowdTournament {
 
     public void setUpdateStamp(HashMap<String, Object> updateStamp) {
         this.updateStamp = updateStamp;
+    }
+
+    public long getReversedDateCreated() {
+        return reversedDateCreated;
+    }
+
+    public void setReversedDateCreated(long reversedDateCreated) {
+        this.reversedDateCreated = reversedDateCreated;
     }
 }
