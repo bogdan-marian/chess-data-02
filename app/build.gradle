@@ -45,7 +45,6 @@ android {
 }
 
 dependencies {
-    //compile fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:support-v4:25.4.0'
     implementation 'com.android.support:recyclerview-v7:25.4.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
@@ -67,7 +66,6 @@ dependencies {
 
     implementation 'eu.chesdata:chess-pairing:1.0-SNAPSHOT'
     implementation 'com.android.support:support-annotations:25.3.1'
-    //s compile 'com.android.support:support:25.3.1'
 }
 
 
