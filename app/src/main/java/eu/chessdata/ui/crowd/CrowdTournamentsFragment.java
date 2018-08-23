@@ -7,12 +7,22 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import eu.chessdata.R;
+import eu.chessdata.model.CrowdTournament;
 import eu.chessdata.ui.club.ClubCreateDialogFragment;
+import eu.chessdata.ui.tournament.TournamentsFragment;
+import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFabInterface;
 
 /**
@@ -25,6 +35,9 @@ import eu.chessdata.utils.MyFabInterface;
  */
 public class CrowdTournamentsFragment extends Fragment {
     View mView;
+    DatabaseReference mReference;
+    FirebaseListAdapter<CrowdTournament> mAdapter;
+    ListView mListView;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -77,6 +90,39 @@ public class CrowdTournamentsFragment extends Fragment {
         mView = inflater.inflate(R.layout.fragment_crowd_tournaments, container, false);
         Toast.makeText(getActivity().getApplicationContext(), "Short press to follow a Crowd Tournament and long press to create a Crowd Tournament", Toast.LENGTH_LONG).show();
         configureFab();
+
+        //USER_SETTINGS+"/"+USER_KEY+"/"+LOCATION_CROWD_TOURNAMENTS+"/"+TOURNAMENT_KEY;
+        String invalidString = "/"+ Constants.TOURNAMENT_KEY;
+        String locTournaments = Constants.LOCATION_USER_SETTINGS_CROWD_TOURNAMENTS
+                .replace(Constants.USER_KEY, mUserId)
+                .replace(invalidString,"");
+
+        mReference = FirebaseDatabase.getInstance().getReference(locTournaments);
+        Query order = mReference.orderByChild("reversedDateCreated");//name
+        mAdapter = new FirebaseListAdapter<CrowdTournament>(
+                getActivity(),
+                CrowdTournament.class,
+                R.layout.list_item_text,
+                order
+        ) {
+            @Override
+            protected void populateView(View v, CrowdTournament model, int position) {
+                ((TextView) v.findViewById(R.id.list_item_text_simple_view)).setText(model.getName());
+            }
+        };
+
+        mListView = (ListView) mView.findViewById(R.id.list_view_tournaments);
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CrowdTournament tournament = mAdapter.getItem(position);
+                String tournamentName = tournament.getName();
+                String tournamentKey = mAdapter.getRef(position).getKey();
+                Toast.makeText(getContext().getApplicationContext(), tournamentName, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return mView;
     }
 

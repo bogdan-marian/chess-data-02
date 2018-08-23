@@ -98,7 +98,7 @@ public class CrowdTournamentCreateDialogFragment extends DialogFragment {
         whoFollowsRef.push().setValue(userKey);
 
         //persist tournament reference
-        String locCrowdUserTournament = Constants.LOCATION_CROWD_USER_TOURNAMENTS
+        String locCrowdUserTournament = Constants.LOCATION_USER_SETTINGS_CROWD_TOURNAMENTS
                 .replace(Constants.USER_KEY, userKey)
                 .replace(Constants.TOURNAMENT_KEY, tournamentKey);
         DatabaseReference userTournament = database.getReference(locCrowdUserTournament);
