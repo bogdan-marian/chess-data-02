@@ -1,6 +1,7 @@
 package eu.chessdata.ui.crowd;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -120,6 +121,13 @@ public class CrowdTournamentsFragment extends Fragment {
                 String tournamentName = tournament.getName();
                 String tournamentKey = mAdapter.getRef(position).getKey();
                 Toast.makeText(getContext().getApplicationContext(), tournamentName, Toast.LENGTH_SHORT).show();
+
+                Intent croudTournament = new Intent(view.getContext(), CrowdTournamentActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("tournamentName", tournamentName);
+                //croudTournament.putExtra("tournamentName","Some name");
+
+                getActivity().startActivity(croudTournament, bundle);
             }
         });
 

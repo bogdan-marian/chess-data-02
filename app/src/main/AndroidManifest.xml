@@ -41,6 +41,14 @@
             </intent-filter>
         </service>
 
+        <activity
+            android:name=".ui.crowd.CrowdTournamentActivity"
+            android:label="@string/title_activity_croud_tournament"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="eu.chessdata.ui.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
