@@ -10,3 +10,5 @@
 
 backend/src/main/resources/serviceAccountCredentials.json
 backend/src/main/resources/mySecurityValues.json
+
+/app/release/
