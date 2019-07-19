@@ -62,8 +62,9 @@ public class GameSetResultDialog extends DialogFragment {
         mTournamentKey = getArguments().getString(Constants.TOURNAMENT_KEY);
         mRoundNumber = getArguments().getInt(Constants.ROUND_NUMBER);
         mTableNumber = getArguments().getInt(Constants.TABLE_NUMBER);
-        mWhitePlayer = getArguments().getString(Constants.WHITE_PLAYER_NAME);
-        mBlackPlayer = getArguments().getString(Constants.BLACK_PLAYER_NAME);
+
+        mWhitePlayer = "1 - 0 : " + getArguments().getString(Constants.WHITE_PLAYER_NAME) + " wins";
+        mBlackPlayer = "0 - 1 : " + getArguments().getString(Constants.BLACK_PLAYER_NAME) + " wins";
         mNoPartner = getArguments().getBoolean(Constants.NO_PARTNER);
         mCurrentResult = getArguments().getInt(Constants.CURRENT_RESULT);
     }
