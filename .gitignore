@@ -5,6 +5,7 @@
 .DS_Store
 /build
 /backend/build/
+/app/release/
 /captures
 .idea/.name
 
