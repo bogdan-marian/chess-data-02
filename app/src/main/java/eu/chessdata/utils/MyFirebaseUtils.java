@@ -450,11 +450,10 @@ public class MyFirebaseUtils {
         //copy the games data
         List<ChesspairingGame> chesspairingGames = round.getGames();
         List<Game> games = new ArrayList<>();
-        int table = 0;
         for (ChesspairingGame chesspairingGame : chesspairingGames) {
             Game game = new Game();
             game.setTableNumber(chesspairingGame.getTableNumber());
-            game.setActualNumber(chesspairingGame.getTableNumber() + firstTableNumber + 1);
+            game.setActualNumber(chesspairingGame.getTableNumber() + firstTableNumber - 1);
             game.setWhitePlayer(playerMap.get(chesspairingGame.getWhitePlayer().getPlayerKey()));
             if (chesspairingGame.getBlackPlayer() != null) {
                 //white player ad black player are present

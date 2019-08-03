@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
+import com.google.common.base.Strings;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -76,13 +77,13 @@ public class TournamentCreateDialogFragment extends DialogFragment {
 
                 String tournamentLocation = ((EditText) mView.findViewById(R.id.tournamentLocation)).getText().toString();
                 if (tournamentLocation == null || tournamentLocation.isEmpty()){
-                    sb.append("Torunament location is empty\n");
+                    sb.append("Tournament location is empty\n");
                 }
 
-                String firstNumber = ((EditText) mView.findViewById(R.id.tournamentFirstTableNumber)).getText().toString();
-                if (firstNumber == null || firstNumber.isEmpty()){
-                    sb.append("Tournament first table number is empty\n");
-                }
+//                String firstNumber = ((EditText) mView.findViewById(R.id.tournamentFirstTableNumber)).getText().toString();
+//                if (firstNumber == null || firstNumber.isEmpty()){
+//                    sb.append("Tournament first table number is empty\n");
+//                }
 
                 if (!sb.toString().isEmpty()) {
                     sb.append("Please try again");
@@ -99,13 +100,25 @@ public class TournamentCreateDialogFragment extends DialogFragment {
 
     private void persistTournament() {
 
+        Integer tournamentFirstTableNumber = 1;
+        String firstNumber = ((EditText) mView.findViewById(R.id.tournamentFirstTableNumber)).getText().toString();
+        if (!Strings.isNullOrEmpty(firstNumber)){
+            try {
+                Integer intFirstNumber = Integer.valueOf(firstNumber);
+                if (intFirstNumber > 0){
+                    tournamentFirstTableNumber = intFirstNumber;
+                }
+            }catch (NumberFormatException e){
+                // do nothing
+            }
+        }
 
         Tournament tournament = new Tournament(
                 ((EditText) mView.findViewById(R.id.tournamentName)).getText().toString(),
                 ((EditText) mView.findViewById(R.id.tournamentDescription)).getText().toString(),
                 ((EditText) mView.findViewById(R.id.tournamentLocation)).getText().toString(),
                 ((NumberPicker) mView.findViewById(R.id.tournamentTotalRounds)).getValue(),
-                Integer.parseInt(((EditText) mView.findViewById(R.id.tournamentFirstTableNumber)).getText().toString())
+                tournamentFirstTableNumber
         );
 
         String tournamentLocation = Constants.LOCATION_TOURNAMENTS
