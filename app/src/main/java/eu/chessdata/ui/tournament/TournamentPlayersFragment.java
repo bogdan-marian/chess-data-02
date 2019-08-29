@@ -57,7 +57,19 @@ public class TournamentPlayersFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Player player = mAdapter.getItem(position);
                 FollowPlayerDialog followPlayerDialog = FollowPlayerDialog.newInstance(player);
-                followPlayerDialog.show(getActivity().getSupportFragmentManager(),"FollowPlayerDialog");
+                followPlayerDialog.show(getActivity().getSupportFragmentManager(), "FollowPlayerDialog");
+            }
+        });
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Player player = mAdapter.getItem(position);
+                TournamentChangeInitialOrderDialog tournamentChangeInitialOrderDialog
+                        = TournamentChangeInitialOrderDialog.newInstance(
+                                player, mTournamentKey, "noClubKey", "noUserKey");
+                tournamentChangeInitialOrderDialog.show(
+                        getActivity().getSupportFragmentManager(), "FollowPlayerDialog");
+                return true;
             }
         });
         return mView;

@@ -18,12 +18,18 @@ android {
 
     defaultConfig {
         applicationId "eu.chessdata"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 26
         versionCode 9
         versionName "0.9"
         multiDexEnabled true //important
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false

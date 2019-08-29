@@ -514,8 +514,8 @@ public class MyFirebaseUtils {
         }
 
         List<RankedPlayer> rankedPlayers = new ArrayList<>();
-        int i=0;
-        for (ChesspairingPlayer item: standings){
+        int i = 0;
+        for (ChesspairingPlayer item : standings) {
             i++;
             RankedPlayer player = new RankedPlayer();
             player.setPlayerKey(item.getPlayerKey());
@@ -526,15 +526,40 @@ public class MyFirebaseUtils {
         }
 
 
-        for (RankedPlayer player:rankedPlayers){
+        for (RankedPlayer player : rankedPlayers) {
             i = player.getRankNumber();
             String standingsLocation = Constants.LOCATION_STANDINGS
                     .replace(Constants.TOURNAMENT_KEY, tournamentKey)
-                    .replace(Constants.ROUND_NUMBER,String.valueOf(roundNumber))
-                    .replace(Constants.CATEGORY_NUMBER,"0")
-                    .replace(Constants.STANDING_NUMBER,String.valueOf(i));
+                    .replace(Constants.ROUND_NUMBER, String.valueOf(roundNumber))
+                    .replace(Constants.CATEGORY_NUMBER, "0")
+                    .replace(Constants.STANDING_NUMBER, String.valueOf(i));
             DatabaseReference standingsReference = FirebaseDatabase.getInstance().getReference(standingsLocation);
             standingsReference.setValue(player);
+        }
+    }
+
+    public static void updateTournamentInitialOrder(String tournamentKey, List<ChesspairingPlayer> chesspairingPlayers) {
+
+        List<RankedPlayer> tournamentOrder = new ArrayList<>();
+        int i = 0;
+        for (ChesspairingPlayer item : chesspairingPlayers) {
+            i++;
+            RankedPlayer player = new RankedPlayer();
+            player.setPlayerKey(item.getPlayerKey());
+            player.setTournamentKey(tournamentKey);
+            player.setTournamentOrderNumber(i);
+            player.setElo(item.getElo());
+            tournamentOrder.add(player);
+        }
+
+        for (RankedPlayer player : tournamentOrder) {
+            int tournamentOrderNumber = player.getTournamentOrderNumber();
+            String tournamentOrderLocation = Constants.LOCATION_TOURNAMENT_INITIAL_ORDER
+                    .replace(Constants.TOURNAMENT_KEY, tournamentKey)
+                    .replace(Constants.TOURNAMENT_INITIAL_ORDER, String.valueOf(tournamentOrderNumber));
+            DatabaseReference initialOrderReference = FirebaseDatabase.getInstance()
+                    .getReference(tournamentOrderLocation);
+            initialOrderReference.setValue(player);
         }
     }
 

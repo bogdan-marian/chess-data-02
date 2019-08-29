@@ -32,6 +32,8 @@ public class Constants {
 
     public static final String TOURNAMENT_ROUNDS = "tournamentRounds";
     public static final String STANDINGS = "standings";
+    public static final String TOURNAMENT_INITIAL_ORDER = "tournamentInitialOrder";
+    public static final String INITIAL_ORDER = "$initialOrder";
     public static final String STANDING_NUMBER = "$standingNumber";
     public static final String TOTAL_ROUNDS = "totalRounds";
     public static final String ROUND_NUMBER = "$roundNumber";
@@ -107,6 +109,11 @@ public class Constants {
     //standings/$tournamentKey/$roundNumber/$categoryNumber/$standingNumber
     public static final String LOCATION_STANDINGS = STANDINGS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + CATEGORY_NUMBER + "/" + STANDING_NUMBER;
 
+    //tournamentInitialOrder/$tournamentKey/$initialOrder
+    public static final String LOCATION_TOURNAMENT_INITIAL_ORDER = TOURNAMENT_INITIAL_ORDER + "/"
+            + TOURNAMENT_KEY + "/"
+            + INITIAL_ORDER;
+
 
     //globalFollowers/byPlayer/$playerKey
     public static final String LOCATION_GLOBAL_FOLLOWERS_BY_PLAYER = GLOBAL_FOLLOWERS + "/" + BY_PLAYER + "/" + PLAYER_KEY;
@@ -133,10 +140,10 @@ public class Constants {
     //crowd tournaments section
     public static final String LOCATION_CROWD_TOURNAMENTS = "crowd-tournaments";
 
-    public static final String LOCATION_USER_SETTINGS_CROWD_TOURNAMENTS = USER_SETTINGS+"/"+USER_KEY+"/"+LOCATION_CROWD_TOURNAMENTS+"/"+TOURNAMENT_KEY;
+    public static final String LOCATION_USER_SETTINGS_CROWD_TOURNAMENTS = USER_SETTINGS + "/" + USER_KEY + "/" + LOCATION_CROWD_TOURNAMENTS + "/" + TOURNAMENT_KEY;
 
     //"crowd-who-follows-tournament/TOURNAMENT_KEY/USER_KEY
-    public static final String LOCATION_CROWD_WHO_FOLLOWS_TOURNAMENT = "crowd-who-follows-tournament"+"/"+TOURNAMENT_KEY;
+    public static final String LOCATION_CROWD_WHO_FOLLOWS_TOURNAMENT = "crowd-who-follows-tournament" + "/" + TOURNAMENT_KEY;
 
     //crowd-tournaments/$tournamentKey
     //public static final String LOCATION_CROWD_TOURNAMENT = LOCATION_CROWD_TOURNAMENTS +"/"+TOURNAMENT_KEY;

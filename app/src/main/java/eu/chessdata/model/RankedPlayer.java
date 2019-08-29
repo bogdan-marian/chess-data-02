@@ -7,7 +7,12 @@ package eu.chessdata.model;
 public class RankedPlayer {
     private String tournamentKey;
     private String playerKey;
+    /**
+     * used only for round standings. It represents the round rank
+     */
     private int rankNumber;
+    private int tournamentOrderNumber;
+    private int elo;
     private String playerName;
 
     public String getTournamentKey() {
@@ -40,5 +45,21 @@ public class RankedPlayer {
 
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
+    }
+
+    public int getTournamentOrderNumber() {
+        return tournamentOrderNumber;
+    }
+
+    public void setTournamentOrderNumber(int tournamentOrderNumber) {
+        this.tournamentOrderNumber = tournamentOrderNumber;
+    }
+
+    public int getElo() {
+        return elo;
+    }
+
+    public void setElo(int elo) {
+        this.elo = elo;
     }
 }

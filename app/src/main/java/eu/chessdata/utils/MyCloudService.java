@@ -31,9 +31,12 @@ public class MyCloudService extends IntentService {
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_GAME_RESULT_UPDATED = "eu.chessdata.utils.ACTION_GAME_RESULT_UPDATED";
     private static final String ACTION_COMPUTE_STANDINGS = "eu.chessdata.util.ACTION_COMPUTE_STANDINGS";
+    private static final String ACTION_UPDATE_TOURNAMENT_INITIAL_ORDER = "eu.chessdata.util.ACTION_UPDATE_TOURNAMENT_INITIAL_ORDER";
     private static final String ACTION_GENERATE_NEXT_ROUND = "eu.chessdata.utils.ACTION_GENERATE_NEXT_ROUND";
     private static final String EXTRA_GAME_LOCATION = "eu.chessdata.utils.EXTRA_GAME_LOCATION";
     private static final String EXTRA_TOURNAMENT_KEY = "eu.chessdata.utils.EXTRA_TOURNAMENT_KEY";
+    private static final String EXTRA_PLAYER_KEY = "eu.chessdata.utils.EXTRA_PLAYER_KEY";
+    private static final String EXTRA_UPDATED_ORDER = "eu.chessdata.utils.EXTRA_UPDATED_ORDER";
     private static final String EXTRA_ROUND_NUMBER = "eu.chessdata.utils.EXTRA_ROUND_NUMBER";
     private static final String EXTRA_CLUB_KEY = "eu.chessdata.utils.EXTRA_CLUB_KEY";
     private static String tag = Constants.LOG_TAG;
@@ -60,6 +63,7 @@ public class MyCloudService extends IntentService {
         context.startService(intent);
     }
 
+
     /**
      * Starts this service to perform action Baz with the given parameters. If
      * the service is already performing a task this action will be queued.
@@ -72,6 +76,21 @@ public class MyCloudService extends IntentService {
         intent.setAction(ACTION_GENERATE_NEXT_ROUND);
         intent.putExtra(EXTRA_CLUB_KEY, clubKey);
         intent.putExtra(EXTRA_TOURNAMENT_KEY, tournamentKey);
+        context.startService(intent);
+    }
+
+    public static void startActionUpdateTournamentInitialOrder(Context context,
+                                                               String clubKey,
+                                                               String userKey,
+                                                               String tournamentKey,
+                                                               String playerKey,
+                                                               String updatedOrder){
+        Intent intent = new Intent(context, MyCloudService.class);
+        intent.setAction(ACTION_UPDATE_TOURNAMENT_INITIAL_ORDER);
+        intent.putExtra(EXTRA_CLUB_KEY, clubKey);
+        intent.putExtra(EXTRA_TOURNAMENT_KEY, tournamentKey);
+        intent.putExtra(EXTRA_PLAYER_KEY, playerKey);
+        intent.putExtra(EXTRA_UPDATED_ORDER, updatedOrder);
         context.startService(intent);
     }
 
@@ -91,6 +110,12 @@ public class MyCloudService extends IntentService {
                 final String tournamentKey = intent.getStringExtra(EXTRA_TOURNAMENT_KEY);
                 final int roundNumber = intent.getIntExtra(EXTRA_ROUND_NUMBER, 1);
                 handleActionComputeStandings(clubKey, tournamentKey, roundNumber);
+            } else if (ACTION_UPDATE_TOURNAMENT_INITIAL_ORDER.equals(action)){
+                final String clubKey = intent.getStringExtra(EXTRA_CLUB_KEY);
+                final String tournamentKey = intent.getStringExtra(EXTRA_TOURNAMENT_KEY);
+                final String playerKey = intent.getStringExtra(EXTRA_PLAYER_KEY);
+                final String updateOrder = intent.getStringExtra(EXTRA_UPDATED_ORDER);
+                handleActionUpdateTournamentInitialOrder(clubKey,tournamentKey,playerKey, updateOrder);
             }
         }
     }
@@ -115,6 +140,14 @@ public class MyCloudService extends IntentService {
             MyFirebaseUtils.persistDefaultStandings(tournamentKey, rNumber, standings);
 
         }
+    }
+
+    private void handleActionUpdateTournamentInitialOrder(String clubKey,
+                                                          String tournamentKey,
+                                                          String playerKey,
+                                                          String updatedOrderString) {
+
+        Log.d(tag, "Update tournamentInitialOrder newOrder = " + playerKey+ "new order = " + updatedOrderString);
     }
 
     /**
