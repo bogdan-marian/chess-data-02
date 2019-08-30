@@ -274,6 +274,29 @@ public class MyFirebaseUtils {
         });
     }
 
+    public static void locateDefaultClub(OnDefaultClubLocated listener){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String defaultClubLocation = Constants.LOCATION_DEFAULT_CLUB
+                .replace(Constants.USER_KEY, uid);
+        DatabaseReference defaultClubRef = database.getReference(defaultClubLocation);
+        defaultClubRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DefaultClub defaultClub = dataSnapshot.getValue(DefaultClub.class);
+                Log.d(tag, "default Club located");
+                listener.onDefaultClubLocated(defaultClub);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
     /**
      * Identifies if current user is manager for a specific club by clubKey and then notifies the
      * registered listener only for positive results.
@@ -574,5 +597,9 @@ public class MyFirebaseUtils {
 
     public interface OnUserIsAdmin {
         public void onUserIsAdmin(boolean isAdmin);
+    }
+
+    public interface OnDefaultClubLocated{
+        public void onDefaultClubLocated(DefaultClub defaultClub);
     }
 }

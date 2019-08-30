@@ -60,14 +60,16 @@ public class MainActivity extends AppCompatActivity
         TournamentsFragment.TournamentsCallback,
         TournamentDetailsFragment.TournamentDetailsCallback,
         CrowdTournamentsFragment.OnCrowdFragmentInteractionListener,
-        Utils.VipMap, MyFabInterface {
+        Utils.VipMap, MyFabInterface, MyFirebaseUtils.OnUserIsAdmin,
+        MyFirebaseUtils.OnDefaultClubLocated {
 
 
     public enum ACTION {
         SHOW_TOURNAMENTS,
         SHOW_PLAYERS,
         SHOW_TOURNAMENT_PLAYERS,
-        SHOW_ROUND
+        SHOW_ROUND,
+        COMPUTE_IS_ADMIN
     }
 
 
@@ -84,11 +86,14 @@ public class MainActivity extends AppCompatActivity
     private String mUsername;
     private String mPhotoUrl;
     private String mEmail;
+    private boolean mIsAdmin = false;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
 
     //
     private FloatingActionButton mFab;
+
+    private String mClubKey;
 
     @Override
     public void updateVipValue(String key, String value) {
@@ -119,6 +124,9 @@ public class MainActivity extends AppCompatActivity
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
+
+        //this calls onDefaultClubLocated
+        MyFirebaseUtils.locateDefaultClub(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -454,7 +462,8 @@ public class MainActivity extends AppCompatActivity
         disableFab();
         if (position == 1) {//players
 
-            TournamentPlayersFragment tournamentPlayersFragment = TournamentPlayersFragment.newInstance(tournamentKey);
+            TournamentPlayersFragment tournamentPlayersFragment = TournamentPlayersFragment
+                    .newInstance(tournamentKey, clubKey,mIsAdmin);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, tournamentPlayersFragment);
             transaction.addToBackStack(null);
@@ -481,5 +490,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onNavToCrowdTournament(String crowdTournamentId) {
         Toast.makeText(getApplicationContext(), "Time to navigate to specific croud tournament", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDefaultClubLocated(DefaultClub defaultClub) {
+        this.mClubKey = defaultClub.getClubKey();
+
+        //this calls onUserIsAdmin
+        MyFirebaseUtils.isCurrentUserAdmin(this.mClubKey, this);
+    }
+
+    @Override
+    public void onUserIsAdmin(boolean isAdmin) {
+        this.mIsAdmin = isAdmin;
+        Log.d(TAG, "Main activity: userIsAdmin =" + this.mIsAdmin);
     }
 }

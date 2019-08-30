@@ -138,7 +138,6 @@ public class MyCloudService extends IntentService {
             List<ChesspairingPlayer> standings = tournament.computeStandings(rNumber);
 
             MyFirebaseUtils.persistDefaultStandings(tournamentKey, rNumber, standings);
-
         }
     }
 
@@ -147,6 +146,7 @@ public class MyCloudService extends IntentService {
                                                           String playerKey,
                                                           String updatedOrderString) {
 
+        ChesspairingTournament tournament = MyFirebaseUtils.buildChessPairingTournament(clubKey, tournamentKey);
         Log.d(tag, "Update tournamentInitialOrder newOrder = " + playerKey+ "new order = " + updatedOrderString);
     }
 
