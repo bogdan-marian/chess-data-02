@@ -84,14 +84,16 @@ public class MyFirebaseUtils {
 
         //populate players
         List<Player> players = getTournamentPlayers(tournamentKey);
+
         //initial order
         List<RankedPlayer> rankedPlayers = getTournamentInitialOrder(tournamentKey);
         Map<String, Integer> initialOrder = new HashMap<>();
         boolean weHaveInitialOrder = false;
         if (rankedPlayers.size() > 0) {
             weHaveInitialOrder = true;
+            int i=1;
             for (RankedPlayer player : rankedPlayers) {
-                initialOrder.put(player.getPlayerKey(), player.getTournamentInitialOrder());
+                initialOrder.put(player.getPlayerKey(), i++);
             }
         }
 
@@ -108,6 +110,11 @@ public class MyFirebaseUtils {
             }
             chesspairingPlayers.add(chesspairingPlayer);
         }
+
+        Comparator<ChesspairingPlayer> comparator = (p1, p2)
+                -> p1.getInitialOrderId() - p2.getInitialOrderId();
+        chesspairingPlayers.sort(comparator);
+
         chesspairingTournament.setPlayers(chesspairingPlayers);
 
         //populate the rounds
@@ -264,7 +271,7 @@ public class MyFirebaseUtils {
         Comparator<RankedPlayer> comparator = new Comparator<RankedPlayer>() {
             @Override
             public int compare(RankedPlayer pa, RankedPlayer pb) {
-                return pb.getTournamentInitialOrder() - pa.getTournamentInitialOrder();
+                return pa.getTournamentInitialOrder() - pb.getTournamentInitialOrder();
             }
         };
         playerList.sort(comparator);
