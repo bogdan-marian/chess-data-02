@@ -2,6 +2,7 @@ package eu.chessdata.utils;
 
 import android.util.Log;
 
+import com.firebase.client.core.utilities.Tree;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -10,12 +11,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 
 import eu.chessdata.chesspairing.model.ChesspairingGame;
@@ -595,59 +599,47 @@ public class MyFirebaseUtils {
                                                     ChesspairingTournament tournament) {
 
         int updateValue = Integer.valueOf(updateOrderString);
-        List<ChesspairingPlayer> players = tournament.getPlayers();
-        int oldValue = 0;
 
-        //update player
-        for (ChesspairingPlayer player : players) {
+        Double spaceing = 0.0000001;
+
+        Map<Double, ChesspairingPlayer> initialTreeMap = new TreeMap<>();
+        for (ChesspairingPlayer player : tournament.getPlayers()) {
+            Double key = Double.valueOf(player.getInitialOrderId()) + spaceing;
             if (player.getPlayerKey().equals(playerKey)) {
-                oldValue = player.getInitialOrderId();
-                player.setInitialOrderId(updateValue);
-                break;
+                key=Double.valueOf(updateValue);
             }
+
+            while (initialTreeMap.containsKey(key)) {
+                key = key + 0.00001d;
+            }
+            initialTreeMap.put(key, player);
         }
 
-        //update other players
-        for (ChesspairingPlayer item : players) {
-            String itemKey = item.getPlayerKey();
-            int itemInitialOrder = item.getInitialOrderId();
-            if (!itemKey.equals(playerKey) && updateValue <= itemInitialOrder) {
-                item.setInitialOrderId(++itemInitialOrder);
-            }
-        }
 
-        List<RankedPlayer> tournamentOrder = new ArrayList<>();
-        for (ChesspairingPlayer player : players) {
+        TreeMap<Double, RankedPlayer> treeMap = new TreeMap<>();
+
+        for (Map.Entry<Double, ChesspairingPlayer> entry: initialTreeMap.entrySet()) {
+            Double mapKey = entry.getKey();
+            ChesspairingPlayer player = entry.getValue();
             RankedPlayer rankedPlayer = new RankedPlayer(player, tournamentKey, clubKey);
-            tournamentOrder.add(rankedPlayer);
+            treeMap.put(mapKey, rankedPlayer);
         }
 
+        //fix the order in case of gabs and update
+        Map<Integer, String> debugMap = new LinkedHashMap<>();
 
-        for (RankedPlayer player : tournamentOrder) {
-            int tournamentOrderNumber = player.getTournamentInitialOrder();
+        int i = 0;
+        for (RankedPlayer player : treeMap.values()) {
+            player.setTournamentInitialOrder(++i);
             String tournamentOrderLocation = Constants.LOCATION_TOURNAMENT_PLAYER_INITIAL_ORDER
                     .replace(Constants.TOURNAMENT_KEY, tournamentKey)
                     .replace(Constants.PLAYER_KEY, player.getPlayerKey());
             DatabaseReference initialOrderReference = FirebaseDatabase.getInstance()
                     .getReference(tournamentOrderLocation);
             initialOrderReference.setValue(player);
+            debugMap.put(Integer.valueOf(i), "-> " + player.getTournamentInitialOrder() + " " + player.getPlayerName());
         }
-
-        //final check
-        Map<Integer, List<RankedPlayer>> rankedPlayerMap = new HashMap<>();
-        for (RankedPlayer player: tournamentOrder){
-            if (rankedPlayerMap.containsKey(player.getTournamentInitialOrder())){
-                throw new IllegalStateException("problems with ranking");
-            }
-            ArrayList<RankedPlayer> list = new ArrayList<>();
-            list.add(player);
-            rankedPlayerMap.put(
-                    player.getTournamentInitialOrder(),
-                    list
-            );
-        }
-        Set<Integer> mySet = rankedPlayerMap.keySet();
-        Log.d(tag, "End of compute order " + mySet);
+        Log.d(tag, "End of updateTournamentInitialOrder: " + debugMap);
     }
 
 
