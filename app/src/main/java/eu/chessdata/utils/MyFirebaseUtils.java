@@ -274,7 +274,7 @@ public class MyFirebaseUtils {
         });
     }
 
-    public static void locateDefaultClub(OnDefaultClubLocated listener){
+    public static void locateDefaultClub(final OnDefaultClubLocated listener){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String defaultClubLocation = Constants.LOCATION_DEFAULT_CLUB
@@ -284,8 +284,10 @@ public class MyFirebaseUtils {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 DefaultClub defaultClub = dataSnapshot.getValue(DefaultClub.class);
-                Log.d(tag, "default Club located");
-                listener.onDefaultClubLocated(defaultClub);
+                if (defaultClub != null) {
+                    Log.d(tag, "default Club located");
+                    listener.onDefaultClubLocated(defaultClub);
+                }
             }
 
             @Override

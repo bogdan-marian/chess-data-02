@@ -26,6 +26,7 @@ import eu.chessdata.utils.MyCloudService;
 public class TournamentChangeInitialOrderDialog extends DialogFragment {
     private String tag = Constants.LOG_TAG;
     private Player mPlayerToSetOrder;
+    private int mCurrentOrder =1;
     private String mTournamentKey;
     private String mClubKey;
     private String mUserKey;
@@ -115,11 +116,18 @@ public class TournamentChangeInitialOrderDialog extends DialogFragment {
             playersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    List<String> myList = new ArrayList<>();
                     for (DataSnapshot item : dataSnapshot.getChildren()) {
                         Player player = item.getValue(Player.class);
                         mPlayerList.add(player);
                         mNumberPicker.setMaxValue(mPlayerList.size());
+                        if (player.getPlayerKey().equals(mPlayerToSetOrder.getPlayerKey())){
+                            mCurrentOrder = mPlayerList.size();
+                        }
+                        mNumberPicker.setValue(mCurrentOrder);
+                        myList.add(player.getName()+" / " + player.getPlayerKey());
                     }
+                    Log.d(tag, "myLlist" + myList);
                 }
 
                 @Override
