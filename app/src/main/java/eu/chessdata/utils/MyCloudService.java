@@ -147,7 +147,7 @@ public class MyCloudService extends IntentService {
                                                           String updatedOrderString) {
 
         ChesspairingTournament tournament = MyFirebaseUtils.buildChessPairingTournament(clubKey, tournamentKey);
-        Log.d(tag, "Update tournamentInitialOrder newOrder = " + playerKey+ "new order = " + updatedOrderString);
+        Log.d(tag, "handleActionUpdateTournamentInitialOrder newOrder = " + playerKey+ "new order = " + updatedOrderString);
         MyFirebaseUtils.updateTournamentInitialOrder(clubKey,
                 tournamentKey, playerKey, updatedOrderString, tournament);
     }

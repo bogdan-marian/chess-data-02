@@ -62,6 +62,7 @@ public class MyFirebaseUtils {
                     chesspairingTournament.setTotalRounds(tournament.getTotalRounds());
                     chesspairingTournament.setTotalRounds(tournament.getTotalRounds());
                 }
+                tournamentRef.removeEventListener(this);
                 latch1.countDown();
             }
 
@@ -240,6 +241,7 @@ public class MyFirebaseUtils {
                     RankedPlayer player = snapshot.getValue(RankedPlayer.class);
                     playerList.add(player);
                 }
+                latch.countDown();
             }
 
             @Override
