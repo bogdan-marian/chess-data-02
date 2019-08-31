@@ -33,7 +33,6 @@ public class Constants {
     public static final String TOURNAMENT_ROUNDS = "tournamentRounds";
     public static final String STANDINGS = "standings";
     public static final String TOURNAMENT_INITIAL_ORDER = "tournamentInitialOrder";
-    public static final String INITIAL_ORDER = "$initialOrder";
     public static final String STANDING_NUMBER = "$standingNumber";
     public static final String TOTAL_ROUNDS = "totalRounds";
     public static final String ROUND_NUMBER = "$roundNumber";
@@ -109,10 +108,14 @@ public class Constants {
     //standings/$tournamentKey/$roundNumber/$categoryNumber/$standingNumber
     public static final String LOCATION_STANDINGS = STANDINGS + "/" + TOURNAMENT_KEY + "/" + ROUND_NUMBER + "/" + CATEGORY_NUMBER + "/" + STANDING_NUMBER;
 
-    //tournamentInitialOrder/$tournamentKey/$initialOrder
-    public static final String LOCATION_TOURNAMENT_INITIAL_ORDER = TOURNAMENT_INITIAL_ORDER + "/"
+    //tournamentInitialOrder/$tournamentKey/$playerKey
+    public static final String LOCATION_TOURNAMENT_PLAYER_INITIAL_ORDER = TOURNAMENT_INITIAL_ORDER + "/"
             + TOURNAMENT_KEY + "/"
-            + INITIAL_ORDER;
+            + PLAYER_KEY;
+
+    //tournamentInitialOrder/$tournamentKey
+    public static final String LOCATION_TOURNAMENT_INITIAL_ORDER = TOURNAMENT_INITIAL_ORDER + "/"
+            + TOURNAMENT_KEY;
 
 
     //globalFollowers/byPlayer/$playerKey

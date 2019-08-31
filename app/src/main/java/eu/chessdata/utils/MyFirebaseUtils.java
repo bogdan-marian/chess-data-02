@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import eu.chessdata.chesspairing.model.ChesspairingGame;
@@ -78,12 +79,28 @@ public class MyFirebaseUtils {
 
         //populate players
         List<Player> players = getTournamentPlayers(tournamentKey);
+        //initial order
+        List<RankedPlayer> rankedPlayers = getTournamentInitialOrder(tournamentKey);
+        Map<String, Integer> initialOrder = new HashMap<>();
+        boolean weHaveInitialOrder = false;
+        if (rankedPlayers.size() > 0) {
+            weHaveInitialOrder = true;
+            for (RankedPlayer player : rankedPlayers) {
+                initialOrder.put(player.getPlayerKey(), player.getTournamentInitialOrder());
+            }
+        }
+
         List<ChesspairingPlayer> chesspairingPlayers = new ArrayList<>();
         int i = 0;
         for (Player player : players) {
             i++;//set the player order as the natural one collected from firebase
             ChesspairingPlayer chesspairingPlayer = MyChesspairingUtils.scanPlayer(player);
-            chesspairingPlayer.setInitialOrderId(i);
+            if (weHaveInitialOrder) {
+                chesspairingPlayer.setInitialOrderId(
+                        initialOrder.get(chesspairingPlayer.getPlayerKey()));
+            } else {
+                chesspairingPlayer.setInitialOrderId(i);
+            }
             chesspairingPlayers.add(chesspairingPlayer);
         }
         chesspairingTournament.setPlayers(chesspairingPlayers);
@@ -208,6 +225,47 @@ public class MyFirebaseUtils {
         return playerList;
     }
 
+    public static List<RankedPlayer> getTournamentInitialOrder(String tournamentKey) {
+        final List<RankedPlayer> playerList = new ArrayList<>();
+        final CountDownLatch latch = new CountDownLatch(1);
+        String playersLoc = Constants.LOCATION_TOURNAMENT_INITIAL_ORDER
+                .replace(Constants.TOURNAMENT_KEY, tournamentKey);
+        DatabaseReference playersRef = FirebaseDatabase.getInstance().getReference(playersLoc);
+        playersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
+                while (it.hasNext()) {
+                    DataSnapshot snapshot = (DataSnapshot) it.next();
+                    RankedPlayer player = snapshot.getValue(RankedPlayer.class);
+                    playerList.add(player);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, databaseError.getMessage());
+                latch.countDown();
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Log.e(tag, "getTournamentPlayers: " + e.getMessage());
+        }
+
+        Comparator<RankedPlayer> comparator = new Comparator<RankedPlayer>() {
+            @Override
+            public int compare(RankedPlayer pa, RankedPlayer pb) {
+                return pb.getTournamentInitialOrder() - pa.getTournamentInitialOrder();
+            }
+        };
+        playerList.sort(comparator);
+
+        return playerList;
+    }
+
 
     public static void setDefaultClub(DefaultClub defaultManagedClub) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -240,7 +298,7 @@ public class MyFirebaseUtils {
         });
     }
 
-    public static void locateDefaultClub(final OnDefaultClubLocated listener){
+    public static void locateDefaultClub(final OnDefaultClubLocated listener) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String defaultClubLocation = Constants.LOCATION_DEFAULT_CLUB
@@ -262,7 +320,6 @@ public class MyFirebaseUtils {
             }
         });
     }
-
 
 
     /**
@@ -535,22 +592,60 @@ public class MyFirebaseUtils {
                                                     String updateOrderString,
                                                     ChesspairingTournament tournament) {
 
+        int updateValue = Integer.valueOf(updateOrderString);
         List<ChesspairingPlayer> players = tournament.getPlayers();
-//        Comparator<ChesspairingPlayer> compareMyInitialOrder = (p1, p2) ->
-//            p1.getInitialOrderId() - p2.getInitialOrderId();
+        int oldValue = 0;
+
+        //update player
+        for (ChesspairingPlayer player : players) {
+            if (player.getPlayerKey().equals(playerKey)) {
+                oldValue = player.getInitialOrderId();
+                player.setInitialOrderId(updateValue);
+                break;
+            }
+        }
+
+        //update other players
+        for (ChesspairingPlayer item : players) {
+            String itemKey = item.getPlayerKey();
+            int itemInitialOrder = item.getInitialOrderId();
+            if (!itemKey.equals(playerKey) && updateValue <= itemInitialOrder) {
+                item.setInitialOrderId(++itemInitialOrder);
+            }
+        }
 
         List<RankedPlayer> tournamentOrder = new ArrayList<>();
+        for (ChesspairingPlayer player : players) {
+            RankedPlayer rankedPlayer = new RankedPlayer(player, tournamentKey, clubKey);
+            tournamentOrder.add(rankedPlayer);
+        }
 
 
         for (RankedPlayer player : tournamentOrder) {
-            int tournamentOrderNumber = player.getTournamentOrderNumber();
-            String tournamentOrderLocation = Constants.LOCATION_TOURNAMENT_INITIAL_ORDER
+            int tournamentOrderNumber = player.getTournamentInitialOrder();
+            String tournamentOrderLocation = Constants.LOCATION_TOURNAMENT_PLAYER_INITIAL_ORDER
                     .replace(Constants.TOURNAMENT_KEY, tournamentKey)
-                    .replace(Constants.TOURNAMENT_INITIAL_ORDER, String.valueOf(tournamentOrderNumber));
+                    .replace(Constants.PLAYER_KEY, player.getPlayerKey());
             DatabaseReference initialOrderReference = FirebaseDatabase.getInstance()
                     .getReference(tournamentOrderLocation);
             initialOrderReference.setValue(player);
         }
+
+        //final check
+        Map<Integer, List<RankedPlayer>> rankedPlayerMap = new HashMap<>();
+        for (RankedPlayer player: tournamentOrder){
+            if (rankedPlayerMap.containsKey(player.getTournamentInitialOrder())){
+                throw new IllegalStateException("problems with ranking");
+            }
+            ArrayList<RankedPlayer> list = new ArrayList<>();
+            list.add(player);
+            rankedPlayerMap.put(
+                    player.getTournamentInitialOrder(),
+                    list
+            );
+        }
+        Set<Integer> mySet = rankedPlayerMap.keySet();
+        Log.d(tag, "End of compute order " + mySet);
     }
 
 
@@ -566,7 +661,7 @@ public class MyFirebaseUtils {
         public void onUserIsAdmin(boolean isAdmin);
     }
 
-    public interface OnDefaultClubLocated{
+    public interface OnDefaultClubLocated {
         public void onDefaultClubLocated(DefaultClub defaultClub);
     }
 }
