@@ -10,6 +10,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -89,41 +90,6 @@ public class MyFirebaseUtils {
 
         //populate the rounds
         chesspairingTournament.setRounds(getTournamentRounds(tournamentKey));
-        /**
-         * get the last round that has no games and copy the presence in the main list.
-         * For the moment I consider the last round the first round that has no games;
-         * Wee remove from the list the first round that has no games
-         */
-//        Map<String, ChesspairingPlayer> chesspairingPlayerMap = new HashMap<>();
-//        Log.i(tag,"debug: " + chesspairingTournament.getName()+chesspairingTournament.getPlayers().size());
-//        for (ChesspairingPlayer chesspairingPlayer:chesspairingTournament.getPlayers()){
-//            chesspairingPlayer.setPresent(ture);
-//            chesspairingPlayerMap.put(chesspairingPlayer.getPlayerKey(),chesspairingPlayer);
-//        }
-
-        //TODO set the presence
-//        for (ChesspairingRound round:chesspairingTournament.getRounds()){
-//            List<ChesspairingGame> games = round.getGames();
-//            if (games == null || games.size()==0 ){
-//                Log.d(tag, "Time to collect presence for round " + round.getRoundNumber());
-//            }
-//        }
-//
-//
-//        //see what round wee need to set as present
-//        int k = -1;
-//        for (ChesspairingRound round: chesspairingTournament.getRounds()){
-//            k++;
-//            List<ChesspairingGame> games = round.getGames();
-//            if (games==null || games.size()==0){
-//                for (ChesspairingPlayer player: round.getPresentPlayers()){
-//                    ChesspairingPlayer reference = chesspairingPlayerMap.get(player.getPlayerKey());
-//                    reference.setPresent(true);
-//                }
-//                chesspairingTournament.getRounds().remove(k);
-//                break;
-//            }
-//        }
         return chesspairingTournament;
     }
 
@@ -563,19 +529,18 @@ public class MyFirebaseUtils {
         }
     }
 
-    public static void updateTournamentInitialOrder(String tournamentKey, List<ChesspairingPlayer> chesspairingPlayers) {
+    public static void updateTournamentInitialOrder(String clubKey,
+                                                    String tournamentKey,
+                                                    String playerKey,
+                                                    String updateOrderString,
+                                                    ChesspairingTournament tournament) {
+
+        List<ChesspairingPlayer> players = tournament.getPlayers();
+//        Comparator<ChesspairingPlayer> compareMyInitialOrder = (p1, p2) ->
+//            p1.getInitialOrderId() - p2.getInitialOrderId();
 
         List<RankedPlayer> tournamentOrder = new ArrayList<>();
-        int i = 0;
-        for (ChesspairingPlayer item : chesspairingPlayers) {
-            i++;
-            RankedPlayer player = new RankedPlayer();
-            player.setPlayerKey(item.getPlayerKey());
-            player.setTournamentKey(tournamentKey);
-            player.setTournamentOrderNumber(i);
-            player.setElo(item.getElo());
-            tournamentOrder.add(player);
-        }
+
 
         for (RankedPlayer player : tournamentOrder) {
             int tournamentOrderNumber = player.getTournamentOrderNumber();
