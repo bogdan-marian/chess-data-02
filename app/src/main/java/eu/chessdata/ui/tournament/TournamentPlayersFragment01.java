@@ -22,7 +22,8 @@ import eu.chessdata.utils.Constants;
 /**
  * Created by Bogdan Oloeriu on 6/9/2016.
  */
-public class TournamentPlayersFragment extends Fragment {
+@Deprecated
+public class TournamentPlayersFragment01 extends Fragment {
     private String tag = Constants.LOG_TAG;
 
     private String mTournamentKey;
@@ -33,8 +34,8 @@ public class TournamentPlayersFragment extends Fragment {
     private DatabaseReference mReference;
     private FirebaseListAdapter<Player> mAdapter;
 
-    public static TournamentPlayersFragment newInstance(String tournamentKey, String clubKey, boolean isAdminUser) {
-        TournamentPlayersFragment fragment = new TournamentPlayersFragment();
+    public static TournamentPlayersFragment01 newInstance(String tournamentKey, String clubKey, boolean isAdminUser) {
+        TournamentPlayersFragment01 fragment = new TournamentPlayersFragment01();
         fragment.mTournamentKey = tournamentKey;
         fragment.mClubKey = clubKey;
         fragment.mIsAdminUser = isAdminUser;

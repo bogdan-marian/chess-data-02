@@ -38,7 +38,8 @@ import eu.chessdata.ui.crowd.CrowdTournamentsFragment;
 import eu.chessdata.ui.home.HomeFragment;
 import eu.chessdata.ui.tournament.TournamentAddPlayerDialog;
 import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
-import eu.chessdata.ui.tournament.TournamentPlayersFragment;
+import eu.chessdata.ui.tournament.players.TournamentPlayersFragment;
+import eu.chessdata.ui.tournament.TournamentPlayersFragment01;
 import eu.chessdata.ui.userspecific.AllMyFollowedPlayersFragment;
 import eu.chessdata.utils.MyFirebaseUtils;
 import eu.chessdata.R;
@@ -460,16 +461,24 @@ public class MainActivity extends AppCompatActivity
         updateVipValue(Constants.TOURNAMENT_KEY, tournamentKey);
 
         disableFab();
-        if (position == 1) {//players
+        if (position == -1) {//players
 
-            TournamentPlayersFragment tournamentPlayersFragment = TournamentPlayersFragment
+            TournamentPlayersFragment01 tournamentPlayersFragment01 = TournamentPlayersFragment01
                     .newInstance(tournamentKey, clubKey,mIsAdmin);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, tournamentPlayersFragment);
+            transaction.replace(R.id.fragment_container, tournamentPlayersFragment01);
             transaction.addToBackStack(null);
             transaction.commit();
             MyFirebaseUtils.isManagerForClubKey(clubKey, this, ACTION.SHOW_TOURNAMENT_PLAYERS);
-        } else if (position == 2) {//rounds
+        } else if (position == 1){
+            TournamentPlayersFragment tournamentPlayersFragment =
+                    TournamentPlayersFragment.newInstance(tournamentKey,clubKey,mIsAdmin);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, tournamentPlayersFragment);
+            transaction.commit();
+            //enable fab
+            MyFirebaseUtils.isManagerForClubKey(clubKey, this, ACTION.SHOW_TOURNAMENT_PLAYERS);
+        }else if (position == 2) {//rounds
             Bundle bundle = RoundPagerFragment.getBundle(tournamentKey, clubKey);
             RoundPagerFragment roundPagerFragment = new RoundPagerFragment();
             roundPagerFragment.setArguments(bundle);
