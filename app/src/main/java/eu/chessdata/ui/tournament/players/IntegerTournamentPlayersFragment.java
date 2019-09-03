@@ -14,6 +14,7 @@ import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import eu.chessdata.R;
 import eu.chessdata.model.Player;
@@ -39,6 +40,8 @@ public class IntegerTournamentPlayersFragment extends Fragment {
     private ArrayList<Integer> integerRemovalList = new ArrayList<>();
     private Integer integerToAdd;
     private Integer integerToRemove;
+    private Map<String, PlayerData> newPlayers;
+    private Map<String, PlayerData> oldPlayers;
 
 
     public static IntegerTournamentPlayersFragment newInstance(String tournamentKey, String clubKey, boolean isAdminUser) {

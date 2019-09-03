@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
@@ -91,7 +92,7 @@ public class MyFirebaseUtils {
         boolean weHaveInitialOrder = false;
         if (rankedPlayers.size() > 0) {
             weHaveInitialOrder = true;
-            int i=1;
+            int i = 1;
             for (RankedPlayer player : rankedPlayers) {
                 initialOrder.put(player.getPlayerKey(), i++);
             }
@@ -205,6 +206,40 @@ public class MyFirebaseUtils {
         return chesspairingRounds;
     }
 
+    public static List<Player> getClubPlayers(String clubKey) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final List<Player> playerList = new ArrayList<>();
+        String playerLocation = Constants.LOCATION_CLUB_PLAYERS
+                .replace(Constants.CLUB_KEY, clubKey);
+
+        DatabaseReference playerReference = FirebaseDatabase.getInstance()
+                .getReference(playerLocation);
+        playerReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
+                while (it.hasNext()) {
+                    DataSnapshot snapshot = (DataSnapshot) it.next();
+                    Player player = snapshot.getValue(Player.class);
+                    playerList.add(player);
+                }
+                latch.countDown();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, databaseError.getMessage());
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Log.e(tag, "getTournamentPlayers: " + e.getMessage());
+        }
+        return playerList;
+    }
+
     public static List<Player> getTournamentPlayers(String tournamentKey) {
         final List<Player> playerList = new ArrayList<>();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -236,6 +271,7 @@ public class MyFirebaseUtils {
         }
         return playerList;
     }
+
 
     public static List<RankedPlayer> getTournamentInitialOrder(String tournamentKey) {
         final List<RankedPlayer> playerList = new ArrayList<>();
@@ -613,7 +649,7 @@ public class MyFirebaseUtils {
         for (ChesspairingPlayer player : tournament.getPlayers()) {
             Double key = Double.valueOf(player.getInitialOrderId()) + spaceing;
             if (player.getPlayerKey().equals(playerKey)) {
-                key=Double.valueOf(updateValue);
+                key = Double.valueOf(updateValue);
             }
 
             while (initialTreeMap.containsKey(key)) {
@@ -625,7 +661,7 @@ public class MyFirebaseUtils {
 
         TreeMap<Double, RankedPlayer> treeMap = new TreeMap<>();
 
-        for (Map.Entry<Double, ChesspairingPlayer> entry: initialTreeMap.entrySet()) {
+        for (Map.Entry<Double, ChesspairingPlayer> entry : initialTreeMap.entrySet()) {
             Double mapKey = entry.getKey();
             ChesspairingPlayer player = entry.getValue();
             RankedPlayer rankedPlayer = new RankedPlayer(player, tournamentKey, clubKey);
