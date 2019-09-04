@@ -485,6 +485,7 @@ public class MainActivity extends AppCompatActivity
                     TournamentPlayersFragment.newInstance(tournamentKey, clubKey, mIsAdmin);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, tournamentPlayersFragment);
+            transaction.addToBackStack(null);
             transaction.commit();
             MyFirebaseUtils.isManagerForClubKey(clubKey, this, ACTION.SHOW_TOURNAMENT_PLAYERS);
         } else if (position == 2) {//rounds

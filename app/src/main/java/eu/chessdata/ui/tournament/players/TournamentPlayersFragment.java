@@ -134,10 +134,4 @@ public class TournamentPlayersFragment extends Fragment {
         return valueEventListener;
     }
 
-    @Override
-    public void onPause() {
-        Log.d(tag, "View paused");
-        mRecyclerView.setAlpha(0);
-        super.onPause();
-    }
 }
