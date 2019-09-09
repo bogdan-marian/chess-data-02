@@ -94,6 +94,8 @@ public class MyCloudService extends IntentService {
         context.startService(intent);
     }
 
+
+
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {

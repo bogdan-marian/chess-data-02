@@ -635,6 +635,12 @@ public class MyFirebaseUtils {
         }
     }
 
+    public static void appendToTournamentInitialOrder(String clubKey,
+                                                      String tournamentKey,
+                                                      String player){
+
+    }
+
     public static void updateTournamentInitialOrder(String clubKey,
                                                     String tournamentKey,
                                                     String playerKey,

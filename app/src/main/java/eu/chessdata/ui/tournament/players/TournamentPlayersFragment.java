@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,7 +100,6 @@ public class TournamentPlayersFragment extends Fragment {
                 oldData.clear();
                 oldData.putAll(newData);
                 newData.clear();
-                int i = 0;
                 for (DataSnapshot item : dataSnapshot.getChildren()) {
                     RankedPlayer rankedPlayer = item.getValue(RankedPlayer.class);
 
