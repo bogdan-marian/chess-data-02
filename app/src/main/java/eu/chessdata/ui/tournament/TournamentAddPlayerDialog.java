@@ -1,6 +1,7 @@
 package eu.chessdata.ui.tournament;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,10 +25,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import eu.chessdata.R;
 import eu.chessdata.model.Player;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MapUtil;
-import eu.chessdata.R;
+import eu.chessdata.utils.MyCloudService;
 
 /**
  * Created by Bogdan Oloeriu on 6/11/2016.
@@ -36,24 +38,30 @@ public class TournamentAddPlayerDialog extends DialogFragment {
     private String tag = Constants.LOG_TAG;
     private String mTournamentKey;
     private String mClubKey;
+    private Context mContext;
+    private String mUserKey;
 
     private View mView;
 
     private ArrayList<Player> mPlayers;
-    private Map<String,Player> mPlayersMap;
+    private Map<String, Player> mPlayersMap;
 
     private PlayerAdapter mPlayerAdapter;
 
-    public static TournamentAddPlayerDialog newInstance(String tournamentKey, String clubKey) {
+    public static TournamentAddPlayerDialog newInstance(String tournamentKey,
+                                                        String clubKey,
+                                                        String userKey) {
         TournamentAddPlayerDialog fragment = new TournamentAddPlayerDialog();
         fragment.mTournamentKey = tournamentKey;
         fragment.mClubKey = clubKey;
+        fragment.mUserKey = userKey;
         return fragment;
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mContext = getActivity().getApplicationContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         builder.setTitle("Select player");
@@ -65,12 +73,12 @@ public class TournamentAddPlayerDialog extends DialogFragment {
         mPlayers = new ArrayList<>();
         mPlayersMap = new HashMap<>();
 
-        mPlayerAdapter = new PlayerAdapter(getContext(),mPlayers);
+        mPlayerAdapter = new PlayerAdapter(getContext(), mPlayers);
         listView.setAdapter(mPlayerAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                List<Map.Entry<String,Player>> list = new LinkedList<Map.Entry<String, Player>>(mPlayersMap.entrySet());
+                List<Map.Entry<String, Player>> list = new LinkedList<Map.Entry<String, Player>>(mPlayersMap.entrySet());
                 Player player = list.get(position).getValue();
                 addPlayer(player);
             }
@@ -85,17 +93,17 @@ public class TournamentAddPlayerDialog extends DialogFragment {
         @Override
         protected Void doInBackground(Void... params) {
             String clubPlayersLoc = Constants.LOCATION_CLUB_PLAYERS
-                    .replace(Constants.CLUB_KEY,mClubKey);
+                    .replace(Constants.CLUB_KEY, mClubKey);
             DatabaseReference clubPlayersRef = FirebaseDatabase.getInstance().getReference(clubPlayersLoc);
             clubPlayersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot item: dataSnapshot.getChildren()){
+                    for (DataSnapshot item : dataSnapshot.getChildren()) {
                         Player player = item.getValue(Player.class);
-                        mPlayersMap.put(player.getPlayerKey(),player);
+                        mPlayersMap.put(player.getPlayerKey(), player);
                     }
                     mPlayersMap = MapUtil.sortByValue(mPlayersMap);
-                    for (Map.Entry<String,Player> entry: mPlayersMap.entrySet()){
+                    for (Map.Entry<String, Player> entry : mPlayersMap.entrySet()) {
                         mPlayerAdapter.add(entry.getValue());
                     }
                 }
@@ -114,22 +122,28 @@ public class TournamentAddPlayerDialog extends DialogFragment {
         }
     }
 
-    private void addPlayer(final Player player){
+    private void addPlayer(final Player player) {
         String tournamentPlayerLoc = Constants.LOCATION_TOURNAMENT_PLAYERS
-                .replace(Constants.TOURNAMENT_KEY, mTournamentKey)+"/"+player.getPlayerKey();
+                .replace(Constants.TOURNAMENT_KEY, mTournamentKey) + "/" + player.getPlayerKey();
         final DatabaseReference playerRef = FirebaseDatabase.getInstance().getReference(tournamentPlayerLoc);
         playerRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() == null){
+                if (dataSnapshot.getValue() == null) {
                     playerRef.setValue(player);
+                    MyCloudService.startActionRefreshTournamentInitialOrder(
+                            mContext,
+                            mClubKey,
+                            mUserKey,
+                            mTournamentKey
+                    );
                 }
                 getDialog().dismiss();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(tag,"Firebase error: " + databaseError.getMessage());
+                Log.e(tag, "Firebase error: " + databaseError.getMessage());
             }
         });
     }

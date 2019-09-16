@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -33,27 +32,27 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.chessdata.ui.club.ClubPlayersFragment;
-import eu.chessdata.ui.club.PlayerCreateDialogFragment;
-import eu.chessdata.ui.crowd.CrowdTournamentsFragment;
-import eu.chessdata.ui.home.HomeFragment;
-import eu.chessdata.ui.tournament.TournamentAddPlayerDialog;
-import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
-import eu.chessdata.ui.tournament.players.IntegerTournamentPlayersFragment;
-import eu.chessdata.ui.tournament.TournamentPlayersFragment01;
-import eu.chessdata.ui.tournament.players.TournamentPlayersFragment;
-import eu.chessdata.ui.userspecific.AllMyFollowedPlayersFragment;
-import eu.chessdata.utils.MyFirebaseUtils;
 import eu.chessdata.R;
 import eu.chessdata.model.DefaultClub;
 import eu.chessdata.ui.club.ClubCreateDialogFragment;
+import eu.chessdata.ui.club.ClubPlayersFragment;
 import eu.chessdata.ui.club.MyClubsFragment;
+import eu.chessdata.ui.club.PlayerCreateDialogFragment;
+import eu.chessdata.ui.crowd.CrowdTournamentsFragment;
+import eu.chessdata.ui.home.HomeFragment;
 import eu.chessdata.ui.round.RoundPagerFragment;
 import eu.chessdata.ui.standings.StandingsPagerFragment;
+import eu.chessdata.ui.tournament.TournamentAddPlayerDialog;
+import eu.chessdata.ui.tournament.TournamentCreateDialogFragment;
 import eu.chessdata.ui.tournament.TournamentDetailsFragment;
+import eu.chessdata.ui.tournament.TournamentPlayersFragment01;
 import eu.chessdata.ui.tournament.TournamentsFragment;
+import eu.chessdata.ui.tournament.players.IntegerTournamentPlayersFragment;
+import eu.chessdata.ui.tournament.players.TournamentPlayersFragment;
+import eu.chessdata.ui.userspecific.AllMyFollowedPlayersFragment;
 import eu.chessdata.utils.Constants;
 import eu.chessdata.utils.MyFabInterface;
+import eu.chessdata.utils.MyFirebaseUtils;
 import eu.chessdata.utils.Utils;
 
 public class MainActivity extends AppCompatActivity
@@ -379,7 +378,8 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(View v) {
                     String clubKey = mVipMap.get(Constants.CLUB_KEY);
                     String tournamentKey = mVipMap.get(Constants.TOURNAMENT_KEY);
-                    TournamentAddPlayerDialog addPlayerDialog = TournamentAddPlayerDialog.newInstance(tournamentKey, clubKey);
+                    String userKey = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    TournamentAddPlayerDialog addPlayerDialog = TournamentAddPlayerDialog.newInstance(tournamentKey, clubKey, userKey);
                     addPlayerDialog.show(getSupportFragmentManager(), "TournamentAddPlayerDialog");
                 }
             });

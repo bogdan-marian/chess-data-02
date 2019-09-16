@@ -32,7 +32,9 @@ public class MyCloudService extends IntentService {
     private static final String ACTION_GAME_RESULT_UPDATED = "eu.chessdata.utils.ACTION_GAME_RESULT_UPDATED";
     private static final String ACTION_COMPUTE_STANDINGS = "eu.chessdata.util.ACTION_COMPUTE_STANDINGS";
     private static final String ACTION_UPDATE_TOURNAMENT_INITIAL_ORDER = "eu.chessdata.util.ACTION_UPDATE_TOURNAMENT_INITIAL_ORDER";
+    private static final String ACTION_REFRESH_TOURNAMENT_INITIAL_ORDER = "eu.chessdata.util.ACTION_REFRESH_TOURNAMENT_INITIAL_ORDER";
     private static final String ACTION_GENERATE_NEXT_ROUND = "eu.chessdata.utils.ACTION_GENERATE_NEXT_ROUND";
+    private static final String EXTRA_USER_KEY = "eu.chessdata.utils.EXTRA_USER_KEY";
     private static final String EXTRA_GAME_LOCATION = "eu.chessdata.utils.EXTRA_GAME_LOCATION";
     private static final String EXTRA_TOURNAMENT_KEY = "eu.chessdata.utils.EXTRA_TOURNAMENT_KEY";
     private static final String EXTRA_PLAYER_KEY = "eu.chessdata.utils.EXTRA_PLAYER_KEY";
@@ -79,12 +81,13 @@ public class MyCloudService extends IntentService {
         context.startService(intent);
     }
 
+
     public static void startActionUpdateTournamentInitialOrder(Context context,
                                                                String clubKey,
                                                                String userKey,
                                                                String tournamentKey,
                                                                String playerKey,
-                                                               String updatedOrder){
+                                                               String updatedOrder) {
         Intent intent = new Intent(context, MyCloudService.class);
         intent.setAction(ACTION_UPDATE_TOURNAMENT_INITIAL_ORDER);
         intent.putExtra(EXTRA_CLUB_KEY, clubKey);
@@ -94,6 +97,17 @@ public class MyCloudService extends IntentService {
         context.startService(intent);
     }
 
+    public static void startActionRefreshTournamentInitialOrder(Context context,
+                                                                String clubKey,
+                                                                String userKey,
+                                                                String tournamentKey) {
+        Intent intent = new Intent(context, MyCloudService.class);
+        intent.setAction(ACTION_REFRESH_TOURNAMENT_INITIAL_ORDER);
+        intent.putExtra(EXTRA_CLUB_KEY, clubKey);
+        intent.putExtra(EXTRA_TOURNAMENT_KEY, tournamentKey);
+        intent.putExtra(EXTRA_USER_KEY, userKey);
+        context.startService(intent);
+    }
 
 
     @Override
@@ -112,12 +126,17 @@ public class MyCloudService extends IntentService {
                 final String tournamentKey = intent.getStringExtra(EXTRA_TOURNAMENT_KEY);
                 final int roundNumber = intent.getIntExtra(EXTRA_ROUND_NUMBER, 1);
                 handleActionComputeStandings(clubKey, tournamentKey, roundNumber);
-            } else if (ACTION_UPDATE_TOURNAMENT_INITIAL_ORDER.equals(action)){
+            } else if (ACTION_UPDATE_TOURNAMENT_INITIAL_ORDER.equals(action)) {
                 final String clubKey = intent.getStringExtra(EXTRA_CLUB_KEY);
                 final String tournamentKey = intent.getStringExtra(EXTRA_TOURNAMENT_KEY);
                 final String playerKey = intent.getStringExtra(EXTRA_PLAYER_KEY);
                 final String updateOrder = intent.getStringExtra(EXTRA_UPDATED_ORDER);
-                handleActionUpdateTournamentInitialOrder(clubKey,tournamentKey,playerKey, updateOrder);
+                handleActionUpdateTournamentInitialOrder(clubKey, tournamentKey, playerKey, updateOrder);
+            } else if (ACTION_REFRESH_TOURNAMENT_INITIAL_ORDER.equals(action)) {
+                final String clubKey = intent.getStringExtra(EXTRA_CLUB_KEY);
+                final String tournamentKey = intent.getStringExtra(EXTRA_TOURNAMENT_KEY);
+                final String userKey = intent.getStringExtra(EXTRA_USER_KEY);
+                handleActionRefreshTournamentInitialOrder(clubKey, tournamentKey, userKey);
             }
         }
     }
@@ -149,9 +168,18 @@ public class MyCloudService extends IntentService {
                                                           String updatedOrderString) {
 
         ChesspairingTournament tournament = MyFirebaseUtils.buildChessPairingTournament(clubKey, tournamentKey);
-        Log.d(tag, "handleActionUpdateTournamentInitialOrder newOrder = " + playerKey+ "new order = " + updatedOrderString);
+        Log.d(tag, "handleActionUpdateTournamentInitialOrder newOrder = " + playerKey + "new order = " + updatedOrderString);
         MyFirebaseUtils.updateTournamentInitialOrder(clubKey,
                 tournamentKey, playerKey, updatedOrderString, tournament);
+    }
+
+    private void handleActionRefreshTournamentInitialOrder(String clubKey,
+                                                           String tournamentKey,
+                                                           String userKey) {
+        ChesspairingTournament tournament = MyFirebaseUtils.buildChessPairingTournament(clubKey,
+                tournamentKey);
+        MyFirebaseUtils.refreshTournamentInitialOrder(clubKey, tournamentKey, userKey, tournament);
+
     }
 
     /**

@@ -2,7 +2,6 @@ package eu.chessdata.utils;
 
 import android.util.Log;
 
-import com.firebase.client.core.utilities.Tree;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -11,15 +10,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 
@@ -30,10 +26,10 @@ import eu.chessdata.chesspairing.model.ChesspairingTournament;
 import eu.chessdata.model.DefaultClub;
 import eu.chessdata.model.Game;
 import eu.chessdata.model.Player;
+import eu.chessdata.model.RankedPlayer;
 import eu.chessdata.model.Tournament;
 import eu.chessdata.model.User;
 import eu.chessdata.ui.MainActivity;
-import eu.chessdata.model.RankedPlayer;
 
 /**
  * Created by Bogdan Oloeriu on 5/31/2016.
@@ -635,11 +631,6 @@ public class MyFirebaseUtils {
         }
     }
 
-    public static void appendToTournamentInitialOrder(String clubKey,
-                                                      String tournamentKey,
-                                                      String player){
-
-    }
 
     public static void updateTournamentInitialOrder(String clubKey,
                                                     String tournamentKey,
@@ -689,6 +680,56 @@ public class MyFirebaseUtils {
             debugMap.put(Integer.valueOf(i), "-> " + player.getTournamentInitialOrder() + " " + player.getPlayerName());
         }
         Log.d(tag, "End of updateTournamentInitialOrder: " + debugMap);
+    }
+
+    public static void refreshTournamentInitialOrder(String clubKey,
+                                                     String tournamentKey,
+                                                     String userKey,
+                                                     ChesspairingTournament tournament) {
+
+        //initial order
+        List<RankedPlayer> rankedPlayers = getTournamentInitialOrder(tournamentKey);
+        Map<String, RankedPlayer> orderedMap = new LinkedHashMap<>();
+
+        int rank = 1;
+        if (rankedPlayers.size() > 0) {
+
+            for (RankedPlayer player : rankedPlayers) {
+                player.setTournamentInitialOrder(rank++);
+                orderedMap.put(player.getPlayerKey(), player);
+            }
+        }
+
+
+        for (ChesspairingPlayer player : tournament.getPlayers()) {
+            String playerKey = player.getPlayerKey();
+            if (!rankedPlayers.contains(playerKey)) {
+                RankedPlayer rankedPlayer = new RankedPlayer(player, tournamentKey, clubKey);
+                rankedPlayer.setTournamentInitialOrder(rank++);
+                orderedMap.put(rankedPlayer.getPlayerKey(), rankedPlayer);
+            }
+        }
+
+        //delete initial order
+        String initialOrder = Constants.LOCATION_TOURNAMENT_PLAYER_INITIAL_ORDER
+                .replace(Constants.TOURNAMENT_KEY, tournamentKey)
+                .replace("/" + Constants.PLAYER_KEY, "");
+        DatabaseReference initialOrderReference = FirebaseDatabase.getInstance()
+                .getReference(initialOrder);
+        initialOrderReference.removeValue();
+
+        //set new order
+        for (RankedPlayer rankedPlayer : orderedMap.values()) {
+            String tournamentOrderLocation = Constants.LOCATION_TOURNAMENT_PLAYER_INITIAL_ORDER
+                    .replace(Constants.TOURNAMENT_KEY, tournamentKey)
+                    .replace(Constants.PLAYER_KEY, rankedPlayer.getPlayerKey());
+            DatabaseReference updatedOrderReference = FirebaseDatabase.getInstance()
+                    .getReference(tournamentOrderLocation);
+            updatedOrderReference.setValue(rankedPlayer);
+        }
+
+
+        Log.d(tag, "End of eu.chessdata.utils.MyFirebaseUtils.refreshTournamentInitialOrder");
     }
 
 
