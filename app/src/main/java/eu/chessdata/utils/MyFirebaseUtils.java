@@ -96,12 +96,20 @@ public class MyFirebaseUtils {
 
         List<ChesspairingPlayer> chesspairingPlayers = new ArrayList<>();
         int i = 0;
+        int k = -1;
         for (Player player : players) {
             i++;//set the player order as the natural one collected from firebase
             ChesspairingPlayer chesspairingPlayer = MyChesspairingUtils.scanPlayer(player);
             if (weHaveInitialOrder) {
-                chesspairingPlayer.setInitialOrderId(
-                        initialOrder.get(chesspairingPlayer.getPlayerKey()));
+                if (initialOrder.containsKey(chesspairingPlayer.getPlayerKey())) {
+                    chesspairingPlayer.setInitialOrderId(
+                            initialOrder.get(chesspairingPlayer.getPlayerKey()));
+                } else {
+                    k++;
+                    int order = k + initialOrder.size();
+                    chesspairingPlayer.setInitialOrderId(k + initialOrder.size());
+                }
+
             } else {
                 chesspairingPlayer.setInitialOrderId(i);
             }
