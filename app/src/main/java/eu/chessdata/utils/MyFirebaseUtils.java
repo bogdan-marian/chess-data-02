@@ -711,7 +711,7 @@ public class MyFirebaseUtils {
 
         for (ChesspairingPlayer player : tournament.getPlayers()) {
             String playerKey = player.getPlayerKey();
-            if (!rankedPlayers.contains(playerKey)) {
+            if (!orderedMap.containsKey(playerKey)) {
                 RankedPlayer rankedPlayer = new RankedPlayer(player, tournamentKey, clubKey);
                 rankedPlayer.setTournamentInitialOrder(rank++);
                 orderedMap.put(rankedPlayer.getPlayerKey(), rankedPlayer);
@@ -727,6 +727,7 @@ public class MyFirebaseUtils {
         initialOrderReference.removeValue();
 
         //set new order
+
         for (RankedPlayer rankedPlayer : orderedMap.values()) {
             String tournamentOrderLocation = Constants.LOCATION_TOURNAMENT_PLAYER_INITIAL_ORDER
                     .replace(Constants.TOURNAMENT_KEY, tournamentKey)

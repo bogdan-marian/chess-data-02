@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -72,9 +73,12 @@ public class TournamentPlayersFragment extends Fragment {
 
     private void setupRecycler() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        mPlayerDataListAdapter = new PlayerDataSortedListAdapter();
+        TournamentPlayersItemSelected tournamentPlayersItemSelected =
+                new TournamentPlayersItemSelected(this);
+        mPlayerDataListAdapter = new PlayerDataSortedListAdapter(tournamentPlayersItemSelected);
         mRecyclerView.setAdapter(mPlayerDataListAdapter);
     }
+
 
     private class UpdateListTask extends AsyncTask<Void, Void, Void> {
 
@@ -132,4 +136,18 @@ public class TournamentPlayersFragment extends Fragment {
         return valueEventListener;
     }
 
+    private void onPlayerSingleClicked (PlayerData playerData){
+        Toast.makeText(getContext(),"Hello there",Toast.LENGTH_LONG).show();
+    }
+
+    public class TournamentPlayersItemSelected {
+        public TournamentPlayersFragment parent;
+
+        private TournamentPlayersItemSelected(TournamentPlayersFragment parent) {
+            this.parent = parent;
+        }
+        public void playerSingleClicked(PlayerData playerData){
+            parent.onPlayerSingleClicked(playerData);
+        }
+    }
 }

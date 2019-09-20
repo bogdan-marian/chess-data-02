@@ -7,9 +7,11 @@ import android.view.ViewGroup;
 public class PlayerDataSortedListAdapter extends PlayerDataListAdapter {
 
     private SortedList<PlayerData> sortedList;
+    TournamentPlayersFragment.TournamentPlayersItemSelected tournamentPlayersItemSelected;
 
 
-    public PlayerDataSortedListAdapter() {
+    public PlayerDataSortedListAdapter(TournamentPlayersFragment.TournamentPlayersItemSelected tournamentPlayersItemSelected) {
+        this.tournamentPlayersItemSelected = tournamentPlayersItemSelected;
         this.sortedList = new SortedList<>(PlayerData.class, new SortedListAdapterCallback<PlayerData>(this) {
             @Override
             public int compare(PlayerData o1, PlayerData o2) {
@@ -45,7 +47,7 @@ public class PlayerDataSortedListAdapter extends PlayerDataListAdapter {
 
     @Override
     public PlayerDataListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return PlayerDataListItemViewHolder.create(parent);
+        return PlayerDataListItemViewHolder.create(parent, tournamentPlayersItemSelected);
     }
 
     @Override
