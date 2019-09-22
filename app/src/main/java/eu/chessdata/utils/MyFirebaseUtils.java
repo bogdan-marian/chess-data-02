@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 
@@ -242,6 +243,40 @@ public class MyFirebaseUtils {
             Log.e(tag, "getTournamentPlayers: " + e.getMessage());
         }
         return playerList;
+    }
+
+    public static Optional<Player> getClubPlayer(String clubKey, String playerKey) {
+        Optional<Player> returnValue[] = new Optional[1];
+        returnValue[0] = Optional.empty();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final List<Player> playerList = new ArrayList<>();
+        String playerLocation = Constants.LOCATION_CLUB_PLAYERS
+                .replace(Constants.CLUB_KEY, clubKey)
+                + "/" + playerKey;
+
+        DatabaseReference playerReference = FirebaseDatabase.getInstance()
+                .getReference(playerLocation);
+        playerReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Player player = dataSnapshot.getValue(Player.class);
+                if (null != player) {
+                    returnValue[0] = Optional.of(player);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(tag, databaseError.getMessage());
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Log.e(tag, "getTournamentPlayers: " + e.getMessage());
+        }
+        return returnValue[0];
     }
 
     public static List<Player> getTournamentPlayers(String tournamentKey) {

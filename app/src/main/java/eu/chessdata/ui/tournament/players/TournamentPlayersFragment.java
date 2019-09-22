@@ -2,6 +2,7 @@ package eu.chessdata.ui.tournament.players;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,6 +43,7 @@ public class TournamentPlayersFragment extends Fragment {
     private Map<String, PlayerData> oldData = new HashMap<>();
     private Map<String, PlayerData> newData = new HashMap<>();
     private Map<String, Player> clubPlayers = new HashMap<>();
+    protected Handler mHandler;
 
     private PlayerDataListAdapter mPlayerDataListAdapter;
 
@@ -59,7 +60,7 @@ public class TournamentPlayersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_tournament_players_v3, container, false);
-
+        mHandler = new Handler();
 
         mRecyclerView = mView.findViewById(R.id.recycler_view_tournament_players);
 
@@ -136,8 +137,11 @@ public class TournamentPlayersFragment extends Fragment {
         return valueEventListener;
     }
 
-    private void onPlayerSingleClicked (PlayerData playerData){
-        Toast.makeText(getContext(),"Hello there",Toast.LENGTH_LONG).show();
+    private void onPlayerSingleClicked(PlayerData playerData) {
+        String keys[] = {playerData.playerKey};
+        if (clubPlayers.containsKey(playerData.playerKey)) {
+            showSelectedDialog(clubPlayers.get(playerData.playerKey));
+        }
     }
 
     public class TournamentPlayersItemSelected {
@@ -146,8 +150,24 @@ public class TournamentPlayersFragment extends Fragment {
         private TournamentPlayersItemSelected(TournamentPlayersFragment parent) {
             this.parent = parent;
         }
-        public void playerSingleClicked(PlayerData playerData){
+
+        public void playerSingleClicked(PlayerData playerData) {
             parent.onPlayerSingleClicked(playerData);
         }
+    }
+
+    private void showSelectedDialog(Player player) {
+
+        TournamentPlayersSelectedDialog tournamentPlayersSelectedDialog =
+                TournamentPlayersSelectedDialog
+                        .newInstance(mTournamentKey,
+                                mClubKey,
+                                mIsAdminUser,
+                                player);
+        tournamentPlayersSelectedDialog.show(
+                getActivity().getFragmentManager(),
+                "TournamentPlayersSelectedDialog");
+
+
     }
 }
