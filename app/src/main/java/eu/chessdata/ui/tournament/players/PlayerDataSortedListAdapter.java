@@ -24,7 +24,7 @@ public class PlayerDataSortedListAdapter extends PlayerDataListAdapter {
             @Override
             public boolean areContentsTheSame(PlayerData oldItem, PlayerData newItem) {
 
-                return oldItem.tournamentInitialOrder == newItem.tournamentInitialOrder;
+                return oldItem.playerKey.equals(newItem.playerKey);
             }
 
             @Override

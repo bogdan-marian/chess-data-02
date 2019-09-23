@@ -17,8 +17,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 import eu.chessdata.chesspairing.model.ChesspairingGame;
 import eu.chessdata.chesspairing.model.ChesspairingPlayer;
@@ -674,55 +674,62 @@ public class MyFirebaseUtils {
         }
     }
 
-
     public static void updateTournamentInitialOrder(String clubKey,
                                                     String tournamentKey,
                                                     String playerKey,
                                                     String updateOrderString,
                                                     ChesspairingTournament tournament) {
 
+        //compute new order
         int updateValue = Integer.valueOf(updateOrderString);
 
-        Double spaceing = 0.0000001;
+        List<ChesspairingPlayer> initialList = tournament.getPlayers().stream()
+                .sorted(Comparator.comparingInt(ChesspairingPlayer::getInitialOrderId))
+                .collect(Collectors.toList());
 
-        Map<Double, ChesspairingPlayer> initialTreeMap = new TreeMap<>();
-        for (ChesspairingPlayer player : tournament.getPlayers()) {
-            Double key = Double.valueOf(player.getInitialOrderId()) + spaceing;
-            if (player.getPlayerKey().equals(playerKey)) {
-                key = Double.valueOf(updateValue);
-            }
+        Optional<ChesspairingPlayer> optionalPlayer = initialList.stream()
+                .filter(player -> playerKey.equals(player.getPlayerKey()))
+                .findFirst();
 
-            while (initialTreeMap.containsKey(key)) {
-                key = key + 0.00001d;
+        List<ChesspairingPlayer> newList = new ArrayList<>();
+        int order = 0;
+        //set the order
+        for (ChesspairingPlayer player : initialList) {
+            order++;
+            if (order == updateValue) {
+                newList.add(optionalPlayer.get());
+            } else {
+                if (!playerKey.equals(player.getPlayerKey())
+                ) {
+                    newList.add(player);
+                }
             }
-            initialTreeMap.put(key, player);
+        }
+
+        //fix the values
+        order = 0;
+        for (ChesspairingPlayer player : newList) {
+            order++;
+            player.setInitialOrderId(order);
         }
 
 
-        TreeMap<Double, RankedPlayer> treeMap = new TreeMap<>();
+        //build RankedPlayer list
+        List<RankedPlayer> rankedPlayers = new ArrayList<>();
+        newList.forEach(chesspairingPlayer -> rankedPlayers.add(
+                new RankedPlayer(chesspairingPlayer, tournamentKey, clubKey)
+        ));
 
-        for (Map.Entry<Double, ChesspairingPlayer> entry : initialTreeMap.entrySet()) {
-            Double mapKey = entry.getKey();
-            ChesspairingPlayer player = entry.getValue();
-            RankedPlayer rankedPlayer = new RankedPlayer(player, tournamentKey, clubKey);
-            treeMap.put(mapKey, rankedPlayer);
-        }
-
-        //fix the order in case of gabs and update
-        Map<Integer, String> debugMap = new LinkedHashMap<>();
-
-        int i = 0;
-        for (RankedPlayer player : treeMap.values()) {
-            player.setTournamentInitialOrder(++i);
+        //persist players
+        rankedPlayers.forEach(player -> {
             String tournamentOrderLocation = Constants.LOCATION_TOURNAMENT_PLAYER_INITIAL_ORDER
                     .replace(Constants.TOURNAMENT_KEY, tournamentKey)
                     .replace(Constants.PLAYER_KEY, player.getPlayerKey());
             DatabaseReference initialOrderReference = FirebaseDatabase.getInstance()
                     .getReference(tournamentOrderLocation);
             initialOrderReference.setValue(player);
-            debugMap.put(Integer.valueOf(i), "-> " + player.getTournamentInitialOrder() + " " + player.getPlayerName());
-        }
-        Log.d(tag, "End of updateTournamentInitialOrder: " + debugMap);
+        });
+
     }
 
     public static void refreshTournamentInitialOrder(String clubKey,

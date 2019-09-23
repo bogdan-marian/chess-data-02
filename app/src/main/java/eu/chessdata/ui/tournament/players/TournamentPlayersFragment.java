@@ -41,7 +41,7 @@ public class TournamentPlayersFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ValueEventListener mValueEventListener;
     private Map<String, PlayerData> oldData = new HashMap<>();
-    private Map<String, PlayerData> newData = new HashMap<>();
+    //private Map<String, PlayerData> newData = new HashMap<>();
     private Map<String, Player> clubPlayers = new HashMap<>();
     protected Handler mHandler;
 
@@ -102,9 +102,10 @@ public class TournamentPlayersFragment extends Fragment {
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                oldData.values().forEach(playerData -> mPlayerDataListAdapter.removePlayer(
+                        playerData
+                ));
                 oldData.clear();
-                oldData.putAll(newData);
-                newData.clear();
                 for (DataSnapshot item : dataSnapshot.getChildren()) {
                     RankedPlayer rankedPlayer = item.getValue(RankedPlayer.class);
 
@@ -116,16 +117,9 @@ public class TournamentPlayersFragment extends Fragment {
                         PlayerData playerData = new PlayerData(rankedPlayer,
                                 optionalPlayer.get().getName());
                         String playerKey = playerData.playerKey;
-                        newData.put(playerKey, playerData);
+                        oldData.put(playerKey, playerData);
                         mPlayerDataListAdapter.addPlayer(playerData);
-                        if (oldData.containsKey(playerKey)) {
-                            oldData.remove(playerKey);
-                        }
-
                     }
-                }
-                for (Map.Entry<String, PlayerData> entry : oldData.entrySet()) {
-                    mPlayerDataListAdapter.removePlayer(entry.getValue());
                 }
             }
 
@@ -165,7 +159,7 @@ public class TournamentPlayersFragment extends Fragment {
                                 mIsAdminUser,
                                 player);
         tournamentPlayersSelectedDialog.show(
-                getActivity().getFragmentManager(),
+                getActivity().getSupportFragmentManager(),
                 "TournamentPlayersSelectedDialog");
 
 
