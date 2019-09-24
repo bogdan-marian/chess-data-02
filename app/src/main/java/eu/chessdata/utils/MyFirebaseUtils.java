@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
@@ -691,26 +692,43 @@ public class MyFirebaseUtils {
                 .filter(player -> playerKey.equals(player.getPlayerKey()))
                 .findFirst();
 
-        List<ChesspairingPlayer> newList = new ArrayList<>();
-        int order = 0;
+
+        List<ChesspairingPlayer> otherPlayers = initialList.stream()
+                .filter(player -> !playerKey.equals(player.getPlayerKey()))
+                .collect(Collectors.toList());
+
+        Map<String, ChesspairingPlayer> otherPlayersMap = new LinkedHashMap<>();
+        otherPlayers.forEach(player -> otherPlayersMap.put(player.getPlayerKey(), player));
+
         //set the order
-        for (ChesspairingPlayer player : initialList) {
-            order++;
-            if (order == updateValue) {
+        List<ChesspairingPlayer> newList = new ArrayList<>();
+        boolean playerProcessed = false;
+        int newOrder = 0;
+        for (ChesspairingPlayer player : otherPlayers) {
+            newOrder++;
+            if (newOrder == updateValue) {
                 newList.add(optionalPlayer.get());
-            } else {
-                if (!playerKey.equals(player.getPlayerKey())
-                ) {
-                    newList.add(player);
-                }
+                playerProcessed = true;
+                break;
             }
+            newList.add(player);
+            otherPlayersMap.remove(player.getPlayerKey());
+        }
+        for (Map.Entry<String, ChesspairingPlayer> entry : otherPlayersMap.entrySet()) {
+            newList.add(entry.getValue());
+        }
+        if (!playerProcessed) {
+            newList.add(optionalPlayer.get());
         }
 
+
         //fix the values
-        order = 0;
+        Map<Integer, ChesspairingPlayer> debugMap = new TreeMap<>();
+        int order = 0;
         for (ChesspairingPlayer player : newList) {
             order++;
             player.setInitialOrderId(order);
+            debugMap.put(Integer.valueOf(order), player);
         }
 
 
@@ -720,7 +738,14 @@ public class MyFirebaseUtils {
                 new RankedPlayer(chesspairingPlayer, tournamentKey, clubKey)
         ));
 
-        //persist players
+        //remove all previous order from database
+        String allInitialOrder = Constants.LOCATION_TOURNAMENT_PLAYER_INITIAL_ORDER
+                .replace(Constants.TOURNAMENT_KEY, tournamentKey)
+                .replace("/" + Constants.PLAYER_KEY, "");
+        FirebaseDatabase.getInstance().getReference(allInitialOrder).removeValue();
+
+
+        //persist new order for each player
         rankedPlayers.forEach(player -> {
             String tournamentOrderLocation = Constants.LOCATION_TOURNAMENT_PLAYER_INITIAL_ORDER
                     .replace(Constants.TOURNAMENT_KEY, tournamentKey)

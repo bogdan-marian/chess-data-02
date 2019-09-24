@@ -132,7 +132,6 @@ public class TournamentPlayersFragment extends Fragment {
     }
 
     private void onPlayerSingleClicked(PlayerData playerData) {
-        String keys[] = {playerData.playerKey};
         if (clubPlayers.containsKey(playerData.playerKey)) {
             showSelectedDialog(clubPlayers.get(playerData.playerKey));
         }

@@ -23,13 +23,16 @@ public class PlayerDataSortedListAdapter extends PlayerDataListAdapter {
 
             @Override
             public boolean areContentsTheSame(PlayerData oldItem, PlayerData newItem) {
-
-                return oldItem.playerKey.equals(newItem.playerKey);
+                boolean sameKey = oldItem.playerKey.equals(newItem.playerKey);
+                boolean sameInitialOrder = oldItem.tournamentInitialOrder == newItem.tournamentInitialOrder;
+                return sameKey && sameInitialOrder;
             }
 
             @Override
             public boolean areItemsTheSame(PlayerData item1, PlayerData item2) {
-                return item1.playerKey.equals(item2.playerKey);
+                boolean sameKey = item1.playerKey.equals(item2.playerKey);
+                boolean sameInitialOrder = item1.tournamentInitialOrder == item2.tournamentInitialOrder;
+                return sameKey && sameInitialOrder;
             }
         });
     }

@@ -124,7 +124,7 @@ public class TournamentChangeInitialOrderDialog extends DialogFragment {
                         if (player.getPlayerKey().equals(mPlayerToSetOrder.getPlayerKey())){
                             mCurrentOrder = mPlayerList.size();
                         }
-                        mNumberPicker.setValue(mCurrentOrder);
+                        mNumberPicker.setValue(1);
                         myList.add(player.getName()+" / " + player.getPlayerKey());
                     }
                     Log.d(tag, "myLlist" + myList);
