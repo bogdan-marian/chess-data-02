@@ -20,7 +20,7 @@ plugins {
 apply plugin: 'com.google.cloud.tools.appengine'
 
 appengine{
-    deploy.projectId = "general-sand-box"
+    deploy.projectId = "chess-data"
     deploy.version = 1-0-01
     deploy.stopPreviousVersion = true
     deploy.promote = true
@@ -38,6 +38,13 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test:2.1.8.RELEASE'
     providedCompile 'org.springframework.boot:spring-boot-starter-tomcat:2.1.8.RELEASE'
     implementation 'com.google.cloud.tools:appengine-gradle-plugin:2.1.0'
+
+    implementation 'com.google.firebase:firebase-server-sdk:[3.0.0,)'
+    implementation 'com.firebase:firebase-client-jvm:2.5.2'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.2'
+    implementation 'com.google.code.gson:gson:2.8.0'
+
+    implementation 'com.google.appengine:appengine-api-1.0-sdk:1.9.38'
 }
 
 group = 'com.example'
