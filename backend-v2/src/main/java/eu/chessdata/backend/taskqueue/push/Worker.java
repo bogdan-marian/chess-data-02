@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
@@ -44,7 +44,7 @@ public class Worker {
 
 
     //@Override
-    @GetMapping("/worker")
+    @PostMapping("/worker")
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         deviceKeys = new ArrayList<>();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(req.getInputStream()));

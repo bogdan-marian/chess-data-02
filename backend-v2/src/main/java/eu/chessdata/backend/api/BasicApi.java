@@ -5,7 +5,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.gson.Gson;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
@@ -28,7 +28,7 @@ public class BasicApi {
     private static final Logger log = Logger.getLogger(BasicApi.class.getName());
 
     //@Override
-    @GetMapping("/api/BasicApi")
+    @PostMapping("/api/BasicApi")
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/plain");
 
