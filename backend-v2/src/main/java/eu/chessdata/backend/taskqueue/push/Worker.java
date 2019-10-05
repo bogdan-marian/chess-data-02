@@ -31,9 +31,9 @@ import eu.chessdata.backend.model.MyPayLoad;
 import eu.chessdata.backend.model.Player;
 import eu.chessdata.backend.model.User;
 import eu.chessdata.backend.utils.Constants;
-import eu.chessdata.backend.utils.MyAuthImplementation;
 import eu.chessdata.backend.utils.MyGson;
 import eu.chessdata.backend.utils.MySecurityValues;
+import eu.chessdata.services.PushNotificationService;
 
 /**
  * Created by Bogdan Oloeriu on 06/07/2016.
@@ -44,9 +44,9 @@ public class Worker {
     private static final Logger log = Logger.getLogger(Worker.class.getName());
     private List<String> deviceKeys;
 
-    @Autowired
-    private MyAuthImplementation myAuthService;
 
+    @Autowired
+    private PushNotificationService pushNotificationService;
 
 
     //@Override
@@ -61,9 +61,11 @@ public class Worker {
         Gson gson = MyGson.getGson();
         MyPayLoad myPayLoad = gson.fromJson(jsonPlayLoad, MyPayLoad.class);
 
+
         if (myPayLoad.getEvent() == MyPayLoad.Event.GAME_RESULT_UPDATED) {
-            restNotifyUsersGameResultUpdated(myPayLoad);
+            //restNotifyUsersGameResultUpdated(myPayLoad);
             //notifyUsersGameResultUpdated(myPayLoad);
+            pushNotificationService.sendPushNotificationToToken(myPayLoad);
         }
 //
 //        MyFirebase.makeSureEverythingIsInOrder();
@@ -113,7 +115,8 @@ public class Worker {
             return;
         }
 
-        String accessToken = myAuthService.getAccessToken();
+        //String accessToken = myAuthService.getAccessToken();
+        String accessToken = "no token";
         if (accessToken == null) {
             return;
         }
@@ -136,7 +139,8 @@ public class Worker {
      * @param game   the game that wee are referring
      */
     private void restComputeDevicesAndNotify(Player player, Game game) {
-        String accessToken = myAuthService.getAccessToken();
+        //String accessToken = myAuthService.getAccessToken();
+        String accessToken = "no access token";
         if (accessToken == null) {
             return;
         }

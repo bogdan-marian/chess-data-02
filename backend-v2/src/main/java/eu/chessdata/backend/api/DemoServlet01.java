@@ -6,16 +6,12 @@
 
 package eu.chessdata.backend.api;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -51,30 +47,22 @@ public class DemoServlet01 extends HttpServlet {
     private String listAllAccounts() {
         ClassLoader classLoader = getClass().getClassLoader();
         String accountPath = classLoader.getResource("serviceAccountCredentials.json").getFile();
-        try {
-            FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setServiceAccount(new FileInputStream(accountPath))
-                    .setDatabaseUrl(Constants.FIREBASE_URL)
-                    .build();
-            FirebaseApp.initializeApp(options);
-            DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(Constants.USERS);
-            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot item : dataSnapshot.getChildren()) {
-                        User user = item.getValue(User.class);
-                        System.out.println(user.getName());
-                        log.info("onDataChange: " + user.getName());
-                    }
-                }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(Constants.USERS);
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
+                    User user = item.getValue(User.class);
+                    System.out.println(user.getName());
+                    log.info("onDataChange: " + user.getName());
                 }
-            });
-        } catch (FileNotFoundException e) {
-            throw new IllegalStateException(e.getMessage());
-        }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
         return "End of listAllAccounts()";
     }
 }

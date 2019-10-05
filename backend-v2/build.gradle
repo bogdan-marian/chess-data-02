@@ -28,7 +28,7 @@ appengine{
 
     deploy{
         projectId = "chess-data"
-        version = 1-0-01
+        version = "1-0-02"
         stopPreviousVersion = true
         promote = true
     }

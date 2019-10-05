@@ -14,6 +14,9 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 
 
+/**
+ * Inspired by: https://blog.mestwin.net/send-push-notifications-from-spring-boot-server-side-application-using-fcm/?unapproved=167&moderation-hash=d1cae62877c4ce899706839609095096#comment-167
+ */
 @Service
 public class FCMInitializer {
 
