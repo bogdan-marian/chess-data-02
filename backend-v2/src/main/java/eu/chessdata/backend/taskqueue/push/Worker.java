@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -29,7 +31,7 @@ import eu.chessdata.backend.model.MyPayLoad;
 import eu.chessdata.backend.model.Player;
 import eu.chessdata.backend.model.User;
 import eu.chessdata.backend.utils.Constants;
-import eu.chessdata.backend.utils.MyAuth;
+import eu.chessdata.backend.utils.MyAuthImplementation;
 import eu.chessdata.backend.utils.MyGson;
 import eu.chessdata.backend.utils.MySecurityValues;
 
@@ -41,6 +43,10 @@ public class Worker {
     private static final Logger errorLogger = Logger.getLogger(Worker.class.getName());
     private static final Logger log = Logger.getLogger(Worker.class.getName());
     private List<String> deviceKeys;
+
+    @Autowired
+    private MyAuthImplementation myAuthService;
+
 
 
     //@Override
@@ -88,6 +94,10 @@ public class Worker {
 
     }
 
+    private void notifyUsersGameResultUpdated(MyPayLoad myPayLoad) {
+        log.log(Level.INFO, "handling the Payload");
+    }
+
     /**
      * starts the notification process for a specific game
      *
@@ -103,7 +113,7 @@ public class Worker {
             return;
         }
 
-        String accessToken = MyAuth.getAccessToken();
+        String accessToken = myAuthService.getAccessToken();
         if (accessToken == null) {
             return;
         }
@@ -126,7 +136,7 @@ public class Worker {
      * @param game   the game that wee are referring
      */
     private void restComputeDevicesAndNotify(Player player, Game game) {
-        String accessToken = MyAuth.getAccessToken();
+        String accessToken = myAuthService.getAccessToken();
         if (accessToken == null) {
             return;
         }

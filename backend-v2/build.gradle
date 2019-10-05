@@ -45,17 +45,23 @@ repositories {
 }
 
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter-web:2.1.8.RELEASE'
-    testCompile 'org.springframework.boot:spring-boot-starter-test:2.1.8.RELEASE'
-    providedCompile 'org.springframework.boot:spring-boot-starter-tomcat:2.1.8.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.1.8.RELEASE'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.1.8.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-tomcat:2.1.8.RELEASE'
     implementation 'com.google.cloud.tools:appengine-gradle-plugin:2.1.0'
 
-    implementation 'com.google.firebase:firebase-server-sdk:[3.0.0,)'
-    implementation 'com.firebase:firebase-client-jvm:2.5.2'
-    implementation 'org.apache.httpcomponents:httpclient:4.5.2'
-    implementation 'com.google.code.gson:gson:2.8.0'
+    //implementation 'com.google.firebase:firebase-server-sdk:3.0.3'
+    implementation group: 'com.google.firebase', name: 'firebase-admin', version: '6.10.0'
 
-    implementation 'com.google.appengine:appengine-api-1.0-sdk:1.9.38'
+    implementation 'com.firebase:firebase-client-jvm:2.5.2'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.10'
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    implementation 'com.google.appengine:appengine-api-1.0-sdk:1.9.76'
+
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation group: 'org.json', name: 'json', version: '20190722'
+
 }
 
 group = 'com.example'

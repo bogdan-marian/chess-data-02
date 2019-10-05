@@ -33,3 +33,5 @@ build/
 
 #special
 /src/main/resources/serviceAccountCredentials.json
+/src/main/resources/mySecurityValues.json
+/src/main/resources/serviceAccountCredentialsV2.json
