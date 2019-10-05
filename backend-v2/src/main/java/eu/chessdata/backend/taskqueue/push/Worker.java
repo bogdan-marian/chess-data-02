@@ -1,5 +1,10 @@
 package eu.chessdata.backend.taskqueue.push;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -18,6 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +37,7 @@ import eu.chessdata.backend.model.MyPayLoad;
 import eu.chessdata.backend.model.Player;
 import eu.chessdata.backend.model.User;
 import eu.chessdata.backend.utils.Constants;
+import eu.chessdata.backend.utils.MyAuthImplementation;
 import eu.chessdata.backend.utils.MyGson;
 import eu.chessdata.backend.utils.MySecurityValues;
 import eu.chessdata.services.PushNotificationService;
@@ -48,6 +55,9 @@ public class Worker {
     @Autowired
     private PushNotificationService pushNotificationService;
 
+    @Autowired
+    private MyAuthImplementation myAuthService;
+
 
     //@Override
     @PostMapping("/worker")
@@ -63,9 +73,10 @@ public class Worker {
 
 
         if (myPayLoad.getEvent() == MyPayLoad.Event.GAME_RESULT_UPDATED) {
-            //restNotifyUsersGameResultUpdated(myPayLoad);
+            restNotifyUsersGameResultUpdated(myPayLoad);
             //notifyUsersGameResultUpdated(myPayLoad);
-            pushNotificationService.sendPushNotificationToToken(myPayLoad);
+
+            //pushNotificationService.sendPushNotificationToToken(myPayLoad);
         }
 //
 //        MyFirebase.makeSureEverythingIsInOrder();
@@ -98,6 +109,31 @@ public class Worker {
 
     private void notifyUsersGameResultUpdated(MyPayLoad myPayLoad) {
         log.log(Level.INFO, "handling the Payload");
+
+//
+//
+        final CountDownLatch latch = new CountDownLatch(1);
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(Constants.USERS);
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
+                    User user = item.getValue(User.class);
+                }
+                latch.countDown();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                errorLogger.info("firebase error: " + databaseError.getMessage());
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -115,12 +151,14 @@ public class Worker {
             return;
         }
 
-        //String accessToken = myAuthService.getAccessToken();
-        String accessToken = "no token";
+        String accessToken = myAuthService.getAccessToken();
+        //String accessToken = "no token";
         if (accessToken == null) {
             return;
         }
         gameUrl = Constants.FIREBASE_URL + gameUrl + ".json?access_token=" + accessToken;
+        log.info("GAME_URL=" + gameUrl);
+        log.info("ACCESS_TOKEN=" + accessToken);
         Game game = getGame(gameUrl);
         if (game.getWhitePlayer() != null) {
             Player whitePlayer = game.getWhitePlayer();
@@ -184,7 +222,6 @@ public class Worker {
             log.info("chess-data-null-text: no devices");
             return new ArrayList<>();
         }
-        ;
 
         Gson gson = MyGson.getGson();
         List<Device> devices = new ArrayList<>();
@@ -295,7 +332,7 @@ public class Worker {
             errorLogger.info("chess-data-error: " + e.getMessage());
             throw new IllegalStateException(e.getMessage());
         } catch (IOException e) {
-            errorLogger.info("chess-data-error: " + e.getMessage());
+            errorLogger.info("chess-data-error-special: " + e.getMessage());
             throw new IllegalStateException(e.getMessage());
         }
 

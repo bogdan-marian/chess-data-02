@@ -1,46 +1,44 @@
 package eu.chessdata.backend.utils;
 
-import com.google.appengine.repackaged.com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.auth.oauth2.AccessToken;
+import com.google.auth.oauth2.GoogleCredentials;
+
+import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-//@Component
-public class MyAuthImplementation implements MyAuthService {
-    private GoogleCredential googleCredential;
+import javax.annotation.PostConstruct;
+
+@Service
+public class MyAuthImplementation {
+    private GoogleCredentials googleCredential;
 
 
-    //  @Autowired
-    public MyAuthImplementation() {
-        initialize();
-    }
-
-    // @Override
     public String getAccessToken() {
         if (null == googleCredential) {
             googleCredential = buildCredential();
         }
         try {
-            googleCredential.refreshToken();
-            return googleCredential.getAccessToken();
+            AccessToken accessToken = googleCredential.refreshAccessToken();
+            String token = accessToken.getTokenValue();
+            return token;
         } catch (IOException e) {
-            throw new IllegalStateException("Not able to refresh token", e);
+            throw new IllegalStateException("Not able to refresh token [" + e.getMessage() + "]", e);
         }
     }
 
-    // @Override
+    @PostConstruct
     public void initialize() {
-        if (null == googleCredential) {
-            googleCredential = buildCredential();
-        }
+        googleCredential = buildCredential();
     }
 
-    private GoogleCredential buildCredential() {
+    private GoogleCredentials buildCredential() {
         ClassLoader classLoader = getClass().getClassLoader();
-        String accountPath = classLoader.getResource("serviceAccountCredentials.json").getFile();
+        String accountPath = classLoader.getResource("serviceAccountCredentialsV2.json").getFile();
         try {
-            GoogleCredential googleCredential = GoogleCredential.fromStream(new FileInputStream(accountPath));
+            GoogleCredentials googleCredential = GoogleCredentials.fromStream(new FileInputStream(accountPath));
             googleCredential = googleCredential.createScoped(
                     Arrays.asList(
                             "https://www.googleapis.com/auth/firebase.database",
