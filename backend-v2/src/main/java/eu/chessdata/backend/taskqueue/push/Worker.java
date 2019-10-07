@@ -37,10 +37,9 @@ import eu.chessdata.backend.model.MyPayLoad;
 import eu.chessdata.backend.model.Player;
 import eu.chessdata.backend.model.User;
 import eu.chessdata.backend.utils.Constants;
-import eu.chessdata.backend.utils.MyAuthImplementation;
+import eu.chessdata.backend.utils.MyAuth;
 import eu.chessdata.backend.utils.MyGson;
 import eu.chessdata.backend.utils.MySecurityValues;
-import eu.chessdata.services.PushNotificationService;
 
 /**
  * Created by Bogdan Oloeriu on 06/07/2016.
@@ -51,59 +50,25 @@ public class Worker {
     private static final Logger log = Logger.getLogger(Worker.class.getName());
     private List<String> deviceKeys;
 
-
     @Autowired
-    private PushNotificationService pushNotificationService;
-
-    @Autowired
-    private MyAuthImplementation myAuthService;
+    MyAuth myAuth;
 
 
     //@Override
     @PostMapping("/worker")
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        deviceKeys = new ArrayList<>();
+        this.deviceKeys = new ArrayList();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(req.getInputStream()));
         String jsonPlayLoad = "";
         if (bufferedReader != null) {
             jsonPlayLoad = jsonPlayLoad + bufferedReader.readLine();
         }
+
         Gson gson = MyGson.getGson();
-        MyPayLoad myPayLoad = gson.fromJson(jsonPlayLoad, MyPayLoad.class);
-
-
+        MyPayLoad myPayLoad = (MyPayLoad) gson.fromJson(jsonPlayLoad, MyPayLoad.class);
         if (myPayLoad.getEvent() == MyPayLoad.Event.GAME_RESULT_UPDATED) {
-            restNotifyUsersGameResultUpdated(myPayLoad);
-            //notifyUsersGameResultUpdated(myPayLoad);
-
-            //pushNotificationService.sendPushNotificationToToken(myPayLoad);
+            this.restNotifyUsersGameResultUpdated(myPayLoad);
         }
-//
-//        MyFirebase.makeSureEverythingIsInOrder();
-//
-//
-//        final CountDownLatch latch = new CountDownLatch(1);
-//        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference(Constants.USERS);
-//        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for (DataSnapshot item : dataSnapshot.getChildren()) {
-//                    User user = item.getValue(User.class);
-//                }
-//                latch.countDown();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                errorLogger.info("firebase error: " + databaseError.getMessage());
-//                latch.countDown();
-//            }
-//        });
-//        try {
-//            latch.await();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
 
     }
 
@@ -142,31 +107,26 @@ public class Worker {
      * @param myPayLoad contains the standard location in the firebase for that game
      */
     private void restNotifyUsersGameResultUpdated(MyPayLoad myPayLoad) {
-        if (myPayLoad.getEvent() != MyPayLoad.Event.GAME_RESULT_UPDATED) {
-            return;
-        }
+        if (myPayLoad.getEvent() == MyPayLoad.Event.GAME_RESULT_UPDATED) {
+            String gameUrl = myPayLoad.getGameLocation();
+            if (gameUrl != null) {
+                String accessToken = myAuth.getAccessToken();
+                if (accessToken != null) {
+                    gameUrl = "https://chess-data.firebaseio.com/" + gameUrl + ".json?access_token=" + accessToken;
+                    Game game = this.getGame(gameUrl);
+                    Player blackPlayer;
+                    if (game.getWhitePlayer() != null) {
+                        blackPlayer = game.getWhitePlayer();
+                        this.restComputeDevicesAndNotify(blackPlayer, game);
+                    }
 
-        String gameUrl = myPayLoad.getGameLocation();
-        if (gameUrl == null) {
-            return;
-        }
+                    if (game.getBlackPlayer() != null) {
+                        blackPlayer = game.getBlackPlayer();
+                        this.restComputeDevicesAndNotify(blackPlayer, game);
+                    }
 
-        String accessToken = myAuthService.getAccessToken();
-        //String accessToken = "no token";
-        if (accessToken == null) {
-            return;
-        }
-        gameUrl = Constants.FIREBASE_URL + gameUrl + ".json?access_token=" + accessToken;
-        log.info("GAME_URL=" + gameUrl);
-        log.info("ACCESS_TOKEN=" + accessToken);
-        Game game = getGame(gameUrl);
-        if (game.getWhitePlayer() != null) {
-            Player whitePlayer = game.getWhitePlayer();
-            restComputeDevicesAndNotify(whitePlayer, game);
-        }
-        if (game.getBlackPlayer() != null) {
-            Player blackPlayer = game.getBlackPlayer();
-            restComputeDevicesAndNotify(blackPlayer, game);
+                }
+            }
         }
     }
 
